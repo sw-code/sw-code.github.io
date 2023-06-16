@@ -10,20 +10,20 @@ layout: default
 
 <header class="blog-header">
     {% if site.logo %}
-      <a class="blog-logo" href="{{site.url}}{{site.baseurl}}" style="background-image: url('{{ site.logo | prepend: site.baseurl }}')">{{ site.title }}</a>
+      <a class="blog-logo" href="{{site.url}}{{site.baseurl}}" style="background-image: url('{{ site.teaserlogo | prepend: site.baseurl }}')">{{ site.title }}</a>
     {% endif %}
     <h1 class="blog-title">{{ site.title }}</h1>
     <h2 class="blog-description">{{ site.description }}</h2>
     <div class="custom-links">
       {% for social in site.social %}
         {% if social.url %}
-            <a class="icon-{{ social.icon }}" href="{{ social.url }}" {% if social.desc %} title="{{ social.desc }}"{% endif %}">
+            <a class="icon-{{ social.icon }}" href="{{ social.url }}" target="_blank" {% if social.desc %} title="{{ social.desc }}"{% endif %}">
               <i class="fa fa-{{ social.icon }}"></i>
             </a>
             &nbsp;&nbsp;·&nbsp;&nbsp;
         {% endif %}
       {% endfor %}
-      <a href={{ "/about/" | prepend: site.baseurl }}>About</a>
+      <a href="https://swcode.io" title="SWCode" target="_blank">About</a>
     </div>
 </header>
 

@@ -4,28 +4,29 @@ gems:
   - jekyll-paginate
 
 # Site settings
-title: "Mediator"
+title: "SWCODE BLOG"
 description: > # this means to ignore newlines until "email:"
-   A Jekyll theme - Medium inspired
+   Articles from our daily dev work
 
-email: a-mail@mail.mail
+email: developers@swcode.io
 #blog logo
-logo: "/assets/images/df_logo.jpg"
+logo: "/assets/images/logo_quad.png"
+teaserlogo: "/assets/images/logo.jpg"
 float_logo: true # true, false (default)
 
 # blog cover
-cover: "/assets/images/cA4aKEIPQrerBnp1yGHv_IMG_9534-3-2.jpg"
+cover: "/assets/images/pattern.jpg"
 
-name: 'Dirk Fabisch'
-author: 'Dirk Fabisch'
+name: 'SWCODE'
+author: 'SWCODE'
 author_image: "/assets/images/author.jpg"
 
-paginate:	5
+paginate:	10
 
-url: "http://myblog.***.***" # the base hostname & protocol for your site
+url: "http://blog.swcode.io" # the base hostname & protocol for your site
 baseurl: ""
 #used to display twitter cards
-twitter_handle: '@dirkfabisch'
+#twitter_handle: '@dirkfabisch'
 
 #fill in disqus shortname to use disqus
 #disqus: disqus-shortname
@@ -34,30 +35,16 @@ twitter_handle: '@dirkfabisch'
 
 # social icons and sharing options
 social:
-  - icon:	twitter
-    url:	https://twitter.com/dirkfabisch
-    desc: Follow me on twitter
-    share_url: http://twitter.com/share
-    share_title: ?text=
+  - icon:	linkedin
+    url:	https://www.linkedin.com/company/69717870
+    desc: Follow us on Linkedin
+    share_url: https://www.linkedin.com/sharing/share-offsite
+    share_title: ?title=
     share_link: "&amp;url="
 
-#  - icon:	facebook
-#    url:	https://facebook.com/???
-#    desc: Connect with me facebook
-#    share_url: https://www.facebook.com/sharer.php
-#    share_title: ?t=
-#    share_link: "&amp;u="
-
   - icon:	github
-    url:	https://github.com/dirkfabisch
-    desc:	Fork me on github
+    url:	https://github.com/sw-code
+    desc:	Fork us on github
     share_url:
     share_title:
     share_link:
-
-#  - icon:	google-plus
-#    url:	https://google.com/???
-#    desc:	Add me on google+
-#    share_url:
-#    share_title:
-#    share_link:
