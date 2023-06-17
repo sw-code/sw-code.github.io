@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Scaling Authorization"
-date:   2013-06-16 22:35:25
+date:   2023-06-16 22:35:25
 categories: jekyll update
 tags: 
 image: /assets/article_images/2014-08-29-welcome-to-jekyll/desktop.JPG
