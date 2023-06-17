@@ -11,7 +11,11 @@ Welcome to "Scaling Authz," a new series dedicated to exploring the complexities
 
 The lessons shared here are not purely theoretical. As we speak, my team and I are in the trenches, developing a scalable authorization architecture based on Ory Keto. We've moved beyond the conceptual phase and are now diving into implementation.
 
-Before diving into our current journey, it's worth noting that this isn't our first rodeo. We've had a scalable system up and running for years based on Casbin. Through this experience, we've garnered invaluable insights and practical knowledge about the realities of scalable authorization, which we'll share throughout this series. Yet, the world of technology is ever-evolving, and with our new project, we're pushing the boundaries once again.
+Before we delve into the specifics of our current journey, it's essential to highlight the invaluable experience our team at SWCode has garnered over the years. This isn't our first encounter with the challenges and intricacies of authorization at scale. In fact, we've been running a scalable system based on Casbin successfully for several years.
+
+This prior experience at SWCode has offered us practical insights and deep knowledge about scalable authorization. The lessons we learned have been instrumental in shaping our approach and decisions as we build and enhance our authorization frameworks. We intend to share these insights throughout this blog series, in the hope that they might aid others navigating the same path.
+
+However, we recognize that the world of technology is ever-evolving. Standing still is not an option. Therefore, with our new project, the team at SWCode is pushing the boundaries of what's possible in authorization once again. We're excited to share this journey with you in the upcoming posts. Stay tuned!
 
 If there's one lesson I've learned from my 8 years of cloud-native development, it's this: Never underestimate the power and complexity of authorization. The authentication stage of a user's journey, while crucial, is just the tip of the iceberg. Beneath the surface, a labyrinth of permissions, roles, and policies is waiting to be navigated and understood. Unfortunately, it's a journey many of us embark on too late.
 
