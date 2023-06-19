@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8">
+  <!-- (1) Optimize for mobile versions: http://goo.gl/EOpFl -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- (1) force latest IE rendering engine: bit.ly/1c8EiC9 -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>Authorization Basics</title>
+  <meta name="description" content="Welcome back to our Scaling Authz blog series, where we’re documenting our journey toward a scalable and efficient authorization architecture." />
+
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  
+  
+  <meta property="og:site_name" content="SWCODE BLOG" />
+  <meta property="og:title" content="Authorization Basics"/>
+  
+  <meta property="og:description" content="Welcome back to our Scaling Authz blog series, where we’re documenting our journey toward a scalable and efficient authorization architecture." />
+  
+  <meta property="og:image" content="http://localhost:4000/assets/article_images/2023-06-22-authz-basics/basics.jpg" />
+  <meta property="og:url" content="http://localhost:4000/authz/2023/06/17/authz-basics/" >
+  <meta property="og:type" content="blog" />
+  <meta property="article:published_time" content="2023-06-17T00:35:25+02:00">
+
+  <link rel="canonical" href="http://localhost:4000/authz/2023/06/17/authz-basics/"/>
+  <link rel="shortcut icon" href="/assets/images/favicon.png" type="image/png"/>
+  <link rel="stylesheet" href="//brick.a.ssl.fastly.net/Linux+Libertine:400,400i,700,700i/Open+Sans:400,400i,700,700i">
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" type="text/css" media="screen" href="/css/main.css" />
+  <link rel="stylesheet" type="text/css" media="print" href="/css/print.css" />
+</head>
+
+  <body itemscope itemtype="http://schema.org/Article">
+    <!-- header start -->
+
+
+  <a href="http://localhost:4000" class="logo-readium"><span class="logo" style="background-image: url(/assets/images/logo_quad.png)"></span></a>
+
+<!-- header end -->
+
+    <main class="content" role="main">
+      <article class="post">
+        
+        <div class="article-image">
+          <div class="post-image-image" style="background-image: url(/assets/article_images/2023-06-22-authz-basics/basics.jpg)">
+            Article Image
+          </div>
+          <div class="post-image-image2" style="background-image: url()">
+            Article Image
+          </div>
+          <div class="post-meta">
+            <h1 class="post-title">Authorization Basics</h1>
+            <div class="cf post-meta-text">
+              <div class="author-image" style="background-image: url(/assets/images/authors/viktor-gottfried/thumbnail.jpg)">Blog Logo</div>
+              <h4 class="author-name" itemprop="author" itemscope itemtype="http://schema.org/Person"><a href="/authors/viktor-gottfried" title="Viktor Gottfried">Viktor Gottfried</a></h4>
+              on
+              <time datetime="2023-06-17 00:35">17 Jun 2023</time>
+              <!-- , tagged on <span class="post-tag-">, <a href="/tag/"></a></span> -->
+            </div>
+            <div style="text-align:center">
+              <a href="#topofpage" class="topofpage"><i class="fa fa-angle-down"></i></a>
+            </div>
+          </div>
+        </div>
+        
+        <section class="post-content">
+          <div class="post-reading">
+            <span class="post-reading-time"></span> read
+          </div>
+          <a name="topofpage"></a>
+          <p>Welcome back to our <a href="/authz/2023/06/17/scaling-authz-series/">Scaling Authz</a> blog series, where we’re documenting our journey toward a scalable and efficient authorization architecture.</p>
+
+<h1 id="authentication-vs-authorization">Authentication vs Authorization</h1>
+<p>Authentication and authorization, while often used interchangeably, serve different purposes within the context of security.</p>
+
+<p>Authentication is the process of verifying a user’s identity. It is the initial step in any secure transaction and typically involves the user providing proof of their identity in the form of credentials, such as a username and password or a digital certificate. Once the user’s identity is verified, they are authenticated.</p>
+
+<p>The authenticated user is then provided with a token, often in the form of a JWT (JSON Web Token). This token can include an ID token, which contains information about the user’s identity (like the user’s name, email, and so forth). This token is subsequently presented every time the user wants to access a specific function or service within the system.</p>
+
+<p>This is where authorization comes into play. Authorization is the process that follows authentication. It’s the act of determining what this authenticated user, now identified by their token, is allowed to do.</p>
+
+<p>In other words, authentication answers the question, “Who are you?” while authorization answers the question, “What are you allowed to do?”</p>
+
+<p>So, after a user is authenticated and their identity is established, we then use authorization to determine the boundaries of their interaction with the system’s resources.</p>
+
+<p>While it’s possible to use information included in the authentication token, such as roles, for making authorization decisions, this approach may not scale well for complex or large systems. The roles can become too granular and numerous to manage effectively, and there’s also a risk of role explosion. Instead, as we’ve introduced in our journey so far, we’re looking for a more scalable solution. We aim to separate the authorization process from the token and move it to its own dedicated, manageable, and efficient infrastructure.</p>
+
+<h1 id="policy-enforcement-point-pep-and-policy-decision-point-pdp">Policy Enforcement Point (PEP) and Policy Decision Point (PDP)</h1>
+
+<p><img src="/assets/article_images/2023-06-22-authz-basics/pep-pdp.svg" alt="Policy Enforcement Point (PEP) and Policy Decision Point (PDP)" title="PEP and PDP" /></p>
+
+<p>The authorization mechanism operates on a simple principle: it either permits or denies a user’s access request. The component responsible for this final verdict is the Policy Enforcement Point (PEP). To make this decision, the PEP consults another component called the Policy Decision Point (PDP).</p>
+
+<p>The PEP provides the request context to the PDP, which is crucial for the decision-making process. This context can contain various details, such as the identity of the user, the requested resource, the action the user wants to perform, and potentially other environmental or contextual attributes.</p>
+
+<p>The PDP could be a part of the application or an external service. Its role is to evaluate the request context against a set of defined policies. These policies could be as simple as “user ‘A’ can read resource ‘B’,” or they can be more complex, including conditions, roles, hierarchical permissions, and more.</p>
+
+<p>Upon evaluating the context against these policies, the PDP makes a decision: permit or deny. It then communicates this decision back to the PEP. The PDP doesn’t enforce the decision; it merely informs the PEP of the outcome.</p>
+
+<p>Finally, the PEP takes the decision from the PDP and enforces it. If the decision was ‘permit’, the PEP allows the request to proceed. If the decision was ‘deny’, the PEP blocks the request, typically returning an error message to the user such as “Access Denied.”</p>
+
+<h1 id="separation-of-concerns-decoupling-authorization-from-business-logic">Separation of Concerns: Decoupling Authorization from Business Logic</h1>
+
+<p>Storing policies for decision-making is an integral part of the authorization process. As we emphasized in our introduction, one of our fundamental goals is to keep the business logic separate from the authorization process. Why? Because intertwining these two concerns can lead to a host of issues, including codebase complexity, reduced maintainability, and increased potential for bugs.</p>
+
+<p>Instead, we advocate for storing the authorization-related data in a separate model within a dedicated persistence layer. This approach not only segregates the business logic from the authorization mechanism but also ensures that changes in either domain do not inadvertently impact the other.</p>
+
+<p>Take the example of an Access Control List (ACL). An ACL is a data model that can store the necessary information for policy decisions. An entry in an ACL might include:</p>
+
+<ul>
+  <li>Subject - This is the entity that wishes to perform an action. Typically, it is a user identifier or a role.</li>
+  <li>Resource - The object on which the action is to be performed. In our model, this would be the identifier of a resource.</li>
+  <li>Action - The operation that the subject wishes to perform on the resource, like read, write, or delete.</li>
+</ul>
+
+<p>Having this data in a separate ACL model allows the Policy Decision Point (PDP) to retrieve and evaluate policies independently of the business logic, aiding the maintainability and scalability of our system. Moreover, this model provides a clear, tabulated, and easily understandable visualization of our system’s access control structure, further simplifying the task of managing complex authorization rules.</p>
+
+<p>Indeed, while we strive for decoupling in software development to ensure modularity and scalability, some degree of coupling is inevitable, especially when it comes to something as integral as authorization.</p>
+
+<p>Let’s take an example: suppose you’re working on a content management system. You have blog posts, and each blog post can have multiple comments. In the domain model, there are clear relationships between users, blog posts, and comments.</p>
+
+<p>In the authorization model, these relationships need to be represented to ensure the correct enforcement of permissions. A user might have permission to edit their own blog post, but not someone else’s. They might also have permission to delete a comment on their blog post, even if they didn’t write the comment themselves.</p>
+
+<p>In essence, while the authorization logic is distinct from the business logic and we aim to separate these two as much as possible, they are intrinsically linked. The domain model and the relationships within it inform the authorization model. The challenge is to design the system in a way that maintains this necessary connection without intertwining the business logic and authorization logic so much that they become difficult to manage, test, and evolve independently.</p>
+
+<h2 id="authorization-models">Authorization models</h2>
+
+<p>Access Control Lists (ACLs) are just one way to handle authorization. Let’s briefly explore some other popular models:</p>
+
+<h3 id="role-based-access-control-rbac">Role-Based Access Control (RBAC)</h3>
+
+<p>As its name suggests, RBAC assigns permissions based on roles. In this model, permissions aren’t directly assigned to individual users. Instead, they’re associated with roles, and users are assigned these roles. RBAC makes managing permissions more straightforward, especially in large systems where a large number of users need to be managed. Instead of managing permissions for each user individually, permissions are managed at the role level, significantly reducing the complexity and administrative overhead.</p>
+
+<h3 id="attribute-based-access-control-abac">Attribute-Based Access Control (ABAC)</h3>
+
+<p>ABAC is an even more flexible and fine-grained access control model. In ABAC, permissions are based on attributes — characteristics or properties — of the user, the resource being accessed, and the environment.</p>
+
+<p>A policy in ABAC could say something like, “Allow users with the role ‘doctor’ to view medical records of patients who are assigned to them, but only during office hours.” As you can see, this is far more specific than what can be expressed with RBAC or ACLs.</p>
+
+<p>ABAC can handle complex access control requirements, making it a good fit for highly dynamic and complex environments. However, the increased complexity can make ABAC more challenging to implement and manage compared to RBAC or ACLs.</p>
+
+<p>While traditional models like ACL, RBAC, and ABAC each have their place, they may not be a perfect fit for every system. Some systems might require the simplicity of an ACL for certain resources, the role-based capabilities of an RBAC for others, and the dynamic, context-aware permissions of an ABAC for even more complex situations.</p>
+
+<p>This is where the versatility of contemporary authorization frameworks shines. They are designed to combine and leverage the strengths of various models, allowing for hybrid approaches that best serve the system’s requirements.</p>
+
+<p>One of the prime examples of these modern, flexible authorization frameworks is <a href="https://casbin.org/">Casbin</a>. Casbin allows for a mix of access control models, including ACL, RBAC, and ABAC. It provides robust, customizable access control mechanisms that can be tailored to the specific needs of the application.</p>
+
+<p>Casbin’s primary strength lies in its policy language, which enables administrators to define complex access control rules. It does this through a highly customizable and flexible policy model structure, which is capable of supporting a combination of ACL, RBAC, and ABAC models, among others. This makes it possible to have a nuanced and fine-grained authorization model that caters to the unique requirements of your system.</p>
+
+<p>Other technologies worth mentioning are <a href="https://www.ory.sh/keto/">Ory Keto</a>, which is inspired by <a href="https://research.google/pubs/pub48190/">Google’s Zanzibar paper</a> and provides a globally consistent and scalable permission system, and <a href="https://www.openpolicyagent.org/">Open Policy Agent (OPA)</a>, which is a general-purpose policy engine that allows for context-aware policy enforcement across the stack.</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>Authorization is a crucial aspect of any system’s security strategy. The models and mechanisms used to implement it can greatly affect the system’s overall security, performance, and flexibility. In the early stages of a project, simple roles and permissions may suffice. However, as the system grows in complexity, a more refined approach becomes necessary.</p>
+
+<p>Through this chapter, we hope to have shed light on some of the fundamental concepts and models in the realm of authorization. From basic models like ACL, RBAC, and ABAC to more advanced, flexible frameworks such as Casbin, Ory Keto, and OPA, we’ve delved into how they operate and their relative strengths and weaknesses.</p>
+
+<p>Our exploration of authorization is far from over. In subsequent chapters, we’ll take a closer look at modern, scalable authorization architectures, with a special focus on our experiences and lessons learned. Stay tuned!</p>
+
+        </section>
+        <footer class="post-footer">
+          <section class="share">
+            
+              
+                <a class="icon-linkedin" href="https://www.linkedin.com/sharing/share-offsite?title=Authorization+Basics&amp;url=http://localhost:4000/authz/2023/06/17/authz-basics"
+                  onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
+                <i class="fa fa-linkedin"></i><span class="hidden">linkedin</span>
+                </a>
+              
+            
+              
+            
+          </section>
+        </footer>
+        <div class="bottom-teaser cf">
+          <div class="isLeft">
+            <h5 class="index-headline featured"><span>Written by</span></h5>
+            <section class="author">
+              <div class="author-image" style="background-image: url(/assets/images/authors/viktor-gottfried/thumbnail.jpg)">Blog Logo</div>
+              <h4><a href="/authors/viktor-gottfried" title="Viktor Gottfried">Viktor Gottfried</a></h4>
+              <p class="bio"></p>
+              <hr>
+              <p class="published">Published <time datetime="2023-06-17 00:35">17 Jun 2023</time></p>
+            </section>
+          </div>
+          
+          <div class="isRight">
+            <h5 class="index-headline featured"><span>Supported by</span></h5>
+            <footer class="site-footer">
+              <section class="poweredby">Proudly published with <a href="http://jekyllrb.com"> Jekyll</a></section>
+              <a class="subscribe" href="/feed.xml"> <span class="tooltip"> <i class="fa fa-rss"></i> You should subscribe to our feed.</span></a>
+              <div class="inner">
+                <section class="copyright">All content copyright <a href="/">SWCODE</a> &copy; 2023<br>All rights reserved.</section>
+              </div>
+            </footer>
+          </div>
+        </div>
+        
+      </article>
+    </main>
+    <div class="bottom-closer">
+      <div class="background-closer-image"  style="background-image: url(/assets/images/pattern.jpg)">
+        Image
+      </div>
+      <div class="inner">
+        <h1 class="blog-title">SWCODE BLOG</h1>
+        <h2 class="blog-description">Articles from our daily dev work
+</h2>
+        <a href=/ class="btn">Back to Overview</a>
+      </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="/assets/js/jquery.fitvids.js"></script>
+<script type="text/javascript" src="/assets/js/index.js"></script>
+<script type="text/javascript" src="/assets/js/readingTime.min.js"></script>
+<script>
+(function ($) {
+  "use strict";
+  $(document).ready(function(){
+
+    var $window = $(window),
+    $image = $('.post-image-image, .teaserimage-image');
+    
+      $window.on('scroll', function() {
+        var top = $window.scrollTop();
+
+        if (top < 0 || top > 1500) { return; }
+        $image
+          .css('transform', 'translate3d(0px, '+top/3+'px, 0px)')
+          .css('opacity', 1-Math.max(top/700, 0));
+      });
+      $window.trigger('scroll');
+
+      var height = $('.article-image').height();
+      $('.post-content').css('padding-top', height + 'px');
+
+      $('a[href*=#]:not([href=#])').click(function() {
+        if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'')
+         && location.hostname == this.hostname) {
+          var target = $(this.hash);
+          target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
+          if (target.length) {
+            $('html,body').animate({ scrollTop: target.offset().top }, 500);
+            return false;
+          }
+        }
+      });
+
+  });
+}(jQuery));
+</script>
+
+
+  </body>
+</html>

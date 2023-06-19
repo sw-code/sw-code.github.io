@@ -6,12 +6,118 @@
 </description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Mon, 19 Jun 2023 21:14:54 +0200</pubDate>
-    <lastBuildDate>Mon, 19 Jun 2023 21:14:54 +0200</lastBuildDate>
+    <pubDate>Fri, 23 Jun 2023 15:25:53 +0200</pubDate>
+    <lastBuildDate>Fri, 23 Jun 2023 15:25:53 +0200</lastBuildDate>
     <generator>Jekyll v3.9.3</generator>
     
       <item>
-        <title>Scaling Authorization</title>
+        <title>Authorization Basics</title>
+        <description>&lt;p&gt;Welcome back to our &lt;a href=&quot;/authz/2023/06/17/scaling-authz-series/&quot;&gt;Scaling Authz&lt;/a&gt; blog series, where we’re documenting our journey toward a scalable and efficient authorization architecture.&lt;/p&gt;
+
+&lt;h1 id=&quot;authentication-vs-authorization&quot;&gt;Authentication vs Authorization&lt;/h1&gt;
+&lt;p&gt;Authentication and authorization, while often used interchangeably, serve different purposes within the context of security.&lt;/p&gt;
+
+&lt;p&gt;Authentication is the process of verifying a user’s identity. It is the initial step in any secure transaction and typically involves the user providing proof of their identity in the form of credentials, such as a username and password or a digital certificate. Once the user’s identity is verified, they are authenticated.&lt;/p&gt;
+
+&lt;p&gt;The authenticated user is then provided with a token, often in the form of a JWT (JSON Web Token). This token can include an ID token, which contains information about the user’s identity (like the user’s name, email, and so forth). This token is subsequently presented every time the user wants to access a specific function or service within the system.&lt;/p&gt;
+
+&lt;p&gt;This is where authorization comes into play. Authorization is the process that follows authentication. It’s the act of determining what this authenticated user, now identified by their token, is allowed to do.&lt;/p&gt;
+
+&lt;p&gt;In other words, authentication answers the question, “Who are you?” while authorization answers the question, “What are you allowed to do?”&lt;/p&gt;
+
+&lt;p&gt;So, after a user is authenticated and their identity is established, we then use authorization to determine the boundaries of their interaction with the system’s resources.&lt;/p&gt;
+
+&lt;p&gt;While it’s possible to use information included in the authentication token, such as roles, for making authorization decisions, this approach may not scale well for complex or large systems. The roles can become too granular and numerous to manage effectively, and there’s also a risk of role explosion. Instead, as we’ve introduced in our journey so far, we’re looking for a more scalable solution. We aim to separate the authorization process from the token and move it to its own dedicated, manageable, and efficient infrastructure.&lt;/p&gt;
+
+&lt;h1 id=&quot;policy-enforcement-point-pep-and-policy-decision-point-pdp&quot;&gt;Policy Enforcement Point (PEP) and Policy Decision Point (PDP)&lt;/h1&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/article_images/2023-06-22-authz-basics/pep-pdp.svg&quot; alt=&quot;Policy Enforcement Point (PEP) and Policy Decision Point (PDP)&quot; title=&quot;PEP and PDP&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The authorization mechanism operates on a simple principle: it either permits or denies a user’s access request. The component responsible for this final verdict is the Policy Enforcement Point (PEP). To make this decision, the PEP consults another component called the Policy Decision Point (PDP).&lt;/p&gt;
+
+&lt;p&gt;The PEP provides the request context to the PDP, which is crucial for the decision-making process. This context can contain various details, such as the identity of the user, the requested resource, the action the user wants to perform, and potentially other environmental or contextual attributes.&lt;/p&gt;
+
+&lt;p&gt;The PDP could be a part of the application or an external service. Its role is to evaluate the request context against a set of defined policies. These policies could be as simple as “user ‘A’ can read resource ‘B’,” or they can be more complex, including conditions, roles, hierarchical permissions, and more.&lt;/p&gt;
+
+&lt;p&gt;Upon evaluating the context against these policies, the PDP makes a decision: permit or deny. It then communicates this decision back to the PEP. The PDP doesn’t enforce the decision; it merely informs the PEP of the outcome.&lt;/p&gt;
+
+&lt;p&gt;Finally, the PEP takes the decision from the PDP and enforces it. If the decision was ‘permit’, the PEP allows the request to proceed. If the decision was ‘deny’, the PEP blocks the request, typically returning an error message to the user such as “Access Denied.”&lt;/p&gt;
+
+&lt;h1 id=&quot;separation-of-concerns-decoupling-authorization-from-business-logic&quot;&gt;Separation of Concerns: Decoupling Authorization from Business Logic&lt;/h1&gt;
+
+&lt;p&gt;Storing policies for decision-making is an integral part of the authorization process. As we emphasized in our introduction, one of our fundamental goals is to keep the business logic separate from the authorization process. Why? Because intertwining these two concerns can lead to a host of issues, including codebase complexity, reduced maintainability, and increased potential for bugs.&lt;/p&gt;
+
+&lt;p&gt;Instead, we advocate for storing the authorization-related data in a separate model within a dedicated persistence layer. This approach not only segregates the business logic from the authorization mechanism but also ensures that changes in either domain do not inadvertently impact the other.&lt;/p&gt;
+
+&lt;p&gt;Take the example of an Access Control List (ACL). An ACL is a data model that can store the necessary information for policy decisions. An entry in an ACL might include:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Subject - This is the entity that wishes to perform an action. Typically, it is a user identifier or a role.&lt;/li&gt;
+  &lt;li&gt;Resource - The object on which the action is to be performed. In our model, this would be the identifier of a resource.&lt;/li&gt;
+  &lt;li&gt;Action - The operation that the subject wishes to perform on the resource, like read, write, or delete.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Having this data in a separate ACL model allows the Policy Decision Point (PDP) to retrieve and evaluate policies independently of the business logic, aiding the maintainability and scalability of our system. Moreover, this model provides a clear, tabulated, and easily understandable visualization of our system’s access control structure, further simplifying the task of managing complex authorization rules.&lt;/p&gt;
+
+&lt;p&gt;Indeed, while we strive for decoupling in software development to ensure modularity and scalability, some degree of coupling is inevitable, especially when it comes to something as integral as authorization.&lt;/p&gt;
+
+&lt;p&gt;Let’s take an example: suppose you’re working on a content management system. You have blog posts, and each blog post can have multiple comments. In the domain model, there are clear relationships between users, blog posts, and comments.&lt;/p&gt;
+
+&lt;p&gt;In the authorization model, these relationships need to be represented to ensure the correct enforcement of permissions. A user might have permission to edit their own blog post, but not someone else’s. They might also have permission to delete a comment on their blog post, even if they didn’t write the comment themselves.&lt;/p&gt;
+
+&lt;p&gt;In essence, while the authorization logic is distinct from the business logic and we aim to separate these two as much as possible, they are intrinsically linked. The domain model and the relationships within it inform the authorization model. The challenge is to design the system in a way that maintains this necessary connection without intertwining the business logic and authorization logic so much that they become difficult to manage, test, and evolve independently.&lt;/p&gt;
+
+&lt;h2 id=&quot;authorization-models&quot;&gt;Authorization models&lt;/h2&gt;
+
+&lt;p&gt;Access Control Lists (ACLs) are just one way to handle authorization. Let’s briefly explore some other popular models:&lt;/p&gt;
+
+&lt;h3 id=&quot;role-based-access-control-rbac&quot;&gt;Role-Based Access Control (RBAC)&lt;/h3&gt;
+
+&lt;p&gt;As its name suggests, RBAC assigns permissions based on roles. In this model, permissions aren’t directly assigned to individual users. Instead, they’re associated with roles, and users are assigned these roles. RBAC makes managing permissions more straightforward, especially in large systems where a large number of users need to be managed. Instead of managing permissions for each user individually, permissions are managed at the role level, significantly reducing the complexity and administrative overhead.&lt;/p&gt;
+
+&lt;h3 id=&quot;attribute-based-access-control-abac&quot;&gt;Attribute-Based Access Control (ABAC)&lt;/h3&gt;
+
+&lt;p&gt;ABAC is an even more flexible and fine-grained access control model. In ABAC, permissions are based on attributes — characteristics or properties — of the user, the resource being accessed, and the environment.&lt;/p&gt;
+
+&lt;p&gt;A policy in ABAC could say something like, “Allow users with the role ‘doctor’ to view medical records of patients who are assigned to them, but only during office hours.” As you can see, this is far more specific than what can be expressed with RBAC or ACLs.&lt;/p&gt;
+
+&lt;p&gt;ABAC can handle complex access control requirements, making it a good fit for highly dynamic and complex environments. However, the increased complexity can make ABAC more challenging to implement and manage compared to RBAC or ACLs.&lt;/p&gt;
+
+&lt;p&gt;While traditional models like ACL, RBAC, and ABAC each have their place, they may not be a perfect fit for every system. Some systems might require the simplicity of an ACL for certain resources, the role-based capabilities of an RBAC for others, and the dynamic, context-aware permissions of an ABAC for even more complex situations.&lt;/p&gt;
+
+&lt;p&gt;This is where the versatility of contemporary authorization frameworks shines. They are designed to combine and leverage the strengths of various models, allowing for hybrid approaches that best serve the system’s requirements.&lt;/p&gt;
+
+&lt;p&gt;One of the prime examples of these modern, flexible authorization frameworks is &lt;a href=&quot;https://casbin.org/&quot;&gt;Casbin&lt;/a&gt;. Casbin allows for a mix of access control models, including ACL, RBAC, and ABAC. It provides robust, customizable access control mechanisms that can be tailored to the specific needs of the application.&lt;/p&gt;
+
+&lt;p&gt;Casbin’s primary strength lies in its policy language, which enables administrators to define complex access control rules. It does this through a highly customizable and flexible policy model structure, which is capable of supporting a combination of ACL, RBAC, and ABAC models, among others. This makes it possible to have a nuanced and fine-grained authorization model that caters to the unique requirements of your system.&lt;/p&gt;
+
+&lt;p&gt;Other technologies worth mentioning are &lt;a href=&quot;https://www.ory.sh/keto/&quot;&gt;Ory Keto&lt;/a&gt;, which is inspired by &lt;a href=&quot;https://research.google/pubs/pub48190/&quot;&gt;Google’s Zanzibar paper&lt;/a&gt; and provides a globally consistent and scalable permission system, and &lt;a href=&quot;https://www.openpolicyagent.org/&quot;&gt;Open Policy Agent (OPA)&lt;/a&gt;, which is a general-purpose policy engine that allows for context-aware policy enforcement across the stack.&lt;/p&gt;
+
+&lt;h1 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h1&gt;
+
+&lt;p&gt;Authorization is a crucial aspect of any system’s security strategy. The models and mechanisms used to implement it can greatly affect the system’s overall security, performance, and flexibility. In the early stages of a project, simple roles and permissions may suffice. However, as the system grows in complexity, a more refined approach becomes necessary.&lt;/p&gt;
+
+&lt;p&gt;Through this chapter, we hope to have shed light on some of the fundamental concepts and models in the realm of authorization. From basic models like ACL, RBAC, and ABAC to more advanced, flexible frameworks such as Casbin, Ory Keto, and OPA, we’ve delved into how they operate and their relative strengths and weaknesses.&lt;/p&gt;
+
+&lt;p&gt;Our exploration of authorization is far from over. In subsequent chapters, we’ll take a closer look at modern, scalable authorization architectures, with a special focus on our experiences and lessons learned. Stay tuned!&lt;/p&gt;
+</description>
+        <pubDate>Sat, 17 Jun 2023 00:35:25 +0200</pubDate>
+        <link>http://localhost:4000/authz/2023/06/17/authz-basics/</link>
+        <guid isPermaLink="true">http://localhost:4000/authz/2023/06/17/authz-basics/</guid>
+        
+        <category>authentication,</category>
+        
+        <category>authorization,</category>
+        
+        <category>security</category>
+        
+        
+        <category>authz</category>
+        
+      </item>
+    
+      <item>
+        <title>Scaling Authz: A Journey into Authorization Architectures</title>
         <description>&lt;p&gt;Welcome to “Scaling Authz,” a new series dedicated to exploring the complexities and challenges of implementing scalable authorization architectures, especially within the context of microservice environments. In this series, we will delve into the nuances of authorization, various approaches to solve common problems, and the techniques used by industry leaders to scale their systems.&lt;/p&gt;
 
 &lt;p&gt;The lessons shared here are not purely theoretical. As we speak, my team and I are in the trenches, developing a scalable authorization architecture based on Ory Keto. We’ve moved beyond the conceptual phase and are now diving into implementation.&lt;/p&gt;
@@ -63,14 +169,20 @@
 &lt;p&gt;In this opening post, we’re setting the stage by highlighting the importance of authorization and the challenges it poses, especially in microservice environments. As we progress through this series, we’ll delve deeper into topics such as roles, claims, tokens, permission structures, policy decision points (PDPs), policy enforcement points (PEPs), and much more.&lt;/p&gt;
 
 &lt;p&gt;Whether you’re a seasoned architect seeking to solidify your knowledge or a beginner starting your journey in the world of scalable architectures, this series aims to be a comprehensive guide to mastering the art and science of authorization. So sit back, relax, and join me as we explore the intricate world of authorization in the era of scalability and microservices.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;2023-06-22-authz-basics.md&quot;&gt;Authorization Basics&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
 </description>
         <pubDate>Sat, 17 Jun 2023 00:35:25 +0200</pubDate>
-        <link>http://localhost:4000/authz/2023/06/17/scaling-authz-series.html</link>
-        <guid isPermaLink="true">http://localhost:4000/authz/2023/06/17/scaling-authz-series.html</guid>
+        <link>http://localhost:4000/authz/2023/06/17/scaling-authz-series/</link>
+        <guid isPermaLink="true">http://localhost:4000/authz/2023/06/17/scaling-authz-series/</guid>
         
         <category>authentication,</category>
         
-        <category>authorization</category>
+        <category>authorization,</category>
+        
+        <category>security</category>
         
         
         <category>authz</category>

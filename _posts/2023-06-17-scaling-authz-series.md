@@ -1,12 +1,13 @@
 ---
 layout: post
-title:  "Scaling Authorization"
+title:  "Scaling Authz: A Journey into Authorization Architectures"
 date:   2023-06-16 22:35:25
 categories: authz
-tags: authentication, authorization
-image: /assets/article_images/2023-06-17-scaling-authz-series/sansibar.jpg
+tags: authentication, authorization, security
+image: /assets/article_images/2023-06-17-scaling-authz-series/authz.jpg
 author_name: Viktor Gottfried
-author_image: /assets/images/authors/viktor.jpg
+author_link: /authors/viktor-gottfried
+author_image: /assets/images/authors/viktor-gottfried/thumbnail.jpg
 ---
 
 Welcome to "Scaling Authz," a new series dedicated to exploring the complexities and challenges of implementing scalable authorization architectures, especially within the context of microservice environments. In this series, we will delve into the nuances of authorization, various approaches to solve common problems, and the techniques used by industry leaders to scale their systems.
@@ -17,7 +18,7 @@ Before we delve into the specifics of our current journey, it's essential to hig
 
 This prior experience at SWCode has offered us practical insights and deep knowledge about scalable authorization. The lessons we learned have been instrumental in shaping our approach and decisions as we build and enhance our authorization frameworks. We intend to share these insights throughout this blog series, in the hope that they might aid others navigating the same path.
 
-However, we recognize that the world of technology is ever-evolving. Standing still is not an option. Therefore, with our new project, the team at SWCode is pushing the boundaries of what's possible in authorization once again. We're excited to share this journey with you in the upcoming posts. Stay tuned!
+However, we recognize that the world of technology is ever-evolving. Standing still is not an option. Therefore, with our new project, the team at SWCode is pushing the boundaries of what's possible in authorization once again. We're excited to share this journey with you in the upcoming posts.
 
 If there's one lesson I've learned from my 8 years of cloud-native development, it's this: Never underestimate the power and complexity of authorization. The authentication stage of a user's journey, while crucial, is just the tip of the iceberg. Beneath the surface, a labyrinth of permissions, roles, and policies is waiting to be navigated and understood. Unfortunately, it's a journey many of us embark on too late.
 
@@ -57,6 +58,8 @@ Ignoring or underestimating this fact only leads to a technical debt that become
 
 # Upcoming
 
-In this opening post, we're setting the stage by highlighting the importance of authorization and the challenges it poses, especially in microservice environments. As we progress through this series, we'll delve deeper into topics such as roles, claims, tokens, permission structures, policy decision points (PDPs), policy enforcement points (PEPs), and much more.
+In this introductory post of our series, we aim to underscore the criticality of authorization and the complexities it introduces, particularly in microservice ecosystems. As we navigate through this series, we will explore in-depth topics such as the requirements for a scalable authorization architecture, fundamental concepts of authorization, roles, claims, tokens, permission structures, and the impact of Google's Zanzibar system, among others.
 
 Whether you're a seasoned architect seeking to solidify your knowledge or a beginner starting your journey in the world of scalable architectures, this series aims to be a comprehensive guide to mastering the art and science of authorization. So sit back, relax, and join me as we explore the intricate world of authorization in the era of scalability and microservices.
+
+* [Authorization Basics](2023-06-22-authz-basics.md)
