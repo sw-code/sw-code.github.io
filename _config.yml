@@ -18,12 +18,10 @@ float_logo: true # true, false (default)
 cover: "/assets/images/pattern.jpg"
 
 name: 'SWCODE'
-author: 'SWCODE'
-author_image: "/assets/images/author.jpg"
 
 paginate:	10
 
-url: "http://blog.swcode.io" # the base hostname & protocol for your site
+url: "httpsZ://blog.swcode.io" # the base hostname & protocol for your site
 baseurl: ""
 #used to display twitter cards
 #twitter_handle: '@dirkfabisch'
