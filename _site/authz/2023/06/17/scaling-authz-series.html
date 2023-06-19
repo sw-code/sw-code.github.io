@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8">
+  <!-- (1) Optimize for mobile versions: http://goo.gl/EOpFl -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- (1) force latest IE rendering engine: bit.ly/1c8EiC9 -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>Scaling Authorization</title>
+  <meta name="description" content="Welcome to “Scaling Authz,” a new series dedicated to exploring the complexities and challenges of implementing scalable authorization architectures, especially within the context of microservice e..." />
+
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  
+  
+  <meta property="og:site_name" content="SWCODE BLOG" />
+  <meta property="og:title" content="Scaling Authorization"/>
+  
+  <meta property="og:description" content="Welcome to “Scaling Authz,” a new series dedicated to exploring the complexities and challenges of implementing scalable authorization architectures, especially within the context of microservice e..." />
+  
+  <meta property="og:image" content="http://localhost:4000/assets/article_images/2023-06-17-scaling-authz-series/sansibar.jpg" />
+  <meta property="og:url" content="http://localhost:4000/authz/2023/06/17/scaling-authz-series.html" >
+  <meta property="og:type" content="blog" />
+  <meta property="article:published_time" content="2023-06-17T00:35:25+02:00">
+
+  <link rel="canonical" href="http://localhost:4000/authz/2023/06/17/scaling-authz-series.html"/>
+  <link rel="shortcut icon" href="/assets/images/favicon.png" type="image/png"/>
+  <link rel="stylesheet" href="//brick.a.ssl.fastly.net/Linux+Libertine:400,400i,700,700i/Open+Sans:400,400i,700,700i">
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" type="text/css" media="screen" href="/css/main.css" />
+  <link rel="stylesheet" type="text/css" media="print" href="/css/print.css" />
+</head>
+
+  <body itemscope itemtype="http://schema.org/Article">
+    <!-- header start -->
+
+
+  <a href="http://localhost:4000" class="logo-readium"><span class="logo" style="background-image: url(/assets/images/logo_quad.png)"></span></a>
+
+<!-- header end -->
+
+    <main class="content" role="main">
+      <article class="post">
+        
+        <div class="article-image">
+          <div class="post-image-image" style="background-image: url(/assets/article_images/2023-06-17-scaling-authz-series/sansibar.jpg)">
+            Article Image
+          </div>
+          <div class="post-image-image2" style="background-image: url()">
+            Article Image
+          </div>
+          <div class="post-meta">
+            <h1 class="post-title">Scaling Authorization</h1>
+            <div class="cf post-meta-text">
+              <div class="author-image" style="background-image: url(/assets/images/authors/viktor.jpg)">Blog Logo</div>
+              <h4 class="author-name" itemprop="author" itemscope itemtype="http://schema.org/Person">Viktor Gottfried</h4>
+              on
+              <time datetime="2023-06-17 00:35">17 Jun 2023</time>
+              <!-- , tagged on <span class="post-tag-">, <a href="/tag/"></a></span> -->
+            </div>
+            <div style="text-align:center">
+              <a href="#topofpage" class="topofpage"><i class="fa fa-angle-down"></i></a>
+            </div>
+          </div>
+        </div>
+        
+        <section class="post-content">
+          <div class="post-reading">
+            <span class="post-reading-time"></span> read
+          </div>
+          <a name="topofpage"></a>
+          <p>Welcome to “Scaling Authz,” a new series dedicated to exploring the complexities and challenges of implementing scalable authorization architectures, especially within the context of microservice environments. In this series, we will delve into the nuances of authorization, various approaches to solve common problems, and the techniques used by industry leaders to scale their systems.</p>
+
+<p>The lessons shared here are not purely theoretical. As we speak, my team and I are in the trenches, developing a scalable authorization architecture based on Ory Keto. We’ve moved beyond the conceptual phase and are now diving into implementation.</p>
+
+<p>Before we delve into the specifics of our current journey, it’s essential to highlight the invaluable experience our team at SWCode has garnered over the years. This isn’t our first encounter with the challenges and intricacies of authorization at scale. In fact, we’ve been running a scalable system based on Casbin successfully for several years.</p>
+
+<p>This prior experience at SWCode has offered us practical insights and deep knowledge about scalable authorization. The lessons we learned have been instrumental in shaping our approach and decisions as we build and enhance our authorization frameworks. We intend to share these insights throughout this blog series, in the hope that they might aid others navigating the same path.</p>
+
+<p>However, we recognize that the world of technology is ever-evolving. Standing still is not an option. Therefore, with our new project, the team at SWCode is pushing the boundaries of what’s possible in authorization once again. We’re excited to share this journey with you in the upcoming posts. Stay tuned!</p>
+
+<p>If there’s one lesson I’ve learned from my 8 years of cloud-native development, it’s this: Never underestimate the power and complexity of authorization. The authentication stage of a user’s journey, while crucial, is just the tip of the iceberg. Beneath the surface, a labyrinth of permissions, roles, and policies is waiting to be navigated and understood. Unfortunately, it’s a journey many of us embark on too late.</p>
+
+<h1 id="from-authentication-to-authorization">From Authentication to Authorization</h1>
+
+<p>In the early stages of most projects, the primary focus tends to revolve around authentication - confirming that the user is who they claim to be. Upon successfully validating their identity, the gates to the system swing wide open, granting them access to a broad set of features and data. Initially, this may seem like an adequate solution, particularly for applications with a limited scope or user base.</p>
+
+<p>However, as business requirements expand and evolve, the needs of the system inevitably become more complex. What was once a modest application might now be dealing with multiple types of users, each requiring distinct levels of access and control. A system that started with a handful of services might have transformed into a microservices landscape, with each microservice managing its own set of resources. This deepening resource hierarchy and the need to precisely control access at various levels herald the onset of a new challenge: authorization.</p>
+
+<p>At this point, many projects introduce roles and permissions in an attempt to meet their growing authorization needs. A ‘role’ is a descriptor for a user’s function within a system, while ‘permissions’ determine what actions this role can perform. For instance, an ‘admin’ role might have permission to ‘create’, ‘read’, ‘update’, and ‘delete’ all types of resources, while a ‘user’ role might only have ‘read’ permission.</p>
+
+<h1 id="when-simple-isnt-enough-the-pitfalls-of-authorization-workarounds">When Simple Isn’t Enough: The Pitfalls of Authorization Workarounds</h1>
+
+<p>For a time, this roles-and-permissions model may serve well. It’s a flexible system that can handle a variety of scenarios. However, as the application continues to grow, the cracks start to show. A flat model of roles and permissions soon struggles to keep up with the intricacies of a deepening resource hierarchy and an expanding user base with diverse needs. What happens when a specific user needs access to a particular set of resources, but not others? Or when a user’s permissions need to vary depending on the context or the specific attributes of the resources they’re trying to access?</p>
+
+<p>That’s when we find ourselves in murky waters. The simple roles-and-permissions model, initially perceived as sufficient, starts to buckle under the weight of growing business requirements. The reality we face is that business requirements never stop growing. The resource hierarchy deepens and becomes more complex. And soon enough, we realize that our initial roles, often implemented within identity providers like Keycloak, no longer suffice. We start finding workarounds, implementing special handling for authorization, digging into the database, and examining roles. Some of us might even modify the business code to accommodate new requirements.</p>
+
+<p>The initial sense of relief that comes with implementing quick fixes and workarounds can quickly give way to a myriad of new problems. As we start to manipulate our authorization mechanisms to fit new, unanticipated requirements, we find ourselves in a precarious situation. Our previously clean and straightforward authorization process now starts to resemble a complex, intertwined web of conditions and exceptions, scattered throughout the codebase.</p>
+
+<p>One significant downside to this approach is that it makes our system harder to understand and maintain. With special handling and exceptions woven into the business logic, the complexity of our codebase grows. This complexity can create cognitive overhead for developers, increasing the time it takes to onboard new team members and slowing down the debugging and development process.</p>
+
+<p>Additionally, these workarounds can make our system more fragile. Since these patches are often rushed and not part of the initial design, they may not be covered by our existing test suite. This lack of test coverage can lead to unintended side effects and obscure bugs, which can be difficult to trace back to their source.</p>
+
+<p>A perhaps more insidious problem is that with every workaround we implement, we start to erode the separation of concerns in our system. The business logic becomes entangled with authorization concerns. This entanglement can lead to a ‘spaghetti code’ situation, where the business logic and the authorization logic are so intertwined that changing one can inadvertently affect the other.</p>
+
+<p>Finally, workarounds scattered throughout the business code can easily get lost or forgotten, leading to potential security vulnerabilities. When authorization checks are not centralized in an authorization layer, it’s easy to miss some when making changes or additions to the system.</p>
+
+<p>Arriving at this point in a project often feels like driving at full speed and suddenly spotting a red light in the distance. You must hit the brakes. It’s a moment for pause, introspection, and reassessment. We must step back and ask ourselves: “How did we end up here?” It’s a pivotal realization, a turning point where we understand that our approach needs a serious reevaluation.</p>
+
+<p>Speaking from personal experience, I’ve encountered this scenario numerous times. Project after project, I’ve seen the same pattern emerge - the struggle to accommodate growing authorization needs within an unprepared system. Each time, it underscores the reality that this is a widespread and commonly underappreciated problem.</p>
+
+<p>My message to those moving in this direction is clear and direct: Stop. Evaluate your current trajectory and consider its implications. If your project is becoming bogged down in a quagmire of workarounds and patchy fixes to accommodate for growing authorization needs, it’s a clear warning sign that your current approach is not sustainable.</p>
+
+<p>Realize that authorization is not an afterthought, or a ‘nice-to-have’. It’s not something that can be tacked onto a system with duct tape and good intentions. Authorization is a fundamental building block for any scalable, secure, and flexible system. It should be one of the cornerstones of your architecture, designed and planned for from the start.</p>
+
+<p>Ignoring or underestimating this fact only leads to a technical debt that becomes increasingly burdensome to pay off. It’s a road I’ve seen many teams travel down, and it always leads to the same destination: a complex, hard-to-maintain system that doesn’t meet its users’ needs or the security standards of today’s digital landscape.</p>
+
+<h1 id="upcoming">Upcoming</h1>
+
+<p>In this opening post, we’re setting the stage by highlighting the importance of authorization and the challenges it poses, especially in microservice environments. As we progress through this series, we’ll delve deeper into topics such as roles, claims, tokens, permission structures, policy decision points (PDPs), policy enforcement points (PEPs), and much more.</p>
+
+<p>Whether you’re a seasoned architect seeking to solidify your knowledge or a beginner starting your journey in the world of scalable architectures, this series aims to be a comprehensive guide to mastering the art and science of authorization. So sit back, relax, and join me as we explore the intricate world of authorization in the era of scalability and microservices.</p>
+
+        </section>
+        <footer class="post-footer">
+          <section class="share">
+            
+              
+                <a class="icon-linkedin" href="https://www.linkedin.com/sharing/share-offsite?title=Scaling+Authorization&amp;url=http://localhost:4000/authz/2023/06/17/scaling-authz-series"
+                  onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
+                <i class="fa fa-linkedin"></i><span class="hidden">linkedin</span>
+                </a>
+              
+            
+              
+            
+          </section>
+        </footer>
+        <div class="bottom-teaser cf">
+          <div class="isLeft">
+            <h5 class="index-headline featured"><span>Written by</span></h5>
+            <section class="author">
+              <div class="author-image" style="background-image: url(/assets/images/authors/viktor.jpg)">Blog Logo</div>
+              <h4>SWCODE</h4>
+              <p class="bio"></p>
+              <hr>
+              <p class="published">Published <time datetime="2023-06-17 00:35">17 Jun 2023</time></p>
+            </section>
+          </div>
+          
+          <div class="isRight">
+            <h5 class="index-headline featured"><span>Supported by</span></h5>
+            <footer class="site-footer">
+              <section class="poweredby">Proudly published with <a href="http://jekyllrb.com"> Jekyll</a></section>
+              <a class="subscribe" href="/feed.xml"> <span class="tooltip"> <i class="fa fa-rss"></i> You should subscribe to our feed.</span></a>
+              <div class="inner">
+                <section class="copyright">All content copyright <a href="/">SWCODE</a> &copy; 2023<br>All rights reserved.</section>
+              </div>
+            </footer>
+          </div>
+        </div>
+        
+      </article>
+    </main>
+    <div class="bottom-closer">
+      <div class="background-closer-image"  style="background-image: url(/assets/images/pattern.jpg)">
+        Image
+      </div>
+      <div class="inner">
+        <h1 class="blog-title">SWCODE BLOG</h1>
+        <h2 class="blog-description">Articles from our daily dev work
+</h2>
+        <a href=/ class="btn">Back to Overview</a>
+      </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="/assets/js/jquery.fitvids.js"></script>
+<script type="text/javascript" src="/assets/js/index.js"></script>
+<script type="text/javascript" src="/assets/js/readingTime.min.js"></script>
+<script>
+(function ($) {
+  "use strict";
+  $(document).ready(function(){
+
+    var $window = $(window),
+    $image = $('.post-image-image, .teaserimage-image');
+    
+      $window.on('scroll', function() {
+        var top = $window.scrollTop();
+
+        if (top < 0 || top > 1500) { return; }
+        $image
+          .css('transform', 'translate3d(0px, '+top/3+'px, 0px)')
+          .css('opacity', 1-Math.max(top/700, 0));
+      });
+      $window.trigger('scroll');
+
+      var height = $('.article-image').height();
+      $('.post-content').css('padding-top', height + 'px');
+
+      $('a[href*=#]:not([href=#])').click(function() {
+        if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'')
+         && location.hostname == this.hostname) {
+          var target = $(this.hash);
+          target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
+          if (target.length) {
+            $('html,body').animate({ scrollTop: target.offset().top }, 500);
+            return false;
+          }
+        }
+      });
+
+  });
+}(jQuery));
+</script>
+
+
+  </body>
+</html>

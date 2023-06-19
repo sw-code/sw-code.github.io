@@ -2,9 +2,11 @@
 layout: post
 title:  "Scaling Authorization"
 date:   2023-06-16 22:35:25
-categories: jekyll update
-tags: 
-image: /assets/article_images/2023-06-17-scaling-authz-series/sansibar.JPG
+categories: authz
+tags: authentication, authorization
+image: /assets/article_images/2023-06-17-scaling-authz-series/sansibar.jpg
+author_name: Viktor Gottfried
+author_image: /assets/images/authors/viktor.jpg
 ---
 
 Welcome to "Scaling Authz," a new series dedicated to exploring the complexities and challenges of implementing scalable authorization architectures, especially within the context of microservice environments. In this series, we will delve into the nuances of authorization, various approaches to solve common problems, and the techniques used by industry leaders to scale their systems.
