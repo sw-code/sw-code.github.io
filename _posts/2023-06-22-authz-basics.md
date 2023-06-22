@@ -9,9 +9,6 @@ author_name: Viktor Gottfried
 author_image: /assets/images/authors/viktor.jpg
 ---
 
-Before we delve into the details of authorization, it's important to distinguish it from a related but distinctly different concept: authentication.
-Authentication vs Authorization
-
 # Authentication vs Authorization
 Authentication and authorization, while often used interchangeably, serve different purposes within the context of security.
 
@@ -24,6 +21,8 @@ This is where authorization comes into play. Authorization is the process that f
 In other words, authentication answers the question, "Who are you?" while authorization answers the question, "What are you allowed to do?"
 
 So, after a user is authenticated and their identity is established, we then use authorization to determine the boundaries of their interaction with the system's resources.
+
+While it's possible to use information included in the authentication token, such as roles, for making authorization decisions, this approach may not scale well for complex or large systems. The roles can become too granular and numerous to manage effectively, and there's also a risk of role explosion. Instead, as we've introduced in our journey so far, we're looking for a more scalable solution. We aim to separate the authorization process from the token and move it to its own dedicated, manageable, and efficient infrastructure.
 
 # Policy Enforcement Point (PEP) and Policy Decision Point (PDP)
 
@@ -87,3 +86,11 @@ One of the prime examples of these modern, flexible authorization frameworks is 
 Casbin's primary strength lies in its policy language, which enables administrators to define complex access control rules. It does this through a highly customizable and flexible policy model structure, which is capable of supporting a combination of ACL, RBAC, and ABAC models, among others. This makes it possible to have a nuanced and fine-grained authorization model that caters to the unique requirements of your system.
 
 Other technologies worth mentioning are [Ory Keto](https://www.ory.sh/keto/), which is inspired by [Google's Zanzibar paper](https://research.google/pubs/pub48190/) and provides a globally consistent and scalable permission system, and [Open Policy Agent (OPA)](https://www.openpolicyagent.org/), which is a general-purpose policy engine that allows for context-aware policy enforcement across the stack.
+
+# Conclusion
+
+Authorization is a crucial aspect of any system's security strategy. The models and mechanisms used to implement it can greatly affect the system's overall security, performance, and flexibility. In the early stages of a project, simple roles and permissions may suffice. However, as the system grows in complexity, a more refined approach becomes necessary.
+
+Through this chapter, we hope to have shed light on some of the fundamental concepts and models in the realm of authorization. From basic models like ACL, RBAC, and ABAC to more advanced, flexible frameworks such as Casbin, Ory Keto, and OPA, we've delved into how they operate and their relative strengths and weaknesses.
+
+Our exploration of authorization is far from over. In subsequent chapters, we'll take a closer look at modern, scalable authorization architectures, with a special focus on our experiences and lessons learned. Stay tuned!
