@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Scaling Authorization"
+title:  "Scaling Authz: A Journey into Authorization Architectures"
 date:   2023-06-16 22:35:25
 categories: authz
 tags: authentication, authorization
