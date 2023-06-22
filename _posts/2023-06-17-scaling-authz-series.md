@@ -3,7 +3,7 @@ layout: post
 title:  "Scaling Authz: A Journey into Authorization Architectures"
 date:   2023-06-16 22:35:25
 categories: authz
-tags: authentication, authorization
+tags: authentication, authorization, security
 image: /assets/article_images/2023-06-17-scaling-authz-series/sansibar.jpg
 author_name: Viktor Gottfried
 author_image: /assets/images/authors/viktor.jpg
