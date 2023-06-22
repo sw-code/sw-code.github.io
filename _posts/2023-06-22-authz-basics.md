@@ -9,6 +9,8 @@ author_name: Viktor Gottfried
 author_image: /assets/images/authors/viktor.jpg
 ---
 
+Welcome back to our [Scaling Authz](2023-06-17-scaling-authz-series.md) blog series, where we're documenting our journey toward a scalable and efficient authorization architecture.
+
 # Authentication vs Authorization
 Authentication and authorization, while often used interchangeably, serve different purposes within the context of security.
 

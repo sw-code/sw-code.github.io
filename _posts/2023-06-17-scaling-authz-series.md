@@ -60,3 +60,5 @@ Ignoring or underestimating this fact only leads to a technical debt that become
 In this opening post, we're setting the stage by highlighting the importance of authorization and the challenges it poses, especially in microservice environments. As we progress through this series, we'll delve deeper into topics such as roles, claims, tokens, permission structures, policy decision points (PDPs), policy enforcement points (PEPs), and much more.
 
 Whether you're a seasoned architect seeking to solidify your knowledge or a beginner starting your journey in the world of scalable architectures, this series aims to be a comprehensive guide to mastering the art and science of authorization. So sit back, relax, and join me as we explore the intricate world of authorization in the era of scalability and microservices.
+
+* [Authorization Basics](2023-06-22-authz-basics.md)
