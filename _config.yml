@@ -1,37 +1,24 @@
-# Build settings
 gems:
   - jemoji
   - jekyll-paginate
 
-# Site settings
+name: 'SWCODE'
 title: "SWCODE BLOG"
-description: > # this means to ignore newlines until "email:"
+description: >
    Articles from our daily dev work
-
 email: developers@swcode.io
-#blog logo
+
 logo: "/assets/images/logo_quad.png"
 teaserlogo: "/assets/images/logo.jpg"
-float_logo: true # true, false (default)
-
-# blog cover
+float_logo: true
 cover: "/assets/images/pattern.jpg"
 
-name: 'SWCODE'
-
 paginate:	10
+permalink: pretty
 
-url: "httpsZ://blog.swcode.io" # the base hostname & protocol for your site
+url: "https://blog.swcode.io"
 baseurl: ""
-#used to display twitter cards
-#twitter_handle: '@dirkfabisch'
 
-#fill in disqus shortname to use disqus
-#disqus: disqus-shortname
-
-#google_analytics: UA-XXXXX-X
-
-# social icons and sharing options
 social:
   - icon:	linkedin
     url:	https://www.linkedin.com/company/69717870
