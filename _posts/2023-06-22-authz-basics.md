@@ -4,9 +4,10 @@ title:  "Authorization Basics"
 date:   2023-06-16 22:35:25
 categories: authz
 tags: authentication, authorization, security
-image: /assets/article_images/2023-06-17-scaling-authz-series/sansibar.jpg
+image: /assets/article_images/2023-06-22-authz-basics/basics.jpg
 author_name: Viktor Gottfried
-author_image: /assets/images/authors/viktor.jpg
+author_link: /authors/viktor-gottfried
+author_image: /assets/images/authors/viktor-gottfried/thumbnail.jpg
 ---
 
 Welcome back to our [Scaling Authz]({% post_url 2023-06-17-scaling-authz-series %}) blog series, where we're documenting our journey toward a scalable and efficient authorization architecture.

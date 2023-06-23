@@ -4,9 +4,10 @@ title:  "Scaling Authz: A Journey into Authorization Architectures"
 date:   2023-06-16 22:35:25
 categories: authz
 tags: authentication, authorization, security
-image: /assets/article_images/2023-06-17-scaling-authz-series/sansibar.jpg
+image: /assets/article_images/2023-06-17-scaling-authz-series/authz.jpg
 author_name: Viktor Gottfried
-author_image: /assets/images/authors/viktor.jpg
+author_link: /authors/viktor-gottfried
+author_image: /assets/images/authors/viktor-gottfried/thumbnail.jpg
 ---
 
 Welcome to "Scaling Authz," a new series dedicated to exploring the complexities and challenges of implementing scalable authorization architectures, especially within the context of microservice environments. In this series, we will delve into the nuances of authorization, various approaches to solve common problems, and the techniques used by industry leaders to scale their systems.
