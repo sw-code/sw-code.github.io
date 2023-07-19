@@ -18,8 +18,6 @@ Before we delve into the specifics of our current journey, it's essential to hig
 
 This prior experience at SWCode has offered us practical insights and deep knowledge about scalable authorization. The lessons we learned have been instrumental in shaping our approach and decisions as we build and enhance our authorization frameworks. We intend to share these insights throughout this blog series, in the hope that they might aid others navigating the same path.
 
-However, I recognize that the world of technology is ever-evolving. Standing still is not an option. Therefore, within this new project that I'm currently undertaking alongside the customer's team, we're pushing the boundaries of what's possible in authorization once again. I'm excited to share this journey with all of you in the upcoming posts.
-
 If there's one lesson I've learned from my 8 years of cloud-native development, it's this: Never underestimate the power and complexity of authorization. The authentication stage of a user's journey, while crucial, is just the tip of the iceberg. Beneath the surface, a labyrinth of permissions, roles, and policies is waiting to be navigated and understood. Unfortunately, it's a journey many of us embark on too late.
 
 # From Authentication to Authorization
