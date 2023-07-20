@@ -12,9 +12,9 @@ author_image: /assets/images/authors/viktor-gottfried/thumbnail.jpg
 
 Welcome to "Scaling Authz," a new series dedicated to exploring the complexities and challenges of implementing scalable authorization architectures, especially within the context of microservice environments. In this series, we will delve into the nuances of authorization, various approaches to solve common problems, and the techniques used by industry leaders to scale their systems.
 
-The lessons shared here are not purely theoretical. Currently, I am engaged in a customer project where we are actively developing a scalable authorization architecture based on Ory Keto. We've moved beyond the conceptual phase and are now diving into the implementation process. I look forward to sharing the progress, challenges, and successes from this hands-on experience with all of you.
+The lessons shared here are not purely theoretical. Currently, I am engaged in a customer project where we are actively developing a scalable authorization architecture based on [Ory Keto](https://www.ory.sh/keto/). We've moved beyond the conceptual phase and are now diving into the implementation process. I look forward to sharing the progress, challenges, and successes from this hands-on experience with all of you.
 
-Before we delve into the specifics of our current journey, it's essential to highlight the invaluable experience our team at SWCode has garnered over the years. This isn't our first encounter with the challenges and intricacies of authorization at scale. In fact, we've been running a scalable system based on Casbin successfully for several years.
+Before we delve into the specifics of our current journey, it's essential to highlight the invaluable experience our team at SWCode has garnered over the years. This isn't our first encounter with the challenges and intricacies of authorization at scale. In fact, we've been running a scalable system based on [Casbin](https://casbin.org/) successfully for several years.
 
 This prior experience at SWCode has offered us practical insights and deep knowledge about scalable authorization. The lessons we learned have been instrumental in shaping our approach and decisions as we build and enhance our authorization frameworks. We intend to share these insights throughout this blog series, in the hope that they might aid others navigating the same path.
 
@@ -56,6 +56,6 @@ Ignoring or underestimating this fact only leads to a technical debt that become
 
 # Upcoming
 
-In this introductory post of our series, we aim to underscore the criticality of authorization and the complexities it introduces, particularly in microservice ecosystems. As we navigate through this series, we will explore in-depth topics such as the requirements for a scalable authorization architecture, fundamental concepts of authorization, roles, claims, tokens, permission structures, and the impact of Google's Zanzibar system, among others.
+In this introductory post of our series, we aim to underscore the criticality of authorization and the complexities it introduces, particularly in microservice ecosystems. As we navigate through this series, we will explore in-depth topics such as the requirements for a scalable authorization architecture, fundamental concepts of authorization, roles, claims, tokens, permission structures, and the impact of [Google's Zanzibar paper](https://research.google/pubs/pub48190/), among others.
 
 Whether you're a seasoned architect seeking to solidify your knowledge or a beginner starting your journey in the world of scalable architectures, this series aims to be a comprehensive guide to mastering the art and science of authorization. So sit back, relax, and join me as we explore the intricate world of authorization in the era of scalability and microservices.
