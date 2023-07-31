@@ -41,3 +41,21 @@
 {% if site.google_analytics %}
 {% include google_analytics.html %}
 {% endif %}
+
+{% if site.matomo %}
+<script>
+  var _paq = window._paq = window._paq || [];
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="//analytics.swcode.io/";
+    _paq.push(['setTrackerUrl', u+'matomo.php']);
+    _paq.push(['setSiteId', '{{ site.matomo.site_id }}']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<noscript>
+  <img referrerpolicy="no-referrer-when-downgrade" src="https://analytics.swcode.io/matomo.php?idsite={{ site.matomo.site_id }}&amp;rec=1" style="border:0" alt="" />
+</noscript>
+{% endif %}

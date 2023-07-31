@@ -19,6 +19,9 @@ permalink: pretty
 url: "https://blog.swcode.io"
 baseurl: ""
 
+matomo:
+  site_id: 10
+
 social:
   - icon:	linkedin
     url:	https://www.linkedin.com/company/69717870
