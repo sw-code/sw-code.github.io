@@ -12,13 +12,11 @@ author_image: /assets/images/authors/viktor-gottfried/thumbnail.jpg
 
 Welcome to "Scaling Authz," a new series dedicated to exploring the complexities and challenges of implementing scalable authorization architectures, especially within the context of microservice environments. In this series, we will delve into the nuances of authorization, various approaches to solve common problems, and the techniques used by industry leaders to scale their systems.
 
-The lessons shared here are not purely theoretical. As we speak, my team and I are in the trenches, developing a scalable authorization architecture based on Ory Keto. We've moved beyond the conceptual phase and are now diving into implementation.
+The lessons shared here are not purely theoretical. Currently, I am engaged in a customer project where we are actively developing a scalable authorization architecture based on [Ory Keto](https://www.ory.sh/keto/). We've moved beyond the conceptual phase and are now diving into the implementation process. I look forward to sharing the progress, challenges, and successes from this hands-on experience with all of you.
 
-Before we delve into the specifics of our current journey, it's essential to highlight the invaluable experience our team at SWCode has garnered over the years. This isn't our first encounter with the challenges and intricacies of authorization at scale. In fact, we've been running a scalable system based on Casbin successfully for several years.
+Before we delve into the specifics of our current journey, it's essential to highlight the invaluable experience our team at SWCode has garnered over the years. This isn't our first encounter with the challenges and intricacies of authorization at scale. In fact, we've been running a scalable system based on [Casbin](https://casbin.org/) successfully for several years.
 
 This prior experience at SWCode has offered us practical insights and deep knowledge about scalable authorization. The lessons we learned have been instrumental in shaping our approach and decisions as we build and enhance our authorization frameworks. We intend to share these insights throughout this blog series, in the hope that they might aid others navigating the same path.
-
-However, we recognize that the world of technology is ever-evolving. Standing still is not an option. Therefore, with our new project, the team at SWCode is pushing the boundaries of what's possible in authorization once again. We're excited to share this journey with you in the upcoming posts. Stay tuned!
 
 If there's one lesson I've learned from my 8 years of cloud-native development, it's this: Never underestimate the power and complexity of authorization. The authentication stage of a user's journey, while crucial, is just the tip of the iceberg. Beneath the surface, a labyrinth of permissions, roles, and policies is waiting to be navigated and understood. Unfortunately, it's a journey many of us embark on too late.
 
@@ -34,7 +32,7 @@ At this point, many projects introduce roles and permissions in an attempt to me
 
 For a time, this roles-and-permissions model may serve well. It's a flexible system that can handle a variety of scenarios. However, as the application continues to grow, the cracks start to show. A flat model of roles and permissions soon struggles to keep up with the intricacies of a deepening resource hierarchy and an expanding user base with diverse needs. What happens when a specific user needs access to a particular set of resources, but not others? Or when a user's permissions need to vary depending on the context or the specific attributes of the resources they're trying to access?
 
-That's when we find ourselves in murky waters. The simple roles-and-permissions model, initially perceived as sufficient, starts to buckle under the weight of growing business requirements. The reality we face is that business requirements never stop growing. The resource hierarchy deepens and becomes more complex. And soon enough, we realize that our initial roles, often implemented within identity providers like Keycloak, no longer suffice. We start finding workarounds, implementing special handling for authorization, digging into the database, and examining roles. Some of us might even modify the business code to accommodate new requirements.
+That's when we find ourselves in murky waters. The simple roles-and-permissions model, initially perceived as sufficient, starts to buckle under the weight of growing business requirements. The reality we face is that business requirements never stop growing. The resource hierarchy deepens and becomes more complex. And soon enough, we realize that our initial roles, often embedded within the token, no longer suffice. We start finding workarounds, implementing special handling for authorization, digging into the database, and examining roles. Some of us might even modify the business code to accommodate new requirements
 
 The initial sense of relief that comes with implementing quick fixes and workarounds can quickly give way to a myriad of new problems. As we start to manipulate our authorization mechanisms to fit new, unanticipated requirements, we find ourselves in a precarious situation. Our previously clean and straightforward authorization process now starts to resemble a complex, intertwined web of conditions and exceptions, scattered throughout the codebase.
 
@@ -58,7 +56,7 @@ Ignoring or underestimating this fact only leads to a technical debt that become
 
 # Upcoming
 
-In this opening post, we're setting the stage by highlighting the importance of authorization and the challenges it poses, especially in microservice environments. As we progress through this series, we'll delve deeper into topics such as roles, claims, tokens, permission structures, policy decision points (PDPs), policy enforcement points (PEPs), and much more.
+In this introductory post of our series, we aim to underscore the criticality of authorization and the complexities it introduces, particularly in microservice ecosystems. As we navigate through this series, we will explore in-depth topics such as the requirements for a scalable authorization architecture, fundamental concepts of authorization, roles, claims, tokens, permission structures, and the impact of [Google's Zanzibar paper](https://research.google/pubs/pub48190/), among others.
 
 Whether you're a seasoned architect seeking to solidify your knowledge or a beginner starting your journey in the world of scalable architectures, this series aims to be a comprehensive guide to mastering the art and science of authorization. So sit back, relax, and join me as we explore the intricate world of authorization in the era of scalability and microservices.
 
