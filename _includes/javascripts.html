@@ -42,7 +42,7 @@
 {% include google_analytics.html %}
 {% endif %}
 
-{% if site.matomo %}
+{% if site.matomo.site_id %}
 <script>
   var _paq = window._paq = window._paq || [];
   _paq.push(['trackPageView']);
@@ -58,4 +58,12 @@
 <noscript>
   <img referrerpolicy="no-referrer-when-downgrade" src="https://analytics.swcode.io/matomo.php?idsite={{ site.matomo.site_id }}&amp;rec=1" style="border:0" alt="" />
 </noscript>
+{% endif %}
+{% if site.matomo.tag_manager_container_id %}
+<script>
+  var _mtm = window._mtm = window._mtm || [];
+  _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
+  var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+  g.async=true; g.src='https://analytics.swcode.io/js/container_{{ site.matomo.tag_manager_container_id }}.js'; s.parentNode.insertBefore(g,s);
+</script>
 {% endif %}

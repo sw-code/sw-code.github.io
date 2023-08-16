@@ -81,7 +81,7 @@
             <h5 class="index-headline featured"><span>Supported by</span></h5>
             <footer class="site-footer">
               <section class="poweredby">Proudly published with <a href="http://jekyllrb.com"> Jekyll</a></section>
-              <span class="tooltip"> Subscribe: <a class="subscribe" href="{{ site.newsletter.registration_url }}" target="_blank" title="Newsletter Subscription"><i class="fa-solid fa-paper-plane"></i> Newsletter</a> | <a class="subscribe" href="{{ "/feed.xml" | prepend: site.baseurl }}" target="_blank" title="RSS Subscription"><i class="fa-solid fa-rss"></i> RSS</a></span>
+              <span class="tooltip"> Subscribe: <a id="subscribe-newsletter-link" class="subscribe" href="{{ site.newsletter.registration_url }}" target="_blank" title="Newsletter Subscription"><i class="fa-solid fa-paper-plane"></i> Newsletter</a> | <a id="subscribe-rss-link" class="subscribe" href="{{ "/feed.xml" | prepend: site.baseurl }}" target="_blank" title="RSS Subscription"><i class="fa-solid fa-rss"></i> RSS</a></span>
               <div class="inner">
                 <section class="copyright">All content copyright <a href="{{@blog.url}}/">{{site.name}}</a> &copy; {{ site.time | date: '%Y' }}<br>All rights reserved.</section>
               </div>

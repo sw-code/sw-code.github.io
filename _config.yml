@@ -21,6 +21,7 @@ baseurl: ""
 
 matomo:
   site_id: 10
+  tag_manager_container_id: "f6aOsDl3"
 
 newsletter:
   registration_url: https://1cfc5ec7.sibforms.com/serve/MUIFACO5cBBoo1-tWYwcHrThrrLYLuje1g4WGaG3tTp2gWCvNxIaPKnf0VxRdZTwgXNkQseMirZ_S_jZvFIhI2YnTt2ffrHH0--uF2iVLvaEpDDLg_7rY_pENdtRhGO0RiSkB4JLonAG1W44LqpvzeVbSfHTdQ3SeBbDFjb3-grRUPo0Ak5q36Mcl76wNLdOGJic98aojSVnK45T
