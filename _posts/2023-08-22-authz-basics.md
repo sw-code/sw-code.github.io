@@ -69,7 +69,7 @@ While each model brings its distinct approach, in practice, they often interming
 
 Diving into the practicalities, we'll use a Spring Boot application to breathe life into our conceptual understanding of authorization. Our canvas for this exercise is a modest web service dedicated to managing a list of pets. This service, while simple, will help us demarcate the boundaries between an authenticated user and one that comes adorned with specific roles or permissions.
 
-For the scope of this chapter, our emphasis will predominantly be on **authentication as authorization**" and on the facets of **Role-Based Access Control (RBAC)**. As we progress further in the series, we'll delve deeper into intricate authorization mechanisms, but for now, these two paradigms serve as our focal points.
+For the scope of this chapter, our emphasis will mainly be on **authentication as authorization**" and on the facets of **Role-Based Access Control (RBAC)**. As we progress further in the series, we'll delve deeper into intricate authorization mechanisms, but for now, these two paradigms serve as our focal points.
  
 ## The Pet Controller
 
