@@ -14,7 +14,7 @@ Welcome back to our [Scaling Authz]({% post_url 2023-06-17-scaling-authz-series 
 
 In this second installment of our blog series, we'll delve into the foundational aspects of authorization. We'll explore various models from simple authentication-based authorization, through role-based access control, and up to complex relationship-based models.
 
-To ensure a hands-on experience, each segment of our series will be accompanied by practical examples and implementation snippets. For those enthusiastic about diving deeper, all resources, code samples, and detailed walkthroughs are readily available in our dedicated repository: [swcode-samples](https://github.com/sw-code/swcode-samples). We believe that the synergy of theoretical knowledge and hands-on practice paves the way for profound understanding and mastery.
+To ensure a hands-on experience, each segment of our series will be accompanied by practical examples and implementation snippets. For those enthusiastic about diving deeper, all resources, code samples, and detailed walkthroughs are readily available in our [dedicated repository](https://github.com/sw-code/swcode-samples). We believe that the synergy of theoretical knowledge and hands-on practice paves the way for profound understanding and mastery.
 
 
 # Authentication vs Authorization
@@ -35,22 +35,22 @@ The simplest form of authorization is when the mere identity of a user is suffic
 
 ## A Glimpse into the Process
 
-![simplified authetication flow](/assets/article_images/2023-06-22-authz-basics/oauth2-simle.svg)
+![simplified authetication flow](/assets/article_images/2023-08-22-authz-basics/oauth2-simle.svg)
 
 1. User Accesses Web Application: A user attempts to access a protected resource or service within a web application.
-
 2. Authentication Required: Recognizing that the user is not yet authenticated, the application redirects the user to a login page.
-
 3. User Authenticates: The user provides their credentials, such as a username and password.
-
 4. Token Granted: Upon successful authentication, the identity provider issues a token to the user. This token acts as a proof of the user's identity and might contain claims, roles, or other pertinent information.
-
 5. Token Utilized: The web application uses this token to grant the user access to its services and to communicate with backend APIs. It is essential to note that the backend verifies the integrity of this token to ensure it's genuine and hasn't been tampered with.
 
 
 The flow above is reminiscent of the OAuth2 "Authorization Code Flow", albeit in a simplified manner. It primarily aims to illustrate the core concept of authentication. For those looking for an in-depth dive into OAuth2, consider exploring [Auth0's comprehensive guide on the Authorization Code Flow](https://auth0.com/docs/get-started/authentication-and-authorization-flow/authorization-code-flow).
 
 # Authorization Models
+
+In the intricate world of authorization, one size seldom fits all. As applications grow and requirements become more nuanced, the mechanisms to decide who gets to do what need to evolve as well. The diversity of use-cases and the need for granularity have given rise to various models of authorization. These models serve as conceptual frameworks, providing structured methods to grant or deny access to resources based on different criteria. From the rudimentary setups that hinged primarily on lists to the more intricate designs that account for dynamic attributes and relationships, the evolution of these models mirrors the increasing complexity of our digital ecosystems.
+
+Let's dive deeper into some of the prevailing models in authorization:
 
 * ACL (Access Control List): Stemming from its historical roots in the Unix file system, ACLs provide a list of permissions attached to an object. They are inherently a means to define which user have access to specific objects and the operations they can perform on them.
 
@@ -63,6 +63,7 @@ The flow above is reminiscent of the OAuth2 "Authorization Code Flow", albeit in
     * Reading an issue is permissible if you are a contributor to its **parent** repository.
     * One becomes a repository contributor if they are **member** of of a team with the "contributor" role.
 
+While each model brings its distinct approach, in practice, they often intermingle. Implementations commonly weave elements from multiple models to create a tailored authorization mechanism that comprehensively fulfills specific requirements. The blending of these models in real-world setups reflects the flexibility and complexity required in today's digital ecosystems.
 
 # Hands-On
 
