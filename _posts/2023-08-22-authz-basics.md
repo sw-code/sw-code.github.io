@@ -99,11 +99,57 @@ class PetsController {
 data class Pet(val species: String)
 ```
 
-In the code above, the @GetMapping annotation is standard for any Spring Boot application, denoting an HTTP GET endpoint. However, the @PostMapping is a bit special. It's decorated with the @PreAuthorize annotation, a component of Spring Security, which states that the following method (in this case, addPet) can only be accessed if the authenticated user has an 'admin' role.
+In the code above, the `@GetMapping` annotation is standard for any Spring Boot application, denoting an HTTP GET endpoint. However, the `@PostMapping` is a bit special. It's decorated with the `@PreAuthorize` annotation, a component of Spring Security, which states that the following method (in this case, addPet) can only be accessed if the authenticated user has an 'admin' role.
 
-When a user attempts to post a new pet to our service, the @PreAuthorize annotation intercepts the request and evaluates the user's roles. If they have the 'admin' role, the method is executed. Otherwise, an access denied response is returned.
+When a user attempts to post a new pet to our service, the `@PreAuthorize` annotation intercepts the request and evaluates the user's roles. If they have the 'admin' role, the method is executed. Otherwise, an access denied response is returned.
 
-This example showcases a simplified form of Role-Based Access Control (RBAC). Here, roles embedded within the user's token (as discussed in the previous chapter) are evaluated by the Spring framework to make authorization decisions.
+You may wonder: where does this 'admin' role come from and how does the system recognize whether the user possesses this role or not?
+
+The answer lies in the JSON Web Token (JWT) used by the application for authentication and authorization.
+
+```json
+{
+  "exp": 1692800905,
+  "iat": 1692800845,
+  "iss": "http://localhost:8090/realms/master",
+  "aud": [
+    "master-realm",
+    "account"
+  ],
+  "sub": "84059de0-00e4-43ab-82f5-5b7b217cf8dd",
+  "typ": "Bearer",
+  "azp": "postman",
+  "acr": "0",
+  "allowed-origins": [
+    "https://oauth.pstmn.io"
+  ],
+  "realm_access": {
+    "roles": [
+      "admin"
+    ]
+  },
+  "scope": "openid profile email",
+  "sid": "7395ed9c-09d4-449b-9f95-60958afe5f91",
+  "email_verified": false,
+  "preferred_username": "admin"
+}
+```
+
+This JWT is a compact, URL-safe means of representing claims between two parties. In the context of our application, the claims within the JWT relay information about the authenticated user to the application. Let's break down some of these claims:
+
+* `exp`: This stands for "expiration time". It specifies the time after which the JWT will no longer be accepted. It's a mechanism to ensure that old tokens get discarded and are not misused if intercepted.
+* `iat`: The "issued at" time claim identifies the time at which the JWT was issued. This can be used to determine the age of the JWT.
+* `iss`: This is the "issuer" claim. It indicates the issuer of the JWT. In our token, the issuer is specified as `http://localhost:8090/realms/master`. Knowing the issuer is vital for validating the authenticity of the token, ensuring it comes from a trusted authority.
+* `sub`: Short for "subject", it identifies the principal entity that is the subject of the JWT. Often, this is used to hold the user ID.
+* `preferred_username`: This claim provides a human-readable string that identifies the user, which can be used to give a personalized user experience.
+
+Amongst these claims, the `realm_access` claim is particularly interesting for our case. This claim reveals the roles associated with the user within the context of a realm in Keycloak, an open-source identity and access management solution. In our provided token, the user possesses the `admin` role within the realm, which correlates with the role our `@PreAuthorize` annotation is checking for.
+
+For those interested in a deeper dive into tokens and their functionalities, [Auth0's JWT Basics](https://developer.auth0.com/resources/labs/tools/jwt-basics#introduction) provides an extensive overview.
+
+This example highlights a basic use of Role-Based Access Control (RBAC). In this case, roles within the user's token are evaluated by the Spring framework to determine authorization. However, as systems grow and become more complex, challenges can arise. A common issue is "role explosion", where the number of roles becomes too large to manage effectively. In some cases, there may be too many roles to fit within the token's constraints.
+
+To address this, advanced systems often separate roles or permissions from the token. Instead of including every role directly, they use a user identifier, like the `sub` claim (user ID). When a user requests access, this identifier is checked against an external source to determine the user's roles or permissions. This approach is more flexible and scalable, making it easier to handle complex authorization setups.
 
 
 # Upcoming
