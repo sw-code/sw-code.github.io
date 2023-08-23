@@ -25,9 +25,9 @@ Authorization: Once past the main gates, what parts of the castle is one permitt
 
 In other words, authentication answers the question, "Who are you?" while authorization answers the question, "What are you allowed to do?"
 
-The tapestry of authentication and authorization often interweaves when a user's identity becomes pivotal in defining their access boundaries. For example, post-authentication, one might harness the user's username to fetch their privilege set. Alternatively, other attributes might hint at the levels of access they should be accorded.
+In real-world applications, the distinctions between authentication and authorization begin to blur as they work hand-in-hand. Once a user's identity is verified, this information is frequently used to determine the permissions they have. For instance, after successfully authenticating, a system might use the user's ID or other attributes to determine which resources or actions they can access.
 
-While our focus in this series predominantly revolves around authorization, we'll nod to authentication where its context is imperative. It's presupposed that readers come equipped with an authentication mechanism or possess the wherewithal to establish one, guided by the myriad of resources at one's disposal in today's digital age.
+This series will primarily center on the nuances of authorization. However, we'll touch upon authentication when it's relevant to the topic at hand. We assume readers are already familiar with, or have in place, a basic authentication system, and there's a bunch of resources available for those looking to further delve into authentication mechanisms.
 
 # Authentication as Authorization
 
