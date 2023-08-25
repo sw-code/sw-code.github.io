@@ -1,0 +1,18 @@
+@startuml
+!theme carbon-gray
+participant "User's Browser" as Browser
+participant "Web App" as WebApp
+participant "Identity Provider (e.g., Keycloak)" as IdP
+participant "Backend API" as API
+
+Browser -> WebApp: Access dashboard (1)
+WebApp -> Browser: Authentication required (2)
+Browser -> IdP: Redirect to login page (2)
+IdP -> Browser: Show login page (2)
+Browser -> IdP: Submit credentials (3)
+IdP -> Browser: Issue JWT token (4)
+WebApp -> API: Fetch data using token (5)
+API -> WebApp: Return requested data
+WebApp -> Browser: Display personalized dashboard
+
+@enduml
