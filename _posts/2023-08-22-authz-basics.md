@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Authorization Basics"
-date:   2023-07-23 12:35:25
+date:   2023-08-22 12:35:25
 categories: authz
 tags: authentication, authorization, security, rbac, abac, acl, rebac, oauth2
 image: /assets/article_images/2023-08-22-authz-basics/basics.jpg
