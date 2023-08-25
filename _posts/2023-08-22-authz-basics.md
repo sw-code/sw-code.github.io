@@ -4,7 +4,7 @@ title:  "Authorization Basics"
 date:   2023-08-22 12:35:25
 categories: authz
 tags: authentication, authorization, security, rbac, abac, acl, rebac, oauth2
-image: /assets/article_images/2023-08-22-authz-basics/basics.jpg
+image: /assets/article_images/2023-08-22-authz-basics/basic_authz.jpg
 author_name: Viktor Gottfried
 author_link: /authors/viktor-gottfried
 author_image: /assets/images/authors/viktor-gottfried/thumbnail.jpg
