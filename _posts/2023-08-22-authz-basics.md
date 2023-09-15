@@ -157,3 +157,5 @@ To address this, advanced systems often separate roles or permissions from the t
 # Upcoming
 
 As we journey through this series, we'll delve deeper into more intricate mechanisms with practical exercises, especially Relationship-Based Access Control (ReBAC). This blog is largely centered on the latter, given our keen interest in harnessing the capabilities of [Google's Zanzibar](https://research.google/pubs/pub48190/), a powerful system known for its robust ReBAC features. By familiarizing ourselves with these advanced techniques, we aim to demonstrate the potential and flexibility that advanced authorization mechanisms can bring to contemporary applications.
+
+* [Requirements for a scalable Authorization Architecture]({% post_url 2023-09-14-authz-requirements %})

@@ -61,4 +61,4 @@ In this introductory post of our series, we aim to underscore the criticality of
 Whether you're a seasoned architect seeking to solidify your knowledge or a beginner starting your journey in the world of scalable architectures, this series aims to be a comprehensive guide to mastering the art and science of authorization. So sit back, relax, and join me as we explore the intricate world of authorization in the era of scalability and microservices.
 
 * [Authorization Basics]({% post_url 2023-08-22-authz-basics %})
-
+* [Requirements for a scalable Authorization Architecture]({% post_url 2023-09-14-authz-requirements %})
