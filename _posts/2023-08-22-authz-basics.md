@@ -53,15 +53,20 @@ In the intricate world of authorization, one size seldom fits all. As applicatio
 Let's dive deeper into some of the prevailing models in authorization:
 
 * ACL (Access Control List): Stemming from its historical roots in the Unix file system, ACLs provide a list of permissions attached to an object. They are inherently a means to define which user have access to specific objects and the operations they can perform on them.
+    * **Example**: Think of ACLs like a club's guest list. If your name (and perhaps a specific criterion, like VIP) is on the list, you're allowed entry.
+    * **Application Context**: ACL would be apt for file-sharing platforms, where individual files/folders can be shared with specific users.
 
 * RBAC (Role-Based Access Control): A more structured approach, RBAC assigns permissions to specific roles rather than individual users. Users are then assigned to roles. This model offers simplicity and scalability, especially in larger systems where defining permissions for each user can become unwieldy.
+    * **Example**: Imagine a hospital. There are doctors, nurses, and administrators. Each role has different access levels in the patient database.
+    * **Application Context**: RBAC might be ideal for corporate intranets where access needs to be defined by job roles like manager, employee, HR, etc.
 
 * ABAC (Attribute-Based Access Control): A more dynamic approach, ABAC bases access decisions on policies derived from various attributes—be it of the user, the resource, or even the surrounding environment. For instance, a document might only be accessible during working hours or if a user is located in a specific country. This approach provides nuanced, context-aware authorization.
+    * **Example**: A confidential company document that's only accessible from company premises (using location as an attribute) and during working hours.
+    * **Application Context**: ABAC is well-suited for complex environments like financial systems where access to resources might depend on various dynamic factors.
 
 * ReBAC (Relationship-Based Access Control): Building on ABAC, ReBAC incorporates relationships. Access decisions take into account both attributes and their interrelationships. Examples include:
-    * Users can delete comments they are the **owner** of.
-    * Reading an issue is permissible if you are a contributor to its **parent** repository.
-    * One becomes a repository contributor if they are **member** of of a team with the "contributor" role.
+    * **Example**: On Facebook, you can view a friend's private post, but you can't necessarily view the private posts of a friend of a friend unless you're also friends with that person.
+    * **Application Context**: Social networking platforms where user relationships play a pivotal role in determining access would greatly benefit from ReBAC.
 
 While each model brings its distinct approach, in practice, they often intermingle. Implementations commonly weave elements from multiple models to create a tailored authorization mechanism that comprehensively fulfills specific requirements. The blending of these models in real-world setups reflects the flexibility and complexity required in today's digital ecosystems.
 
