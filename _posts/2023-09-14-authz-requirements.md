@@ -10,9 +10,7 @@ author_link: /authors/viktor-gottfried
 author_image: /assets/images/authors/viktor-gottfried/thumbnail.jpg
 ---
 
-Welcome back to our [Scaling Authz]({% post_url 2023-06-17-scaling-authz-series %}) blog series, where we're documenting our journey toward a scalable and efficient authorization architecture.
-
-Our prior exploration, [Authorization Basics]({% post_url 2023-08-22-authz-basics %}), provided a primer on the foundational elements of authorization. Yet as organizations evolve, so too must the systems that safeguard their data and resources. This article delves deeper, defining essential criteria for an adaptive authorization system and starting our journey into their detailed exploration.
+Our prior exploration, [Authorization Basics]({% post_url 2023-08-22-authz-basics %}) of our [Scaling Authz]({% post_url 2023-06-17-scaling-authz-series %}) blog series, provided a primer on the foundational elements of authorization. Yet as organizations evolve, so too must the systems that safeguard their data and resources. This article delves deeper, defining essential criteria for an adaptive authorization system and starting our journey into their detailed exploration.
 
 # Requirements
 
