@@ -29,7 +29,7 @@ Authorization, at its core, stands as a bastion against unauthorized access to c
     4. **Minimal Attack Surface**: The framework should be lightweight with no unnecessary components or plugins that could be exploited. This "minimalism" reduces the attack surface, making it tougher for adversaries to find vulnerabilities.
     5. **Regular Patching & Updates**: Security isn't a one-time affair. As new vulnerabilities are discovered, the framework must be actively maintained and patched, ensuring that known issues are promptly addressed.
     6. **Fine-Grained Auditing and Logging**: Being able to trace back actions can be a lifesaver when it comes to detecting and investigating security incidents. The framework should offer detailed auditing capabilities, capturing who did what and when.
-    7 .Role and Policy Lifecycle Management: Over time, roles may become obsolete, or policies might need refining. The framework should offer mechanisms to safely deprecate roles or adjust policies, ensuring that outdated rules don't become security loopholes.
+    7 **Role and Policy Lifecycle Management**: Over time, roles may become obsolete, or policies might need refining. The framework should offer mechanisms to safely deprecate roles or adjust policies, ensuring that outdated rules don't become security loopholes.
 
 ## 3. Technology Agnosticism
 An effective authorization system must be a universal translator, smoothly integrating across diverse technological landscapes. It shouldn't matter whether one department uses Python and another uses Java. Authorization should be a seamless bridge.
