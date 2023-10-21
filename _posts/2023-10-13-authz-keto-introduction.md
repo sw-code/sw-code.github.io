@@ -4,7 +4,7 @@ title:  "Exploring Relation-based Models"
 date:   2023-10-13 10:30:00
 categories: authz
 tags: authentication, authorization, security, rbac, abac, acl, rebac, keto
-image: /assets/article_images/2023-09-14-authz-requirements/header.png
+image: /assets/article_images/2023-10-13-authz-keto-introduction/header.png
 author_name: Viktor Gottfried
 author_link: /authors/viktor-gottfried
 author_image: /assets/images/authors/viktor-gottfried/thumbnail.jpg
@@ -57,7 +57,7 @@ It's worth noting that this explanation is somewhat simplified for clarity. The 
 
 # Ory Keto
 
-Ory Keto, written in Go, is an open-source authorization system that pivots around the concept of relation tuples, echoing the foundational principles of Google's Zanzibar. Ory Keto is packaged as a standalone service, offering both HTTPS and gRPC APIs for seamless integration across diverse systems. Recognizing the varied deployment needs of organizations, Ory provides Keto both as a Software as a Service (SaaS) offering and a self-hosted solution, ensuring adaptability across different infrastructural requirements.
+[Ory Keto](https://github.com/ory/keto), written in Go, is an open-source authorization system that pivots around the concept of relation tuples, echoing the foundational principles of Google's Zanzibar. Ory Keto is packaged as a standalone service, offering both HTTPS and gRPC APIs for seamless integration across diverse systems. Recognizing the varied deployment needs of organizations, Ory provides Keto both as a Software as a Service (SaaS) offering and a self-hosted solution, ensuring adaptability across different infrastructural requirements.
 
 While conceptualizing Ory Keto, certain guiding principles and assumptions were maintained to ensure its efficacy:
 
@@ -87,16 +87,16 @@ class Folder implements Namespace {}
 ### Ory Keto Relations
 
 In Ory Keto, defining relations is at the heart of the model. Let's illustrate this with a hands-on example featuring two namespaces: Document and User.
-Within the Document namespace, a user is designated as either an owner, a viewer, or an editor of a document through specific relations.
+Within the Document namespace, a user is designated as either an `owner`, a `viewer`, or an `editor` of a document through specific relations.
 
-The core of authorization revolves around permissions, such as 'view' or 'edit', rather than checking relations like 'owner' or 'editor'. The concrete permission is checked against the relationships. Within the Ory Permission Language, permissions are declared as functions inside the permits property of the corresponding namespace. Let's explore how permissions might be outlined for our Document namespace:
+The core of authorization revolves around permissions, such as `view` or `edit`, rather than checking relations like 'owner' or 'editor'. The concrete permission is checked against the relationships. Within the Ory Permission Language, permissions are declared as functions inside the permits property of the corresponding namespace. Let's explore how permissions might be outlined for our Document namespace:
 
 ```
 class Document implements Namespace {
   related: {
     owners: User[]
     editors: User[]
-    viewers: User[]
+    viewers: User[]:D
   }
 
   permits = {
@@ -148,8 +148,8 @@ The diagram effectively visualizes Jane's direct relations and how they cascade 
 
 Given this arrangement and the provided OPL:
 
-* Jane has a "viewer" relation to GlobeCorp, allowing her 'readonly' access to its data. This relationship extends hierarchically, meaning Jane can also view data of the companies that are subsidiaries or children of GlobeCorp due to the parents relation, which are TechNovelties and EcoLife.
-* Jane, due to her 'editors' relation with EcoLife, is endowed with edit access to its data. Leveraging the hierarchical structure, this access naturally extends to GreenHealth, EcoLife's subsidiary.
+* Jane has a `viewer` relation to GlobeCorp, allowing her 'readonly' access to its data. This relationship extends hierarchically, meaning Jane can also view data of the companies that are subsidiaries or children of GlobeCorp due to the parents relation, which are TechNovelties and EcoLife.
+* Jane, due to her `editors` relation with EcoLife, is endowed with edit access to its data. Leveraging the hierarchical structure, this access naturally extends to GreenHealth, EcoLife's subsidiary.
 
 # A Hands-on Integration of Ory Keto and Spring Boot
 
