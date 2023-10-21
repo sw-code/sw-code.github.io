@@ -16,6 +16,10 @@ In the digital realm, it's similar. Access isn't always about direct permissions
 
 It's this nuanced dance of relationships that defines relation-based authorization. Less of a straightforward checklist and more of a dynamic network of ties, it offers a richer, deeper layer to deciding "Who gets to do what?".
 
+**TL;DR**: We explored the foundational concepts of relation-based authorization models, tracing back to the roots in tech giants like Google. 
+With the power of Ory Keto and Spring Boot, we crafted a hands-on example to bring the theory to life. 
+Want to dive straight into the action? Check out our detailed hands-on integration: [A Hands-on Integration of Ory Keto and Spring Boot](#a-hands-on-integration-of-ory-keto-and-spring-boot).
+
 # The Google Zanzibar Paper and its Influence on Rapid Authorization Framework Development
 
 In recent years, a notable event has had a profound influence on the world of authorization frameworks. This event was the release of the [Google Zanzibar paper](https://research.google/pubs/pub48190/), a highly insightful document that details Google's approach to scalable, efficient authorization.
