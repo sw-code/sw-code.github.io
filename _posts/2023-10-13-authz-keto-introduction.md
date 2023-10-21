@@ -153,10 +153,121 @@ Given this arrangement and the provided OPL:
 
 # A Hands-on Integration of Ory Keto and Spring Boot
 
-Alright, it's action time! You've gotten a taste of what Ory Keto can do. Now, let's see it in action with a practical Spring Boot application that showcases our fictional organization's structure.
+Now that you've had a sip of the theory behind relation-based authorization, it's time to roll up your sleeves and witness it in action. Our destination? A realistic scenario involving the integration of Ory Keto and Spring Boot. 
 
-Here's the Game Plan:
+## Step 1: Cloning the Repository
 
-* Setup Fun: We'll get everything in order, ensuring our environment is ready for some Ory Keto magic.
-* Integration Time: We'll mesh Ory Keto with our Spring Boot app. It's like pairing wine and cheese, but for developers.
-* Play Around: Ever wanted to see how policies play out in real-time? This is your chance. Tweak, test, and explore the effects of different access control configurations.
+To kick things off, we have laid out everything on a silver platter for you.
+By cloning our repository, you get access to a fully equipped application for our use case and docker-compose file:
+
+* A PostgreSQL database to store your data.
+* Keycloak, already set up with pre-configured users to handle authentication.
+* Ory Keto, primed with an OPL definition, ensuring authorization processes are streamlined right from the get-go.
+
+```
+git clone https://github.com/sw-code/swcode-samples.git
+cd swcode-samples/authz-keto
+```
+
+## Step 2: Explore the Code
+Within the `authz-keto` directory, you'll stumble upon our representation of the Jane and GlobalCorp scenario. 
+Remember Jane and her relationship with GlobalCorp and its sub-organizations? Yup, that's what we're bringing to life here.
+
+Now, let's dive deep into the heart of our application: the `OrganizationController`. 
+Two distinct endpoints are waiting to unveil the story of relation-based authorization in action.
+ 
+1. Viewing an Organization:
+```kotlin
+@GetMapping("/organizations/{organizationId}")
+@PreAuthorize("hasPermission(#organizationId, 'Organization', 'view')")
+fun getOrganization(@PathVariable organizationId: String): ResponseEntity<OrganizationDto>
+```
+
+The beacon guiding us here is the @PreAuthorize annotation. 
+Notice the "hasPermission" argument? This expression is the gatekeeper, determining if the user can `view` the specified Organization.
+
+2. Updating an Organization:
+```kotlin
+@PutMapping("/organizations/{organizationId}")
+@PreAuthorize("hasPermission(#organizationId, 'Organization', 'edit')")
+fun updateOrganization(
+    @PathVariable organizationId: String,
+    @RequestBody request: OrganizationUpdateDto
+): ResponseEntity<OrganizationDto>
+```
+
+Again, the `@PreAuthorize` annotation stands guard. This time, however, it's on the lookout for those who wish to `edit` the Organization.
+
+But what brews behind this magical curtain of @PreAuthorize: The `KetoPermissionEvaluator`.
+This component, a standard approach in Spring Security, implements the `PermissionEvaluator` interface and is instrumental in collaborating with Ory Keto to check permissions.
+```kotlin
+override fun hasPermission(
+    authentication: Authentication,
+    targetId: Serializable,
+    targetType: String,
+    permission: Any
+): Boolean {
+    return ketoKetoClient.checkPermission(authentication.name, targetType, targetId as String, permission as String)
+}
+```
+
+The `hasPermission` method takes in four arguments:
+
+1. authentication: This is an object provided by Spring Security, representing the current user's authentication information.
+2. targetId: A Serializable ID, in this context, typically the identifier for a specific entity within the system.
+3. targetType: This string represents the type or category of the entity. In our case, it corresponds to the namespace in Ory Keto.
+4. permission: Represents the specific action or permission we want to check, such as `view` or `edit`.
+
+Within the method, a call is made to `ketoKetoClient.checkPermission(...)`, which, in turn, communicates with Ory Keto via REST API.
+
+In essence, this method is asking Ory Keto: "Given this user and this specific entity in the provided namespace, do they have the specified permission?"
+T he response is a Boolean, indicating either permission granted or denied.
+
+An important detail to note is our choice of using the username directly from the authentication, instead of the typically recommended user ID. 
+This decision was made purely for illustrative clarity. 
+While in a production scenario, leveraging UUIDs as the subject would be the standard approach, here we've prioritized a straightforward demonstration to ensure a clear and uncomplicated understanding.
+
+## Step 3: Setup & Configuration
+
+To initialize the necessary test data, we utilize the `SampleDataInitializer` class. 
+This class orchestrates the creation of our well-known GlobalCorp and its associated organizational hierarchies upon application launch. 
+Additionally, it ensures Jane is granted the appropriate access.
+
+While user-to-organization relationships are forged directly within this class as part of sample data, 
+the relationships defining the organizational hierarchies (`parents`) are dynamically established. 
+Whenever a new organization is brought to life in our system, an `OrganizationCreatedEvent` is emitted. 
+This event is the catalyst, triggering the creation of `parents` relationships in Ory Keto when necessary.
+
+## Step 4: Launch & Play
+
+Before launching the application, make sure you've initiated the necessary infrastructure using the supplied docker-compose file.
+
+Once the application is up and running, test out the endpoints.
+Within the repository, there's a Postman collection tailor-made for this hands-on. 
+This collection includes everything you'll need, from fetching a token from Keycloak for a user to making calls to our endpoints.
+Start by trying to retrieve GlobalCorp's data as Jane using GET `/organizations/1`. 
+Since Jane holds viewer permissions, this attempt will succeed. 
+But if you try to update this data? Expect a "Forbidden" response.
+Remember, though, that Jane has editing rights for EcoLife. 
+This means you can update its information using PUT `/organizations/3`. 
+The same goes for its sub-organization, GreenHealth, accessible via PUT `/organizations/4`.
+
+Certainly, you might've spotted endpoints like `GET /organizations` and `POST /organizations` that haven't been enveloped in our authorization discussion yet. 
+These endpoints, unlike the others, don't target a specific entity and thus require a slightly different approach. 
+However, fret not; the path forward with Keto will be smooth and intuitive. 
+The upcoming posts, where we'll delve deeper into these aspects and navigate through other exciting challenges ahead.
+
+# Conclusion
+
+In this comprehensive exploration, we dove into the fascinating world of relation-based authorization models. 
+With its roots deeply embedded in Google's Zanzibar, this approach presents a robust paradigm shift in how we perceive and implement permissions in the digital realm.
+
+We unveiled a ready-to-use example coupling Spring Boot and Ory Keto, offering readers a tangible demonstration of these concepts in action. 
+This elucidated how the various building blocks, when seamlessly integrated, can create an effective and secure authorization system.
+
+As we step further into this domain, our journey is only just beginning. 
+Looking ahead, there are several compelling challenges to address: 
+understanding the dynamics of users and roles, managing blocking relations for exception handling, and tackling the demands of searching and filtering with permissions in mind.
+
+The world of authorization is vast and ever-evolving, and we're just scratching the surface. 
+Stay with us as we delve deeper into its depths in our forthcoming discussions.
