@@ -87,6 +87,7 @@ class Folder implements Namespace {}
 ### Ory Keto Relations
 
 In Ory Keto, defining relations is at the heart of the model. Let's illustrate this with a hands-on example featuring two namespaces: Document and User.
+
 Within the Document namespace, a user is designated as either an `owner`, a `viewer`, or an `editor` of a document through specific relations.
 
 The core of authorization revolves around permissions, such as `view` or `edit`, rather than checking relations like 'owner' or 'editor'. The concrete permission is checked against the relationships. Within the Ory Permission Language, permissions are declared as functions inside the permits property of the corresponding namespace. Let's explore how permissions might be outlined for our Document namespace:
@@ -96,7 +97,7 @@ class Document implements Namespace {
   related: {
     owners: User[]
     editors: User[]
-    viewers: User[]:D
+    viewers: User[]
   }
 
   permits = {
@@ -147,6 +148,7 @@ The diagram effectively visualizes Jane's direct relations and how they cascade 
 ![Relations](/assets/article_images/2023-10-13-authz-keto-introduction/opl.png)
 
 Given this arrangement and the provided OPL:
+
 
 * Jane has a `viewer` relation to GlobeCorp, allowing her 'readonly' access to its data. This relationship extends hierarchically, meaning Jane can also view data of the companies that are subsidiaries or children of GlobeCorp due to the parents relation, which are TechNovelties and EcoLife.
 * Jane, due to her `editors` relation with EcoLife, is endowed with edit access to its data. Leveraging the hierarchical structure, this access naturally extends to GreenHealth, EcoLife's subsidiary.
