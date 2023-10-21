@@ -22,7 +22,7 @@ In recent years, a notable event has had a profound influence on the world of au
 
 Google's Zanzibar system is a testament to the prowess of modern technology. According to the paper, Zanzibar handles access management for an astonishing number of resources - we're talking trillions of objects - used by hundreds of millions of users. What makes these figures even more impressive is the wide array of client services that rely on Zanzibar. Renowned platforms like Google Maps, Google Drive, and YouTube, all depend on Zanzibar for their authorization needs.
 
-But Zanzibar doesn't just handle this enormous load, it does so rapidly and reliably. The system boasts a remarkable response time, with 95% of requests being handled within just 10 milliseconds. On top of this, Zanzibar has proven its reliability, maintaining an exceptional availability rate of 99.999% over the past three years.
+But Zanzibar doesn't just handle this enormous load, it does so rapidly and reliably. The system boasts a remarkable response time, with 95% of requests being handled within just 10 milliseconds and 99% within 20 milliseconds. On top of this, Zanzibar has proven its reliability, maintaining an exceptional availability rate of 99.999% over the past three years.
 
 However, the impact of the Zanzibar paper extends beyond these impressive technical capabilities. The release of the paper pushed a flurry of development in the authorization realm, resulting in a variety of open-source projects and SaaS offerings inspired by Google's Zanzibar, including [Ory Keto](https://github.com/ory/keto), [AuthZed](https://authzed.com/), and [OpenFGA](https://openfga.dev/).
 
@@ -221,7 +221,7 @@ The `hasPermission` method takes in four arguments:
 Within the method, a call is made to `ketoKetoClient.checkPermission(...)`, which, in turn, communicates with Ory Keto via REST API.
 
 In essence, this method is asking Ory Keto: "Given this user and this specific entity in the provided namespace, do they have the specified permission?"
-T he response is a Boolean, indicating either permission granted or denied.
+The response is a Boolean, indicating either permission granted or denied.
 
 An important detail to note is our choice of using the username directly from the authentication, instead of the typically recommended user ID. 
 This decision was made purely for illustrative clarity. 
