@@ -41,9 +41,9 @@ As we at SWCode embark on our journey to implement a scalable authorization arch
 
 At the core of Google's Zanzibar system is a surprisingly simple yet powerful model: relation tuples. A relation tuple is a small record that describes a relationship, in the form of `namespace:object#relation@subject`. In this format:
 
-* `namespace` represents the type of the object, such as 'document' or 'folder'.
+* `namespace` represents the type of the object, such as `document` or `folder`.
 * `object` refers to a unique identifier for a specific instance of that type, like a specific document ID or folder ID.
-* `relation` relation signifies the type of relationship between the object and the subject, such as 'owner' or 'viewer'.
+* `relation` relation signifies the type of relationship between the object and the subject, such as `owner´ or `viewer`.
 * `subject` can either be a user or another relation tuple, allowing for complex, nested relationships.
 
 For example, a relation tuple might look like this: `document:readme#owner@user456`, meaning that `user456` is the `owner` of `readme` in the `document` namespace.
