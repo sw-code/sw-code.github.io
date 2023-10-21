@@ -158,3 +158,5 @@ In "Requirements for a Scalable Authorization Architecture," we've taken a deep 
 However, our journey is just beginning. As we move forward, subsequent articles will delve deeper into the other requirements, ensuring you have a comprehensive understanding of what it takes to build an effective, scalable, and secure authorization system.
 
 Stay with us for more insights and deeper explorations into the expansive world of authorization.
+
+* [Exploring Relation-based Models]({% post_url 2023-10-13-authz-keto-introduction %})
