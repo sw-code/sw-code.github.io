@@ -159,4 +159,4 @@ However, our journey is just beginning. As we move forward, subsequent articles 
 
 Stay with us for more insights and deeper explorations into the expansive world of authorization.
 
-* [Exploring Relation-based Models]({% post_url 2023-10-13-authz-keto-introduction %})
+* [Google's Zanzibar and Beyond: A Deep Dive into Relation-based Authorization]({% post_url 2023-10-13-authz-keto-introduction %})
