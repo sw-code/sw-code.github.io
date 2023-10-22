@@ -190,6 +190,8 @@ curl --location --request PUT 'http://localhost:4467/admin/relation-tuples' \
   }'
 ```
 
+In the subsequent hands-on section, we provide a comprehensive configuration setup for Ory Keto, ensuring that you have all the tools and information at your disposal to effectively establish relations using the REST API.
+
 # A Hands-on Integration of Ory Keto and Spring Boot
 
 Now that you've had a sip of the theory behind relation-based authorization, it's time to roll up your sleeves and witness it in action. Our destination? A realistic scenario involving the integration of Ory Keto and Spring Boot. 

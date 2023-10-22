@@ -6,9 +6,741 @@
 </description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Wed, 16 Aug 2023 13:08:05 +0200</pubDate>
-    <lastBuildDate>Wed, 16 Aug 2023 13:08:05 +0200</lastBuildDate>
+    <pubDate>Sun, 22 Oct 2023 20:07:22 +0200</pubDate>
+    <lastBuildDate>Sun, 22 Oct 2023 20:07:22 +0200</lastBuildDate>
     <generator>Jekyll v3.9.3</generator>
+    
+      <item>
+        <title>Google&apos;s Zanzibar and Beyond: A Deep Dive into Relation-based Authorization</title>
+        <description>&lt;p&gt;Dive into the world of online permissions and it quickly becomes clear: it’s all about the connections you hold. Imagine being at an upscale gala. It’s not just about your invitation card that gets you through the door. It’s about who you know inside, the conversations you’re a part of, and the circles you move in.&lt;/p&gt;
+
+&lt;p&gt;In the digital realm, it’s similar. Access isn’t always about direct permissions; it’s about the intricate web of relationships that you’re entangled in. Can you view this document? Well, it depends – are you linked to its creator, or part of the team that worked on it?&lt;/p&gt;
+
+&lt;p&gt;It’s this nuanced dance of relationships that defines relation-based authorization. Less of a straightforward checklist and more of a dynamic network of ties, it offers a richer, deeper layer to deciding “Who gets to do what?”.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;TL;DR&lt;/strong&gt;: We explored the foundational concepts of relation-based authorization models, tracing back to the roots in tech giants like Google. 
+With the power of Ory Keto and Spring Boot, we crafted a hands-on example to bring the theory to life. 
+Want to dive straight into the action? Check out our detailed hands-on integration: &lt;a href=&quot;#a-hands-on-integration-of-ory-keto-and-spring-boot&quot;&gt;A Hands-on Integration of Ory Keto and Spring Boot&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h1 id=&quot;the-google-zanzibar-paper-and-its-influence-on-rapid-authorization-framework-development&quot;&gt;The Google Zanzibar Paper and its Influence on Rapid Authorization Framework Development&lt;/h1&gt;
+
+&lt;p&gt;In recent years, a notable event has had a profound influence on the world of authorization frameworks. This event was the release of the &lt;a href=&quot;https://research.google/pubs/pub48190/&quot;&gt;Google Zanzibar paper&lt;/a&gt;, a highly insightful document that details Google’s approach to scalable, efficient authorization.&lt;/p&gt;
+
+&lt;p&gt;Google’s Zanzibar system is a testament to the prowess of modern technology. According to the paper, Zanzibar handles access management for an astonishing number of resources - we’re talking trillions of objects - used by hundreds of millions of users. What makes these figures even more impressive is the wide array of client services that rely on Zanzibar. Renowned platforms like Google Maps, Google Drive, and YouTube, all depend on Zanzibar for their authorization needs.&lt;/p&gt;
+
+&lt;p&gt;But Zanzibar doesn’t just handle this enormous load, it does so rapidly and reliably. The system boasts a remarkable response time, with 95% of requests being handled within just 10 milliseconds and 99% within 20 milliseconds. On top of this, Zanzibar has proven its reliability, maintaining an exceptional availability rate of 99.999% over the past three years.&lt;/p&gt;
+
+&lt;p&gt;However, the impact of the Zanzibar paper extends beyond these impressive technical capabilities. The release of the paper pushed a flurry of development in the authorization realm, resulting in a variety of open-source projects and SaaS offerings inspired by Google’s Zanzibar, including &lt;a href=&quot;https://github.com/ory/keto&quot;&gt;Ory Keto&lt;/a&gt;, &lt;a href=&quot;https://authzed.com/&quot;&gt;AuthZed&lt;/a&gt;, and &lt;a href=&quot;https://openfga.dev/&quot;&gt;OpenFGA&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;But why has this paper sparked such a wave of development? The answer lies in a combination of factors:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;strong&gt;Scalability&lt;/strong&gt;: As mentioned, Zanzibar’s ability to handle authorization for trillions of objects by hundreds of millions of users is awe-inspiring. As more businesses adopt microservices and cloud-native architectures, the need for scalable authorization solutions becomes increasingly pressing. Zanzibar offers a proven blueprint for achieving such scalability.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Flexibility&lt;/strong&gt;: The Zanzibar model, termed &lt;strong&gt;Global, Consistent Authorization System&lt;/strong&gt;, is not tied to specific business logic or policies. This flexibility makes it broadly applicable across various domains and use cases, inspiring many to leverage it in their contexts.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Efficiency&lt;/strong&gt;: Efficiency in authorization is crucial. Zanzibar’s use of data sharding and re-sharding for optimal use of resources has been an inspiration for many developing authorization frameworks.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Reliability&lt;/strong&gt;: Google’s paper emphasizes Zanzibar’s ability to provide consistent authorization decisions, even in the face of network partitions and system failures. This high level of reliability is a key factor in Zanzibar’s appeal.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Innovation&lt;/strong&gt;: Finally, the Zanzibar paper represents a significant leap in the way we think about and implement authorization. Its innovative approach to handling access control at a massive scale has piqued the interest of many in the field, spurring them to explore and adopt similar strategies.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;The widespread interest and rapid development sparked by the Zanzibar paper are testaments to its game-changing potential in the realm of scalable authorization.
+As we at SWCode embark on our journey to implement a scalable authorization architecture, we too are inspired by the lessons gleaned from Google’s Zanzibar.&lt;/p&gt;
+
+&lt;h2 id=&quot;unpacking-zanzibars-relation-tuple-based-model&quot;&gt;Unpacking Zanzibar’s Relation-Tuple-Based Model&lt;/h2&gt;
+
+&lt;p&gt;At the core of Google’s Zanzibar system is a surprisingly simple yet powerful model: relation tuples. A relation tuple is a small record that describes a relationship, in the form of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;namespace:object#relation@subject&lt;/code&gt;. In this format:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;namespace&lt;/code&gt; represents the type of the object, such as &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;document&lt;/code&gt; or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;folder&lt;/code&gt;.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;object&lt;/code&gt; refers to a unique identifier for a specific instance of that type, like a specific document ID or folder ID.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;relation&lt;/code&gt; relation signifies the type of relationship between the object and the subject, such as &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;owner&lt;/code&gt; or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;viewer&lt;/code&gt;.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;subject&lt;/code&gt; can either be a user or another relation tuple, allowing for complex, nested relationships.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;For example, a relation tuple might look like this: &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;document:readme#owner@user456&lt;/code&gt;, meaning that &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;user456&lt;/code&gt; is the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;owner&lt;/code&gt; of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;readme&lt;/code&gt; in the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;document&lt;/code&gt; namespace.
+Expanding on this, the subject in a relation tuple doesn’t necessarily need to be a user. It could also be another relation tuple. This introduces the ability to create relationships between objects, as exemplified by &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;document:readme#parent@folder:A&lt;/code&gt;, indicating that the folder A is the parent of the document readme.&lt;/p&gt;
+
+&lt;p&gt;By combining these simple elements, Zanzibar can describe complex hierarchical relationships and permissions across vast numbers of objects and users. This granularity of control is one of the key reasons for Zanzibar’s flexibility and scalability, and it’s a fundamental concept that has been adopted by Zanzibar-inspired frameworks mentioned before.&lt;/p&gt;
+
+&lt;p&gt;Expanding on this concept, Zanzibar’s relationships weave a structured graph connecting objects. Its strength lies in the straightforward approach: for authorization validation, Zanzibar merely verifies the presence of a certain relationship. Using our previous example, it would simply verify if there’s an &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;owner&lt;/code&gt; connection between the document &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;readme&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;user456&lt;/code&gt;. To dive deeper into this mechanism and gain a clearer understanding, continue to our next chapter where we dissect the Ory Keto framework, a system inspired by Zanzibar.&lt;/p&gt;
+
+&lt;p&gt;It’s worth noting that this explanation is somewhat simplified for clarity. The original Zanzibar paper is a scientific work and delves into greater theoretical depth, but the above should provide readers with a foundational understanding of the core concept.&lt;/p&gt;
+
+&lt;h1 id=&quot;ory-keto&quot;&gt;Ory Keto&lt;/h1&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/ory/keto&quot;&gt;Ory Keto&lt;/a&gt;, written in Go, is an open-source authorization system that pivots around the concept of relation tuples, echoing the foundational principles of Google’s Zanzibar. Ory Keto is packaged as a standalone service, offering both HTTPS and gRPC APIs for seamless integration across diverse systems. Recognizing the varied deployment needs of organizations, Ory provides Keto both as a Software as a Service (SaaS) offering and a self-hosted solution, ensuring adaptability across different infrastructural requirements.&lt;/p&gt;
+
+&lt;p&gt;While conceptualizing Ory Keto, certain guiding principles and assumptions were maintained to ensure its efficacy:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Simplicity in Management&lt;/strong&gt;: The system was built on the hypothesis that no individual or team would dedicate their full time to configuring an authorization system.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Intuitive Nature&lt;/strong&gt;: Keto is designed to be self-explanatory, minimizing the learning curve and ensuring that users find the system approachable.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Familiarity&lt;/strong&gt;: By adhering to familiar paradigms and practices, Keto reduces the onboarding time for developers and system administrators.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Ease of Modification&lt;/strong&gt;: Any changes or updates to the authorization configurations can be carried out with high confidence, ensuring system stability.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Editorial Support&lt;/strong&gt;: Thanks to the Ory Permission Language, which is a subset of Typescript, Keto is compatible with numerous editors. This ensures users have the flexibility and familiarity in their choice of tools.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;core-concepts-of-ory-keto&quot;&gt;Core Concepts of Ory Keto&lt;/h2&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;strong&gt;Adoption of the Relation Tuple Model&lt;/strong&gt;: Ory Keto adapts the Zanzibar-inspired relation tuples model. As we’ve previously elaborated, a relation tuple succinctly describes a relationship in a format like &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;namespace:object#relation@subject&lt;/code&gt;. Through these tuples, Ory Keto can express and evaluate intricate hierarchical relationships and permissions across a multitude of objects and users, ensuring a granular and fine-tuned access control mechanism.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Ory Permission Language (OPL)&lt;/strong&gt;: OPL, envisioned as a subset of TypeScript, is Ory Keto’s method to detail and evaluate policies within its framework. Despite the internal engine of Keto being rooted in Go, OPL offers developers a familiar TypeScript-like syntax to outline intricate authorization policies seamlessly and precisely.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;OPL integrates namespaces and rules to aid in permission evaluations by exploring relations, though the actual tracing is managed by Keto internally. 
+While Google Zanzibar’s model was framed scientifically for researchers and experts, Ory Keto uses TypeScript-based OPL, targeting a broader developer audience for a more user-friendly experience.&lt;/p&gt;
+
+&lt;h3 id=&quot;ory-permission-language&quot;&gt;Ory Permission Language&lt;/h3&gt;
+
+&lt;p&gt;In Ory Keto, defining namespaces and relations is at the heart of the model. Let’s illustrate this with a hands-on example featuring two namespaces: Document and User.&lt;/p&gt;
+
+&lt;p&gt;Within the Document namespace, a user is designated as either an &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;owner&lt;/code&gt;, a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;viewer&lt;/code&gt;, or an &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;editor&lt;/code&gt; of a document through specific relations.&lt;/p&gt;
+
+&lt;p&gt;The core of authorization revolves around permissions, such as &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;view&lt;/code&gt; or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;edit&lt;/code&gt;, rather than checking relations like ‘owner’ or ‘editor’. The concrete permission is checked against the relationships. Within the Ory Permission Language, permissions are declared as functions inside the permits property of the corresponding namespace.&lt;/p&gt;
+
+&lt;p&gt;Let’s explore how permissions might be outlined for our Document namespace. 
+The code provided outlines a basic permission structure, which Keto subsequently processes to generate relation tuples internally.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;class User implements Namespace {}
+
+class Document implements Namespace {
+  related: {
+    owners: User[]
+    editors: User[]
+    viewers: User[]
+  }
+
+  permits = {
+    view: (ctx: Context): boolean =&amp;gt;
+      this.related.viewers.includes(ctx.subject) ||
+      this.related.editors.includes(ctx.subject) ||
+      this.related.owners.includes(ctx.subject)
+  }  
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;revisiting-jane-with-ory-keto-relations&quot;&gt;Revisiting Jane with Ory Keto Relations&lt;/h2&gt;
+
+&lt;p&gt;In our preceding discussions on Role-Based Access Control (RBAC), we introduced Jane, an auditor working for GlobeCorp. Jane was granted ‘readonly’ access to GlobeCorp’s financial data and held the admin role at EcoLife. This time around, let’s reframe Jane’s scenario using Ory Keto’s relation tuple framework.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/article_images/2023-09-14-authz-requirements/global-corp-2.png&quot; alt=&quot;RBAC&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Here’s a quick recap:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;GlobeCorp is a global conglomerate&lt;/li&gt;
+  &lt;li&gt;TechNovelties and EcoLife are direct subsidiaries of GlobeCorp&lt;/li&gt;
+  &lt;li&gt;GreenHealth is a specialized vertical of EcoLife&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;In the OPL, all organizations will be clustered within a singular ‘Organization’ namespace, with functional dependencies illustrated using the ‘parents’ relations.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;class Organization implements Namespace {
+  related: {
+    editors: User[]
+    viewers: User[]
+    parents: Organization[]
+  }
+
+  permits = {
+    view: (ctx: Context): boolean =&amp;gt;
+      this.related.viewers.includes(ctx.subject) ||
+      this.related.editors.includes(ctx.subject) ||
+      this.related.parents.traverse((p) =&amp;gt; p.permits.view(ctx))
+    edit: (ctx: Context): boolean =&amp;gt;
+      this.related.editors.includes(ctx.subject) ||
+      this.related.parents.traverse((p) =&amp;gt; p.permits.edit(ctx))      
+  }  
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;The diagram effectively visualizes Jane’s direct relations and how they cascade down the organization hierarchy using the parents relation in the context of Ory Keto’s permission system.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/article_images/2023-10-13-authz-keto-introduction/opl.png&quot; alt=&quot;Relations&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Given this arrangement and the provided OPL:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Jane has a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;viewer&lt;/code&gt; relation to GlobeCorp, allowing her ‘readonly’ access to its data. This relationship extends hierarchically, meaning Jane can also view data of the companies that are subsidiaries or children of GlobeCorp due to the parents relation, which are TechNovelties and EcoLife.&lt;/li&gt;
+  &lt;li&gt;Jane, due to her &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;editors&lt;/code&gt; relation with EcoLife, is endowed with edit access to its data. Leveraging the hierarchical structure, this access naturally extends to GreenHealth, EcoLife’s subsidiary.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;creating-relations-in-ory-keto-via-rest-api&quot;&gt;Creating Relations in Ory Keto via REST API&lt;/h2&gt;
+
+&lt;p&gt;Defining namespaces, relations, and permission rules forms the configuration phase in Ory Keto. 
+Once this setup is complete, you can then dynamically create the actual relations to express relationships between various entities. 
+This is achieved on-demand via REST API calls.&lt;/p&gt;
+
+&lt;p&gt;To illustrate, let’s define a relation that indicates “EcoLife” is a child organization of “GlobalCorp”. You can do this by making a PUT request as follows:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;curl &lt;span class=&quot;nt&quot;&gt;--location&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--request&lt;/span&gt; PUT &lt;span class=&quot;s1&quot;&gt;&apos;http://localhost:4467/admin/relation-tuples&apos;&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;--header&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;Content-Type: application/json&apos;&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;--data&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;{
+      &quot;namespace&quot;: &quot;Organization&quot;,
+      &quot;object&quot;: &quot;EcoLife&quot;,
+      &quot;relation&quot;: &quot;parents&quot;,
+      &quot;subject_set&quot;: {
+        &quot;namespace&quot;: &quot;Organization&quot;,
+        &quot;object&quot;: &quot;GlobalCorp&quot;,
+        &quot;relation&quot;: &quot;&quot;
+      }
+    }&apos;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;In this example, the relation “parents” for the object “EcoLife” points to “GlobalCorp”, indicating the hierarchical relationship between the two organizations.&lt;/p&gt;
+
+&lt;p&gt;Likewise, to establish a relationship between a user and an object, you would follow a similar approach. 
+For instance, if you want to specify that the user &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;jane&lt;/code&gt; has a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;viewer&lt;/code&gt; role for the organization &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;EcoLife&lt;/code&gt;, you would craft a REST call as such:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;curl &lt;span class=&quot;nt&quot;&gt;--location&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--request&lt;/span&gt; PUT &lt;span class=&quot;s1&quot;&gt;&apos;http://localhost:4467/admin/relation-tuples&apos;&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;--header&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;Content-Type: application/json&apos;&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;--data&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;{
+    &quot;namespace&quot;: &quot;Organization&quot;,
+    &quot;object&quot;: &quot;GlobalCorp&quot;,
+    &quot;relation&quot;: &quot;viewers&quot;,
+    &quot;subject_id&quot;: &quot;jane&quot;
+  }&apos;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h1 id=&quot;a-hands-on-integration-of-ory-keto-and-spring-boot&quot;&gt;A Hands-on Integration of Ory Keto and Spring Boot&lt;/h1&gt;
+
+&lt;p&gt;Now that you’ve had a sip of the theory behind relation-based authorization, it’s time to roll up your sleeves and witness it in action. Our destination? A realistic scenario involving the integration of Ory Keto and Spring Boot.&lt;/p&gt;
+
+&lt;h2 id=&quot;step-1-cloning-the-repository&quot;&gt;Step 1: Cloning the Repository&lt;/h2&gt;
+
+&lt;p&gt;To kick things off, we have laid out everything on a silver platter for you.
+By cloning our repository, you get access to a fully equipped application for our use case and docker-compose file:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;A PostgreSQL database to store your data.&lt;/li&gt;
+  &lt;li&gt;Keycloak, already set up with pre-configured users to handle authentication.&lt;/li&gt;
+  &lt;li&gt;Ory Keto, primed with an OPL definition, ensuring authorization processes are streamlined right from the get-go.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;git clone https://github.com/sw-code/swcode-samples.git
+cd swcode-samples/authz-keto
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;step-2-explore-the-code&quot;&gt;Step 2: Explore the Code&lt;/h2&gt;
+&lt;p&gt;Within the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;authz-keto&lt;/code&gt; directory, you’ll stumble upon our representation of the Jane and GlobalCorp scenario. 
+Remember Jane and her relationship with GlobalCorp and its sub-organizations? Yup, that’s what we’re bringing to life here.&lt;/p&gt;
+
+&lt;p&gt;Now, let’s dive deep into the heart of our application: the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;OrganizationController&lt;/code&gt;. 
+Two distinct endpoints are waiting to unveil the story of relation-based authorization in action.&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Viewing an Organization:
+    &lt;div class=&quot;language-kotlin highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nd&quot;&gt;@GetMapping&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;/organizations/{organizationId}&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;nd&quot;&gt;@PreAuthorize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;hasPermission(#organizationId, &apos;Organization&apos;, &apos;view&apos;)&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;fun&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getOrganization&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nd&quot;&gt;@PathVariable&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;organizationId&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ResponseEntity&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;OrganizationDto&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;The beacon guiding us here is the @PreAuthorize annotation. 
+Notice the “hasPermission” argument? This expression is the gatekeeper, determining if the user can &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;view&lt;/code&gt; the specified Organization.&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Updating an Organization:
+    &lt;div class=&quot;language-kotlin highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nd&quot;&gt;@PutMapping&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;/organizations/{organizationId}&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;nd&quot;&gt;@PreAuthorize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;hasPermission(#organizationId, &apos;Organization&apos;, &apos;edit&apos;)&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;fun&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;updateOrganization&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+ &lt;span class=&quot;nd&quot;&gt;@PathVariable&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;organizationId&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+ &lt;span class=&quot;nd&quot;&gt;@RequestBody&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;OrganizationUpdateDto&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ResponseEntity&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;OrganizationDto&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Again, the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;@PreAuthorize&lt;/code&gt; annotation stands guard. This time, however, it’s on the lookout for those who wish to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;edit&lt;/code&gt; the Organization.&lt;/p&gt;
+
+&lt;p&gt;But what brews behind this magical curtain of @PreAuthorize: The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;KetoPermissionEvaluator&lt;/code&gt;.
+This component, a standard approach in Spring Security, implements the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;PermissionEvaluator&lt;/code&gt; interface and is instrumental in collaborating with Ory Keto to check permissions.&lt;/p&gt;
+&lt;div class=&quot;language-kotlin highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;override&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;fun&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;hasPermission&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;authentication&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Authentication&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;targetId&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Serializable&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;targetType&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;permission&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Any&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Boolean&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ketoKetoClient&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;checkPermission&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;authentication&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;targetType&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;targetId&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;permission&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hasPermission&lt;/code&gt; method takes in four arguments:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;authentication: This is an object provided by Spring Security, representing the current user’s authentication information.&lt;/li&gt;
+  &lt;li&gt;targetId: A Serializable ID, in this context, typically the identifier for a specific entity within the system.&lt;/li&gt;
+  &lt;li&gt;targetType: This string represents the type or category of the entity. In our case, it corresponds to the namespace in Ory Keto.&lt;/li&gt;
+  &lt;li&gt;permission: Represents the specific action or permission we want to check, such as &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;view&lt;/code&gt; or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;edit&lt;/code&gt;.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Within the method, a call is made to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ketoKetoClient.checkPermission(...)&lt;/code&gt;, which, in turn, communicates with Ory Keto via REST API.&lt;/p&gt;
+
+&lt;p&gt;In essence, this method is asking Ory Keto: “Given this user and this specific entity in the provided namespace, do they have the specified permission?”
+The response is a Boolean, indicating either permission granted or denied.&lt;/p&gt;
+
+&lt;p&gt;An important detail to note is our choice of using the username directly from the authentication, instead of the typically recommended user ID. 
+This decision was made purely for illustrative clarity. 
+While in a production scenario, leveraging UUIDs as the subject would be the standard approach, here we’ve prioritized a straightforward demonstration to ensure a clear and uncomplicated understanding.&lt;/p&gt;
+
+&lt;h2 id=&quot;step-3-setup--configuration&quot;&gt;Step 3: Setup &amp;amp; Configuration&lt;/h2&gt;
+
+&lt;p&gt;To initialize the necessary test data, we utilize the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SampleDataInitializer&lt;/code&gt; class. 
+This class orchestrates the creation of our well-known GlobalCorp and its associated organizational hierarchies upon application launch. 
+Additionally, it ensures Jane is granted the appropriate access.&lt;/p&gt;
+
+&lt;p&gt;While user-to-organization relationships are forged directly within this class as part of sample data, 
+the relationships defining the organizational hierarchies (&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;parents&lt;/code&gt;) are dynamically established. 
+Whenever a new organization is brought to life in our system, an &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;OrganizationCreatedEvent&lt;/code&gt; is emitted. 
+This event is the catalyst, triggering the creation of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;parents&lt;/code&gt; relationships in Ory Keto when necessary.&lt;/p&gt;
+
+&lt;h2 id=&quot;step-4-launch--play&quot;&gt;Step 4: Launch &amp;amp; Play&lt;/h2&gt;
+
+&lt;p&gt;Before launching the application, make sure you’ve initiated the necessary infrastructure using the supplied docker-compose file.&lt;/p&gt;
+
+&lt;p&gt;Once the application is up and running, test out the endpoints.
+Within the repository, there’s a Postman collection tailor-made for this hands-on. 
+This collection includes everything you’ll need, from fetching a token from Keycloak for a user to making calls to our endpoints.
+Start by trying to retrieve GlobalCorp’s data as Jane using GET &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/organizations/1&lt;/code&gt;. 
+Since Jane holds viewer permissions, this attempt will succeed. 
+But if you try to update this data? Expect a “Forbidden” response.
+Remember, though, that Jane has editing rights for EcoLife. 
+This means you can update its information using PUT &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/organizations/3&lt;/code&gt;. 
+The same goes for its sub-organization, GreenHealth, accessible via PUT &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/organizations/4&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Certainly, you might’ve spotted endpoints like &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;GET /organizations&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;POST /organizations&lt;/code&gt; that haven’t been enveloped in our authorization discussion yet. 
+These endpoints, unlike the others, don’t target a specific entity and thus require a slightly different approach. 
+However, fret not; the path forward with Keto will be smooth and intuitive. 
+The upcoming posts, where we’ll delve deeper into these aspects and navigate through other exciting challenges ahead.&lt;/p&gt;
+
+&lt;h1 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h1&gt;
+
+&lt;p&gt;In this comprehensive exploration, we dove into the fascinating world of relation-based authorization models. 
+With its roots deeply embedded in Google’s Zanzibar, this approach presents a robust paradigm shift in how we perceive and implement permissions in the digital realm.&lt;/p&gt;
+
+&lt;p&gt;We unveiled a ready-to-use example coupling Spring Boot and Ory Keto, offering readers a tangible demonstration of these concepts in action. 
+This elucidated how the various building blocks, when seamlessly integrated, can create an effective and secure authorization system.&lt;/p&gt;
+
+&lt;p&gt;As we step further into this domain, our journey is only just beginning. 
+Looking ahead, there are several compelling challenges to address: 
+understanding the dynamics of users and roles, managing blocking relations for exception handling, and tackling the demands of searching and filtering with permissions in mind.&lt;/p&gt;
+
+&lt;p&gt;The world of authorization is vast and ever-evolving, and we’re just scratching the surface. 
+Stay with us as we delve deeper into its depths in our forthcoming discussions.&lt;/p&gt;
+</description>
+        <pubDate>Fri, 13 Oct 2023 12:30:00 +0200</pubDate>
+        <link>http://localhost:4000/authz/2023/10/13/authz-keto-introduction/</link>
+        <guid isPermaLink="true">http://localhost:4000/authz/2023/10/13/authz-keto-introduction/</guid>
+        
+        <category>authentication,</category>
+        
+        <category>authorization,</category>
+        
+        <category>security,</category>
+        
+        <category>rbac,</category>
+        
+        <category>abac,</category>
+        
+        <category>acl,</category>
+        
+        <category>rebac,</category>
+        
+        <category>keto</category>
+        
+        
+        <category>authz</category>
+        
+      </item>
+    
+      <item>
+        <title>Requirements for a scalable Authorization Architecture</title>
+        <description>&lt;p&gt;Our prior exploration, &lt;a href=&quot;/authz/2023/08/22/authz-basics/&quot;&gt;Authorization Basics&lt;/a&gt; of our &lt;a href=&quot;/authz/2023/06/17/scaling-authz-series/&quot;&gt;Scaling Authz&lt;/a&gt; blog series, provided a primer on the foundational elements of authorization. Yet as organizations evolve, so too must the systems that safeguard their data and resources. This article delves deeper, defining essential criteria for an adaptive authorization system and starting our journey into their detailed exploration.&lt;/p&gt;
+
+&lt;h1 id=&quot;requirements&quot;&gt;Requirements&lt;/h1&gt;
+
+&lt;p&gt;When designing an authorization system that scales, it’s crucial to prioritize functional requirements that guarantee both performance and user satisfaction. Here are the foundational prerequisites for creating such a system.&lt;/p&gt;
+
+&lt;h2 id=&quot;1-fine-grained-access-management&quot;&gt;1. Fine-Grained Access Management&lt;/h2&gt;
+&lt;p&gt;Every individual or system component should have tailored access rights. Think of it as ensuring that each employee in a vast company has the right keycard for the specific rooms they need to enter, nothing more and nothing less. Moreover, as businesses evolve and expand, so do their requirements. What starts as a simple access model can soon become a complex web of permissions. Therefore, it’s crucial to have an authorization system that not only adapts to these growing needs but is also designed to handle intricate access patterns from the outset. Building flexibility into your system from day one ensures you’re not caught off guard when the business asks for a new, nuanced access rule tomorrow.&lt;/p&gt;
+
+&lt;h2 id=&quot;2-built-with-security-front-and-center&quot;&gt;2. Built with Security Front and Center&lt;/h2&gt;
+&lt;p&gt;Authorization, at its core, stands as a bastion against unauthorized access to critical resources. But to ensure robustness, the underlying framework employed within the authorization system becomes pivotal. Let’s examine some of the foundational pillars that ensure the security of such a framework:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Secure Coding Practices&lt;/strong&gt;: As with any software component, the framework should be developed with best coding practices to avoid common vulnerabilities such as code injection or buffer overflows. Regular security audits and adherence to guidelines like the &lt;a href=&quot;https://owasp.org/www-project-top-ten/&quot;&gt;OWASP Top Ten&lt;/a&gt; provide a layer of assurance.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Extensibility without Exposure&lt;/strong&gt;: A scalable authorization architecture must allow for extensions and integrations, but each integration point poses a potential risk. The framework must support secure APIs and integrations, ensuring that extensibility doesn’t equate to exposure.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Strong Encryption Standards&lt;/strong&gt;: Data, especially concerning user roles, permissions, and policies, is critical. The chosen framework should support robust encryption both at rest and in transit, using industry-approved algorithms and protocols.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Minimal Attack Surface&lt;/strong&gt;: The framework should be lightweight with no unnecessary components or plugins that could be exploited. This “minimalism” reduces the attack surface, making it tougher for adversaries to find vulnerabilities.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Regular Patching &amp;amp; Updates&lt;/strong&gt;: Security isn’t a one-time affair. As new vulnerabilities are discovered, the framework must be actively maintained and patched, ensuring that known issues are promptly addressed.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Fine-Grained Auditing and Logging&lt;/strong&gt;: Being able to trace back actions can be a lifesaver when it comes to detecting and investigating security incidents. The framework should offer detailed auditing capabilities, capturing who did what and when.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Role and Policy Lifecycle Management&lt;/strong&gt;: Over time, roles may become obsolete, or policies might need refining. The framework should offer mechanisms to safely deprecate roles or adjust policies, ensuring that outdated rules don’t become security loopholes.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;3-technology-agnosticism&quot;&gt;3. Technology Agnosticism&lt;/h2&gt;
+&lt;p&gt;An effective authorization system must be a universal translator, smoothly integrating across diverse technological landscapes. It shouldn’t matter whether one department uses Python and another uses Java. Authorization should be a seamless bridge.&lt;/p&gt;
+
+&lt;h2 id=&quot;4-low-latency&quot;&gt;4. Low Latency&lt;/h2&gt;
+
+&lt;p&gt;Every time a user interacts with a system, there’s a series of backend operations taking place, many of which are invisible to the user. Among these operations is the crucial step of verifying whether the user has the right to perform the action they’re attempting. This verification, the permission check, is a constant companion to every API call, database fetch, or file access. For a seamless user experience, these checks must be lightning fast. Any delay, no matter how slight, amplifies with every interaction and request. The cumulative result is a noticeable increase in response time, which could make the difference between an efficient, enjoyable user experience and a slow, frustrating one. Thus, an authorization system must be designed with latency at the forefront, ensuring that these repeated checks don’t become bottlenecks in the user’s journey.&lt;/p&gt;
+
+&lt;h2 id=&quot;5-cloud-compatibility&quot;&gt;5. Cloud-Compatibility&lt;/h2&gt;
+&lt;p&gt;In today’s digital landscape, scalability is synonymous with cloud compatibility. Only cloud environments offer the elasticity and on-demand resources necessary to meet the volatile demands of a growing user base. Without a cloud-native design, the architecture would struggle to efficiently scale, both in terms of handling large numbers of users and the vast array of resources they access. It’s worth noting: if your architecture doesn’t need to thrive in the cloud, you probably don’t need a massively scalable authorization system in the first place. Thus, designing for cloud compatibility isn’t just about keeping up with technological trends; it’s about laying the foundation for the scalable, high-performance system that modern applications demand.&lt;/p&gt;
+
+&lt;h2 id=&quot;6-consistent-authorization-decisions&quot;&gt;6. Consistent Authorization Decisions:&lt;/h2&gt;
+&lt;p&gt;Consistency in authorization is paramount. Let’s consider two contrasting scenarios:&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;A user has been restricted from accessing a sensitive resource, perhaps due to a change in their role or an observed security risk. If this revocation isn’t consistently applied across all instances immediately, there’s a potential window where the user can still access this data. Such inconsistencies can lead to unintentional data leaks, unauthorized actions, or breaches.&lt;/li&gt;
+  &lt;li&gt;Conversely, imagine a user who has just been granted access to specific resources, perhaps as a result of a promotion or a new project assignment. If the system doesn’t promptly recognize and enforce this updated permission, the user may face unnecessary access denial errors. This not only hampers their workflow but can also be a significant source of frustration, leading to decreased productivity and satisfaction.
+In both scenarios, any change in access rights should be instantly reflected across the system, ensuring that access controls are accurate and reliable at all times, no matter where or when the access request is made.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;7-simplicity-in-maintenance&quot;&gt;7. Simplicity in Maintenance&lt;/h2&gt;
+&lt;p&gt;Just like a well-curated library where one can effortlessly locate and replace books, the components of an authorization system should be designed for ease of modification, replacement, or scaling. This foresight ensures longevity, adaptability, and can lead to cost savings in the long run.&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;strong&gt;Separation of Concerns&lt;/strong&gt;: Authorization should be managed within its own dedicated layer, distinct from the business logic. Mixing business logic with authorization checks can lead to increased complexity, making updates or changes more prone to errors. Separating these concerns ensures that modifications to one do not inadvertently affect the other.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Transparent Mechanisms&lt;/strong&gt;: The authorization mechanism should be transparent and replicable. This ensures that, as the team grows or changes, new developers can quickly understand and work with the system without a steep learning curve.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Flexibility from Business Requirements&lt;/strong&gt;: While the authorization system must be robust and capable of handling a myriad of scenarios, it should be independent of ever-evolving business requirements. This means that changes in business rules or strategies shouldn’t necessitate a reconfiguration of the authorization architecture. The system should be adaptable enough to accommodate these changes without a need for frequent overhauls.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;8-scalability-to-match-growth&quot;&gt;8. Scalability to Match Growth&lt;/h2&gt;
+&lt;p&gt;As organizations evolve, they often witness a surge in user numbers, resources, and the frequency of requests. An authorization system should not only be comparable to a well-trained athlete, capable of sprinting when demands peak, but also maintain its performance and resilience over extended periods.&lt;/p&gt;
+
+&lt;p&gt;To delve deeper into what scalability truly means in this context:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;strong&gt;User Base Scalability&lt;/strong&gt;: The system should handle a rapid increase in users seamlessly. A tenfold or even hundredfold surge in user numbers shouldn’t cause the system to falter or slow down. It should be designed such that adding more users doesn’t create an exponential increase in required resources or system load.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Adaptable to Expanding Business Needs&lt;/strong&gt;: As a company grows, it often diversifies, bringing forth new business models, services, and use cases. The authorization system should be flexible enough to accommodate this evolution. Whether there’s a need for integrating new services, managing more granular permissions, or interfacing with new technologies, the system should be ready.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Service Distribution&lt;/strong&gt;: Modern businesses, especially tech-driven ones, often adopt microservice architectures or other distributed systems. This fragmentation can pose unique challenges to authorization, as permissions may have to be checked and reconciled across various services and databases. A scalable authorization system should, therefore, be prepared to operate efficiently across such distributed environments, ensuring consistent and timely access decisions.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h1 id=&quot;9-testability-for-peace-of-mind&quot;&gt;9. Testability for Peace of Mind&lt;/h1&gt;
+&lt;p&gt;Ensuring the robustness of an authorization system isn’t just about design – it’s about validation. Testability plays a pivotal role in this:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;strong&gt;Continuous Validation&lt;/strong&gt;: Integrating an authorization system’s test suite with an external library or service is not merely a luxury; it’s a necessity. With continuous testing, you can promptly catch any regressions or unexpected behavior changes. The immediacy of feedback accelerates the development process, all the while keeping systems in check.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Security Assurance&lt;/strong&gt;: Security is a non-negotiable aspect of authorization, and a well-crafted test suite aids immensely in this regard. By thoroughly testing the various authorization scenarios, edge cases, and potential vulnerabilities, developers can confidently make changes and enhancements. The testing framework serves as a safety net, catching any potential breaches or inconsistencies before they go live. This setup empowers developers to focus on the primary task at hand, ensuring top-tier security without getting bogged down by the nitty-gritty of each potential risk.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Maintainability &amp;amp; Scalability&lt;/strong&gt;: As your system grows and evolves, so do its intricacies. A comprehensive test suite ensures that changes, no matter how minor or significant, don’t inadvertently disrupt existing functionalities. This not only maintains the health of the system but also scales its resilience. Developers can swiftly integrate new features or scale existing ones, all the while having the assurance that the rest of the system remains unaffected.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h1 id=&quot;tackling-the-essentials&quot;&gt;Tackling the Essentials&lt;/h1&gt;
+
+&lt;p&gt;In our quest to establish a solid foundation for scalable authorization, we will embark on a journey through each key requirement. These requirements aren’t just academic or theoretical constructs; they represent the core of what it takes to make authorization truly effective and scalable in real-world scenarios. Our exploration begins with arguably one of the most crucial facets: Fine-Grained Access Management.&lt;/p&gt;
+
+&lt;h1 id=&quot;fine-grained-access-management-the-heart-of-modern-authorization&quot;&gt;Fine-Grained Access Management: The Heart of Modern Authorization&lt;/h1&gt;
+
+&lt;p&gt;When discussing authorization, particularly in complex and evolving systems, the need for fine-grained access management becomes paramount. It’s no longer sufficient to rely on broad strokes and generalized roles. As business requirements expand, so too does the need for a more nuanced approach to permissions. Let’s delve deeper into the complexities of this and understand the nuances.&lt;/p&gt;
+
+&lt;h2 id=&quot;the-limitations-of-flat-roles&quot;&gt;The Limitations of Flat Roles&lt;/h2&gt;
+
+&lt;p&gt;When we talk about flat roles, we’re typically referring to systems where users are assigned broad, general roles such as “admin”, “editor”, or “viewer”. These roles, while simple and intuitive, come with their own set of challenges when implemented within intricate organizational setups.&lt;/p&gt;
+
+&lt;p&gt;In real-world systems, developers often grapple with the limitations of these generalized roles by encoding information directly into the role name. A prime example would be designations like “editor:organization_a”. While this might seem like a handy workaround initially, it quickly compounds the complexity of the system and detracts from the initial simplicity that flat roles promised.&lt;/p&gt;
+
+&lt;p&gt;These flat roles are easily understood but come with a host of limitations:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;strong&gt;Inadequate Representation of Complex Hierarchies&lt;/strong&gt;: In most real-world scenarios, resources and their access patterns are not flat. They follow a complex hierarchy, often with nested levels. For instance, consider a multinational corporation with departments, sub-departments, teams, and sub-teams. A flat role might easily allow access to an entire department but struggles when you need to provide access only to a specific sub-team within that department.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Lack of Flexibility&lt;/strong&gt;: With flat roles, the permissions are typically rigid. If you need to give someone access to a resource that doesn’t align neatly with these predefined roles, you either risk over-privileging them (by giving them a broader role) or under-privileging them (by denying access they might legitimately need).&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Maintenance Challenges&lt;/strong&gt;: Over time, as more exceptions and one-off permissions are added to accommodate the inadequacies of flat roles, the system becomes increasingly challenging to manage and maintain. This might lead to inefficient practices like creating a multitude of narrowly defined roles, exacerbating the issue of role explosion.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;role-explosion&quot;&gt;Role Explosion&lt;/h2&gt;
+
+&lt;p&gt;As systems aim for more granularity, there’s a risk of over-complicating things. When every new business need results in a new role being created, you end up with ‘role explosion’. This brings its own set of challenges:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Maintenance Nightmare&lt;/strong&gt;: With hundreds of roles, managing and updating them becomes a Herculean task. It’s easy to lose track of what each role represents.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Decreased Security&lt;/strong&gt;: The more roles you have, the harder it is to ensure each is correctly configured. This could lead to security gaps.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Cognitive Overload&lt;/strong&gt;: For those managing these roles, remembering and understanding the function and scope of each becomes a challenge.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Token Bloat&lt;/strong&gt;: In flat role-based systems, especially those leaning on IDPs, roles are commonly embedded as claims within JWT tokens. Role explosion causes these tokens to become bloated. Consequently, these oversized tokens may exceed the HTTP header size limitations set by some receiving systems, rendering them non-functional due to the token’s size. This leads to requests being denied, creating potential operational disruptions.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&quot;hierarchies-and-their-importance&quot;&gt;Hierarchies and Their Importance&lt;/h1&gt;
+
+&lt;h2 id=&quot;role-hierarchies&quot;&gt;Role Hierarchies&lt;/h2&gt;
+&lt;p&gt;A role hierarchy can be visualized as a pyramid or tree structure, where roles inherit permissions from roles beneath them. In a hierarchical role-based system, each role can encompass the permissions of roles “below” it, making the management of permissions more modular and reducing redundancy.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Example&lt;/strong&gt;: In a corporate setting, we might have:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Employee&lt;/strong&gt;: Basic access to company resources, such as the intranet or time tracking system.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Manager&lt;/strong&gt;: Inherits all permissions of the Employee role, but also has added permissions like approving timesheets or access to team performance data.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Director&lt;/strong&gt;: Inherits all permissions of both Employee and Manager roles. They might also have access to department-wide data, budgeting systems, and strategic planning tools.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;In this model, if a basic permission, like accessing the company intranet, needed to be changed, you’d only need to modify it at the Employee level. Both Manager and Director roles would automatically inherit this change, thanks to the hierarchy.&lt;/p&gt;
+
+&lt;h2 id=&quot;resource-hierarchies&quot;&gt;Resource Hierarchies&lt;/h2&gt;
+
+&lt;p&gt;Just as roles can be hierarchical, so can resources. Resources are often not flat; they’re nested within each other, forming a structured hierarchy. Understanding and modeling these hierarchies is essential for fine-grained access control.&lt;/p&gt;
+
+&lt;p&gt;Let’s take the concept of resource hierarchies and apply it to a scenario we’re all familiar with: the structure of a multi-national corporation.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;GlobeCorp&lt;/strong&gt; is a global conglomerate with its headquarters in New York. This is our “Parent Organization”.&lt;/p&gt;
+
+&lt;p&gt;Under &lt;strong&gt;GlobeCorp&lt;/strong&gt;, there are several subsidiaries:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;TechNovelties in Silicon Valley&lt;/li&gt;
+  &lt;li&gt;EcoLife in London&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Now, EcoLife itself has a specialized vertical focused on organic health products named GreenHealth, based in London as well.&lt;/p&gt;
+
+&lt;p&gt;Imagine an employee, let’s call her Jane. Jane is an auditor and is given a ‘readonly’ access role to the financial data of GlobeCorp. 
+Due to the hierarchy, this ‘readonly’ access should automatically extend to both TechNovelties and EcoLife, since they are subsidiaries of GlobeCorp.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/article_images/2023-09-14-authz-requirements/global-corp-1.png&quot; alt=&quot;ReadOnly inheritance&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;However, Jane’s role at EcoLife isn’t just to audit. She’s also responsible for operations. Thus, she’s granted an ‘admin’ access role specifically for EcoLife. 
+This ‘admin’ access, following our hierarchical structure, should grant her broader privileges not just for EcoLife, but also for its child organization, GreenHealth.&lt;/p&gt;
+
+&lt;p&gt;Through this example, it’s evident how roles and access permissions can cascade through a hierarchical system. 
+It also underscores the importance of having a flexible authorization system that can discern between broad, inherited permissions and specific, assigned ones.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/article_images/2023-09-14-authz-requirements/global-corp-2.png&quot; alt=&quot;Admin inheritance&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;exception-handling-in-hierarchies&quot;&gt;Exception Handling in Hierarchies&lt;/h2&gt;
+
+&lt;p&gt;An efficient hierarchy-based system isn’t merely about cascading permissions down the chain. It’s equally crucial for such systems to provide the capability to make exceptions to the rule, preventing certain permissions even if the hierarchy would naturally grant them.&lt;/p&gt;
+
+&lt;p&gt;Let’s revert back to our &lt;strong&gt;GlobeCorp&lt;/strong&gt; scenario. &lt;strong&gt;Jane&lt;/strong&gt;, who has a ‘readonly’ role at &lt;strong&gt;GlobeCorp&lt;/strong&gt;, and an ‘admin’ role at &lt;strong&gt;EcoLife&lt;/strong&gt;, might find herself in a tricky situation. Perhaps, due to new data protection regulations, she shouldn’t have access to individual health records within &lt;strong&gt;GreenHealth&lt;/strong&gt;, even though her ‘admin’ role for &lt;strong&gt;EcoLife&lt;/strong&gt; would naturally grant her that access.&lt;/p&gt;
+
+&lt;p&gt;This scenario underscores the necessity of an authorization system that can make nuanced decisions. It should not only grant permissions based on hierarchical roles but also be adept at carving out exceptions based on specific business rules or compliance requirements. Such capabilities ensure that a company remains compliant with both its internal policies and external legal standards.&lt;/p&gt;
+
+&lt;p&gt;Embracing these hierarchical principles with the capacity for exception handling enables businesses to craft an authorization system that is structured yet adaptable, reflecting the real-world complexities of roles and resources.&lt;/p&gt;
+
+&lt;h1 id=&quot;conclusion--whats-next&quot;&gt;Conclusion &amp;amp; What’s Next&lt;/h1&gt;
+
+&lt;p&gt;In “Requirements for a Scalable Authorization Architecture,” we’ve taken a deep dive into the essential requirements, both technical and functional, needed for robust authorization. One of the key components we’ve highlighted is the ever-important realm of Fine-Grained Access Management, shedding light on its complexities and indispensable role in modern systems.&lt;/p&gt;
+
+&lt;p&gt;However, our journey is just beginning. As we move forward, subsequent articles will delve deeper into the other requirements, ensuring you have a comprehensive understanding of what it takes to build an effective, scalable, and secure authorization system.&lt;/p&gt;
+
+&lt;p&gt;Stay with us for more insights and deeper explorations into the expansive world of authorization.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;/authz/2023/10/13/authz-keto-introduction/&quot;&gt;Google’s Zanzibar and Beyond: A Deep Dive into Relation-based Authorization&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Thu, 14 Sep 2023 12:30:00 +0200</pubDate>
+        <link>http://localhost:4000/authz/2023/09/14/authz-requirements/</link>
+        <guid isPermaLink="true">http://localhost:4000/authz/2023/09/14/authz-requirements/</guid>
+        
+        <category>authentication,</category>
+        
+        <category>authorization,</category>
+        
+        <category>security,</category>
+        
+        <category>rbac,</category>
+        
+        <category>abac,</category>
+        
+        <category>acl,</category>
+        
+        <category>rebac,</category>
+        
+        <category>oauth2</category>
+        
+        
+        <category>authz</category>
+        
+      </item>
+    
+      <item>
+        <title>Authorization Basics</title>
+        <description>&lt;p&gt;Welcome back to our &lt;a href=&quot;/authz/2023/06/17/scaling-authz-series/&quot;&gt;Scaling Authz&lt;/a&gt; blog series, where we’re documenting our journey toward a scalable and efficient authorization architecture.&lt;/p&gt;
+
+&lt;p&gt;In this second installment of our blog series, we’ll delve into the foundational aspects of authorization. We’ll explore various models from simple authentication-based authorization, through role-based access control, and up to complex relationship-based models.&lt;/p&gt;
+
+&lt;p&gt;To ensure a hands-on experience, each segment of our series will be accompanied by practical examples and implementation snippets. For those enthusiastic about diving deeper, all resources, code samples, and detailed walkthroughs are readily available in our &lt;a href=&quot;https://github.com/sw-code/swcode-samples&quot;&gt;dedicated repository&lt;/a&gt;. We believe that the synergy of theoretical knowledge and hands-on practice paves the way for profound understanding and mastery.&lt;/p&gt;
+
+&lt;h1 id=&quot;authentication-vs-authorization&quot;&gt;Authentication vs Authorization&lt;/h1&gt;
+
+&lt;p&gt;Authentication: Think of it as the grand entrance—the main gateway to your application. It’s about ascertaining “who” stands at the gates. Whether you employ the age-old username-password duo, modern techniques like OAuth, or even the increasingly popular OpenID Connect (often recognized in functionalities like “Login with Google”), the essence remains the same: confirming the identity of the entity trying to gain access.&lt;/p&gt;
+
+&lt;p&gt;Authorization: Once past the main gates, what parts of the castle is one permitted to explore? That’s the realm of authorization. It delineates what you’re allowed to do once you’ve made your entrance. The rooms you can enter, the secrets you can access, all fall under its domain.&lt;/p&gt;
+
+&lt;p&gt;In other words, authentication answers the question, “Who are you?” while authorization answers the question, “What are you allowed to do?”&lt;/p&gt;
+
+&lt;p&gt;In real-world applications, the distinctions between authentication and authorization begin to blur as they work hand-in-hand. Once a user’s identity is verified, this information is frequently used to determine the permissions they have. For instance, after successfully authenticating, a system might use the user’s ID or other attributes to determine which resources or actions they can access.&lt;/p&gt;
+
+&lt;p&gt;This series will primarily center on the nuances of authorization. However, we’ll touch upon authentication when it’s relevant to the topic at hand. We assume readers are already familiar with, or have in place, a basic authentication system, and there’s a bunch of resources available for those looking to further delve into authentication mechanisms.&lt;/p&gt;
+
+&lt;h1 id=&quot;authentication-as-authorization&quot;&gt;Authentication as Authorization&lt;/h1&gt;
+
+&lt;p&gt;The simplest form of authorization is when the mere identity of a user is sufficient to grant access to resources. Such scenarios commonly surface in systems engineered for limited functionality or catering to a compact user base. In these instances, user authentication effectively doubles as a form of authorization.&lt;/p&gt;
+
+&lt;h2 id=&quot;a-glimpse-into-the-process&quot;&gt;A Glimpse into the Process&lt;/h2&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/article_images/2023-08-22-authz-basics/oauth2-simle.svg&quot; alt=&quot;simplified authetication flow&quot; /&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;User Accesses Web Application: A user attempts to access a protected resource or service within a web application.&lt;/li&gt;
+  &lt;li&gt;Authentication Required: Recognizing that the user is not yet authenticated, the application redirects the user to a login page.&lt;/li&gt;
+  &lt;li&gt;User Authenticates: The user provides their credentials, such as a username and password.&lt;/li&gt;
+  &lt;li&gt;Token Granted: Upon successful authentication, the identity provider issues a token to the user. This token acts as a proof of the user’s identity and might contain claims, roles, or other pertinent information.&lt;/li&gt;
+  &lt;li&gt;Token Utilized: The web application uses this token to grant the user access to its services and to communicate with backend APIs. It is essential to note that the backend verifies the integrity of this token to ensure it’s genuine and hasn’t been tampered with.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;The flow above is reminiscent of the OAuth2 “Authorization Code Flow”, albeit in a simplified manner. It primarily aims to illustrate the core concept of authentication. For those looking for an in-depth dive into OAuth2, consider exploring &lt;a href=&quot;https://auth0.com/docs/get-started/authentication-and-authorization-flow/authorization-code-flow&quot;&gt;Auth0’s comprehensive guide on the Authorization Code Flow&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h1 id=&quot;authorization-models&quot;&gt;Authorization Models&lt;/h1&gt;
+
+&lt;p&gt;In the intricate world of authorization, one size seldom fits all. As applications grow and requirements become more nuanced, the mechanisms to decide who gets to do what need to evolve as well. The diversity of use-cases and the need for granularity have given rise to various models of authorization. These models serve as conceptual frameworks, providing structured methods to grant or deny access to resources based on different criteria. From the rudimentary setups that hinged primarily on lists to the more intricate designs that account for dynamic attributes and relationships, the evolution of these models mirrors the increasing complexity of our digital ecosystems.&lt;/p&gt;
+
+&lt;p&gt;Let’s dive deeper into some of the prevailing models in authorization:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;ACL (Access Control List): Stemming from its historical roots in the Unix file system, ACLs provide a list of permissions attached to an object. They are inherently a means to define which user have access to specific objects and the operations they can perform on them.
+    &lt;ul&gt;
+      &lt;li&gt;&lt;strong&gt;Example&lt;/strong&gt;: Think of ACLs like a club’s guest list. If your name (and perhaps a specific criterion, like VIP) is on the list, you’re allowed entry.&lt;/li&gt;
+      &lt;li&gt;&lt;strong&gt;Application Context&lt;/strong&gt;: ACL would be apt for file-sharing platforms, where individual files/folders can be shared with specific users.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;RBAC (Role-Based Access Control): A more structured approach, RBAC assigns permissions to specific roles rather than individual users. Users are then assigned to roles. This model offers simplicity and scalability, especially in larger systems where defining permissions for each user can become unwieldy.
+    &lt;ul&gt;
+      &lt;li&gt;&lt;strong&gt;Example&lt;/strong&gt;: Imagine a hospital. There are doctors, nurses, and administrators. Each role has different access levels in the patient database.&lt;/li&gt;
+      &lt;li&gt;&lt;strong&gt;Application Context&lt;/strong&gt;: RBAC might be ideal for corporate intranets where access needs to be defined by job roles like manager, employee, HR, etc.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;ABAC (Attribute-Based Access Control): A more dynamic approach, ABAC bases access decisions on policies derived from various attributes—be it of the user, the resource, or even the surrounding environment. For instance, a document might only be accessible during working hours or if a user is located in a specific country. This approach provides nuanced, context-aware authorization.
+    &lt;ul&gt;
+      &lt;li&gt;&lt;strong&gt;Example&lt;/strong&gt;: A confidential company document that’s only accessible from company premises (using location as an attribute) and during working hours.&lt;/li&gt;
+      &lt;li&gt;&lt;strong&gt;Application Context&lt;/strong&gt;: ABAC is well-suited for complex environments like financial systems where access to resources might depend on various dynamic factors.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;ReBAC (Relationship-Based Access Control): Building on ABAC, ReBAC incorporates relationships. Access decisions take into account both attributes and their interrelationships. Examples include:
+    &lt;ul&gt;
+      &lt;li&gt;&lt;strong&gt;Example&lt;/strong&gt;: On Facebook, you can view a friend’s private post, but you can’t necessarily view the private posts of a friend of a friend unless you’re also friends with that person.&lt;/li&gt;
+      &lt;li&gt;&lt;strong&gt;Application Context&lt;/strong&gt;: Social networking platforms where user relationships play a pivotal role in determining access would greatly benefit from ReBAC.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;While each model brings its distinct approach, in practice, they often intermingle. Implementations commonly weave elements from multiple models to create a tailored authorization mechanism that comprehensively fulfills specific requirements. The blending of these models in real-world setups reflects the flexibility and complexity required in today’s digital ecosystems.&lt;/p&gt;
+
+&lt;h1 id=&quot;hands-on&quot;&gt;Hands-On&lt;/h1&gt;
+
+&lt;p&gt;Diving into the practicalities, we’ll use a Spring Boot application to breathe life into our conceptual understanding of authorization. Our canvas for this exercise is a modest web service dedicated to managing a list of pets. This service, while simple, will help us demarcate the boundaries between an authenticated user and one that comes adorned with specific roles or permissions.&lt;/p&gt;
+
+&lt;p&gt;For the scope of this chapter, our emphasis will mainly be on &lt;strong&gt;authentication as authorization&lt;/strong&gt;” and on the facets of &lt;strong&gt;Role-Based Access Control (RBAC)&lt;/strong&gt;. As we progress further in the series, we’ll delve deeper into intricate authorization mechanisms, but for now, these two paradigms serve as our focal points.&lt;/p&gt;
+
+&lt;h2 id=&quot;the-pet-controller&quot;&gt;The Pet Controller&lt;/h2&gt;
+
+&lt;p&gt;Consider this Spring Boot PetsController. It offers two endpoints:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;An endpoint to fetch a list of pets, accessible by any authenticated user.&lt;/li&gt;
+  &lt;li&gt;An endpoint to add a new pet, restricted to only those users with the ‘admin’ role.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;language-kotlin highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nd&quot;&gt;@RestController&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;PetsController&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;py&quot;&gt;pets&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;mutableListOf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Pet&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;dog&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+
+    &lt;span class=&quot;nd&quot;&gt;@GetMapping&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;/pets&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;fun&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getPets&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;():&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Pet&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pets&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;nd&quot;&gt;@PostMapping&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;/pets&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;nd&quot;&gt;@PreAuthorize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;hasAnyRole(&apos;admin&apos;)&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;fun&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;addPet&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pet&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Pet&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Pet&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;pets&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pet&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pet&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;data class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Pet&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;py&quot;&gt;species&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;In the code above, the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;@GetMapping&lt;/code&gt; annotation is standard for any Spring Boot application, denoting an HTTP GET endpoint. However, the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;@PostMapping&lt;/code&gt; is a bit special. It’s decorated with the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;@PreAuthorize&lt;/code&gt; annotation, a component of Spring Security, which states that the following method (in this case, addPet) can only be accessed if the authenticated user has an ‘admin’ role.&lt;/p&gt;
+
+&lt;p&gt;When a user attempts to post a new pet to our service, the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;@PreAuthorize&lt;/code&gt; annotation intercepts the request and evaluates the user’s roles. If they have the ‘admin’ role, the method is executed. Otherwise, an access denied response is returned.&lt;/p&gt;
+
+&lt;p&gt;You may wonder: where does this ‘admin’ role come from and how does the system recognize whether the user possesses this role or not?&lt;/p&gt;
+
+&lt;p&gt;The answer lies in the JSON Web Token (JWT) used by the application for authentication and authorization.&lt;/p&gt;
+
+&lt;div class=&quot;language-json highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;exp&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1692800905&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;iat&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1692800845&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;iss&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;http://localhost:8090/realms/master&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;aud&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;master-realm&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;account&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;sub&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;84059de0-00e4-43ab-82f5-5b7b217cf8dd&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;typ&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;Bearer&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;azp&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;postman&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;acr&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;0&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;allowed-origins&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;https://oauth.pstmn.io&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;realm_access&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;roles&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;admin&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;scope&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;openid profile email&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;sid&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;7395ed9c-09d4-449b-9f95-60958afe5f91&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;email_verified&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;preferred_username&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;admin&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;This JWT is a compact, URL-safe means of representing claims between two parties. In the context of our application, the claims within the JWT relay information about the authenticated user to the application. Let’s break down some of these claims:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;exp&lt;/code&gt;: This stands for “expiration time”. It specifies the time after which the JWT will no longer be accepted. It’s a mechanism to ensure that old tokens get discarded and are not misused if intercepted.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;iat&lt;/code&gt;: The “issued at” time claim identifies the time at which the JWT was issued. This can be used to determine the age of the JWT.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;iss&lt;/code&gt;: This is the “issuer” claim. It indicates the issuer of the JWT. In our token, the issuer is specified as &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;http://localhost:8090/realms/master&lt;/code&gt;. Knowing the issuer is vital for validating the authenticity of the token, ensuring it comes from a trusted authority.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sub&lt;/code&gt;: Short for “subject”, it identifies the principal entity that is the subject of the JWT. Often, this is used to hold the user ID.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;preferred_username&lt;/code&gt;: This claim provides a human-readable string that identifies the user, which can be used to give a personalized user experience.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Amongst these claims, the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;realm_access&lt;/code&gt; claim is particularly interesting for our case. This claim reveals the roles associated with the user within the context of a realm in Keycloak, an open-source identity and access management solution. In our provided token, the user possesses the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;admin&lt;/code&gt; role within the realm, which correlates with the role our &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;@PreAuthorize&lt;/code&gt; annotation is checking for.&lt;/p&gt;
+
+&lt;p&gt;Now, it’s essential to draw attention to the mechanics of how this token is used. As highlighted in our previous chapter on authentication, this JWT token isn’t a one-off; it accompanies every request made to the application. It’s transmitted as a part of the Authorization header. This persistent presence means that the token, and by extension its claims, must be evaluated repeatedly. Every time the application receives a request, it needs to validate the token and identify the user and his permissions to ensure the right levels of access. This continuous validation plays a pivotal role in maintaining the security and integrity of the application’s operations.&lt;/p&gt;
+
+&lt;p&gt;For those interested in a deeper dive into tokens and their functionalities, &lt;a href=&quot;https://developer.auth0.com/resources/labs/tools/jwt-basics#introduction&quot;&gt;Auth0’s JWT Basics&lt;/a&gt; provides an extensive overview.&lt;/p&gt;
+
+&lt;p&gt;This example highlights a basic use of Role-Based Access Control (RBAC). In this case, roles within the user’s token are evaluated by the Spring framework to determine authorization. However, as systems grow and become more complex, challenges can arise. A common issue is “role explosion”, where the number of roles becomes too large to manage effectively. In some cases, there may be too many roles to fit within the token’s constraints.&lt;/p&gt;
+
+&lt;p&gt;To address this, advanced systems often separate roles or permissions from the token. Instead of including every role directly, they use a user identifier, like the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sub&lt;/code&gt; claim (user ID). When a user requests access, this identifier is checked against an external source to determine the user’s roles or permissions. This approach is more flexible and scalable, making it easier to handle complex authorization setups.&lt;/p&gt;
+
+&lt;h1 id=&quot;upcoming&quot;&gt;Upcoming&lt;/h1&gt;
+
+&lt;p&gt;As we journey through this series, we’ll delve deeper into more intricate mechanisms with practical exercises, especially Relationship-Based Access Control (ReBAC). This blog is largely centered on the latter, given our keen interest in harnessing the capabilities of &lt;a href=&quot;https://research.google/pubs/pub48190/&quot;&gt;Google’s Zanzibar&lt;/a&gt;, a powerful system known for its robust ReBAC features. By familiarizing ourselves with these advanced techniques, we aim to demonstrate the potential and flexibility that advanced authorization mechanisms can bring to contemporary applications.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;/authz/2023/09/14/authz-requirements/&quot;&gt;Requirements for a scalable Authorization Architecture&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Tue, 22 Aug 2023 14:35:25 +0200</pubDate>
+        <link>http://localhost:4000/authz/2023/08/22/authz-basics/</link>
+        <guid isPermaLink="true">http://localhost:4000/authz/2023/08/22/authz-basics/</guid>
+        
+        <category>authentication,</category>
+        
+        <category>authorization,</category>
+        
+        <category>security,</category>
+        
+        <category>rbac,</category>
+        
+        <category>abac,</category>
+        
+        <category>acl,</category>
+        
+        <category>rebac,</category>
+        
+        <category>oauth2</category>
+        
+        
+        <category>authz</category>
+        
+      </item>
     
       <item>
         <title>Scaling Authz: A Journey into Authorization Architectures</title>
@@ -63,7 +795,9 @@
 &lt;p&gt;Whether you’re a seasoned architect seeking to solidify your knowledge or a beginner starting your journey in the world of scalable architectures, this series aims to be a comprehensive guide to mastering the art and science of authorization. So sit back, relax, and join me as we explore the intricate world of authorization in the era of scalability and microservices.&lt;/p&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;&lt;a href=&quot;2023-06-22-authz-basics.md&quot;&gt;Authorization Basics&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;/authz/2023/08/22/authz-basics/&quot;&gt;Authorization Basics&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;/authz/2023/09/14/authz-requirements/&quot;&gt;Requirements for a scalable Authorization Architecture&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;/authz/2023/10/13/authz-keto-introduction/&quot;&gt;Google’s Zanzibar and Beyond: A Deep Dive into Relation-based Authorization&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 </description>
         <pubDate>Sat, 17 Jun 2023 00:35:25 +0200</pubDate>
