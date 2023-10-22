@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Exploring Relation-based Models"
+title:  "Google's Zanzibar and Beyond: A Deep Dive into Relation-based Authorization"
 date:   2023-10-13 10:30:00
 categories: authz
 tags: authentication, authorization, security, rbac, abac, acl, rebac, keto
@@ -33,7 +33,7 @@ However, the impact of the Zanzibar paper extends beyond these impressive techni
 But why has this paper sparked such a wave of development? The answer lies in a combination of factors:
 
 1. **Scalability**: As mentioned, Zanzibar's ability to handle authorization for trillions of objects by hundreds of millions of users is awe-inspiring. As more businesses adopt microservices and cloud-native architectures, the need for scalable authorization solutions becomes increasingly pressing. Zanzibar offers a proven blueprint for achieving such scalability.
-2. **Flexibility**: The Zanzibar model, termed 'Global, Consistent Authorization System', is not tied to specific business logic or policies. This flexibility makes it broadly applicable across various domains and use cases, inspiring many to leverage it in their contexts.
+2. **Flexibility**: The Zanzibar model, termed **Global, Consistent Authorization System**, is not tied to specific business logic or policies. This flexibility makes it broadly applicable across various domains and use cases, inspiring many to leverage it in their contexts.
 3. **Efficiency**: Efficiency in authorization is crucial. Zanzibar's use of data sharding and re-sharding for optimal use of resources has been an inspiration for many developing authorization frameworks.
 4. **Reliability**: Google's paper emphasizes Zanzibar's ability to provide consistent authorization decisions, even in the face of network partitions and system failures. This high level of reliability is a key factor in Zanzibar's appeal.
 5. **Innovation**: Finally, the Zanzibar paper represents a significant leap in the way we think about and implement authorization. Its innovative approach to handling access control at a massive scale has piqued the interest of many in the field, spurring them to explore and adopt similar strategies.
@@ -47,7 +47,7 @@ At the core of Google's Zanzibar system is a surprisingly simple yet powerful mo
 
 * `namespace` represents the type of the object, such as `document` or `folder`.
 * `object` refers to a unique identifier for a specific instance of that type, like a specific document ID or folder ID.
-* `relation` relation signifies the type of relationship between the object and the subject, such as `owner´ or `viewer`.
+* `relation` relation signifies the type of relationship between the object and the subject, such as `owner` or `viewer`.
 * `subject` can either be a user or another relation tuple, allowing for complex, nested relationships.
 
 For example, a relation tuple might look like this: `document:readme#owner@user456`, meaning that `user456` is the `owner` of `readme` in the `document` namespace.
@@ -74,29 +74,24 @@ While conceptualizing Ory Keto, certain guiding principles and assumptions were 
 ## Core Concepts of Ory Keto
 
 1. **Adoption of the Relation Tuple Model**: Ory Keto adapts the Zanzibar-inspired relation tuples model. As we’ve previously elaborated, a relation tuple succinctly describes a relationship in a format like `namespace:object#relation@subject`. Through these tuples, Ory Keto can express and evaluate intricate hierarchical relationships and permissions across a multitude of objects and users, ensuring a granular and fine-tuned access control mechanism.
-2. **Ory Permission Language (OPL)**: To complement its adoption of relation tuples, Ory Keto introduces the Ory Permission Language (OPL). Conceptualized as a subset of TypeScript, OPL facilitates the definition and evaluation of policies and permissions within the Keto environment. By leveraging a familiar syntax style and structure, OPL provides developers with a more intuitive and streamlined process to articulate complex authorization policies, while maintaining efficiency and precision.
+2. **Ory Permission Language (OPL)**: OPL, envisioned as a subset of TypeScript, is Ory Keto's method to detail and evaluate policies within its framework. Despite the internal engine of Keto being rooted in Go, OPL offers developers a familiar TypeScript-like syntax to outline intricate authorization policies seamlessly and precisely.
 
-### Ory Keto Namespaces
+OPL integrates namespaces and rules to aid in permission evaluations by exploring relations, though the actual tracing is managed by Keto internally. 
+While Google Zanzibar's model was framed scientifically for researchers and experts, Ory Keto uses TypeScript-based OPL, targeting a broader developer audience for a more user-friendly experience.
 
-In Ory Keto, namespaces are essentially the building blocks that aid in grouping related objects. To define these namespaces, Ory Keto uses TypeScript's class structures. 
+### Ory Permission Language
 
-```
-import { Namespace, Context } from "@ory/keto-namespace-types"
-
-class User implements Namespace {}
-class Document implements Namespace {}
-class Folder implements Namespace {}
-```
-
-### Ory Keto Relations
-
-In Ory Keto, defining relations is at the heart of the model. Let's illustrate this with a hands-on example featuring two namespaces: Document and User.
+In Ory Keto, defining namespaces and relations is at the heart of the model. Let's illustrate this with a hands-on example featuring two namespaces: Document and User.
 
 Within the Document namespace, a user is designated as either an `owner`, a `viewer`, or an `editor` of a document through specific relations.
 
-The core of authorization revolves around permissions, such as `view` or `edit`, rather than checking relations like 'owner' or 'editor'. The concrete permission is checked against the relationships. Within the Ory Permission Language, permissions are declared as functions inside the permits property of the corresponding namespace. Let's explore how permissions might be outlined for our Document namespace:
+The core of authorization revolves around permissions, such as `view` or `edit`, rather than checking relations like 'owner' or 'editor'. The concrete permission is checked against the relationships. Within the Ory Permission Language, permissions are declared as functions inside the permits property of the corresponding namespace. 
+
+The code provided outlines a basic permission structure, which Keto subsequently processes to generate relation tuples internally.
 
 ```
+class User implements Namespace {}
+
 class Document implements Namespace {
   related: {
     owners: User[]
@@ -114,7 +109,6 @@ class Document implements Namespace {
 ```
 
 ## Revisiting Jane with Ory Keto Relations
-
 
 In our preceding discussions on Role-Based Access Control (RBAC), we introduced Jane, an auditor working for GlobeCorp. Jane was granted 'readonly' access to GlobeCorp's financial data and held the admin role at EcoLife. This time around, let's reframe Jane’s scenario using Ory Keto’s relation tuple framework.
 
@@ -153,9 +147,48 @@ The diagram effectively visualizes Jane's direct relations and how they cascade 
 
 Given this arrangement and the provided OPL:
 
-
 * Jane has a `viewer` relation to GlobeCorp, allowing her 'readonly' access to its data. This relationship extends hierarchically, meaning Jane can also view data of the companies that are subsidiaries or children of GlobeCorp due to the parents relation, which are TechNovelties and EcoLife.
 * Jane, due to her `editors` relation with EcoLife, is endowed with edit access to its data. Leveraging the hierarchical structure, this access naturally extends to GreenHealth, EcoLife's subsidiary.
+
+## Creating Relations in Ory Keto via REST API
+
+Defining namespaces, relations, and permission rules forms the configuration phase in Ory Keto. 
+Once this setup is complete, you can then dynamically create the actual relations to express relationships between various entities. 
+This is achieved on-demand via REST API calls.
+
+To illustrate, let's define a relation that indicates EcoLife is a child organization of GlobalCorp. 
+You can do this by making a PUT request as follows:
+
+```bash
+curl --location --request PUT 'http://localhost:4467/admin/relation-tuples' \
+--header 'Content-Type: application/json' \
+--data '{
+      "namespace": "Organization",
+      "object": "EcoLife",
+      "relation": "parents",
+      "subject_set": {
+        "namespace": "Organization",
+        "object": "GlobalCorp",
+        "relation": ""
+      }
+    }'
+```
+
+In this example, the relation `parents` for the object EcoLife points to GlobalCorp, indicating the hierarchical relationship between the two organizations.
+
+Likewise, to establish a relationship between a user and an object, you would follow a similar approach. 
+For instance, if you want to specify that the user `jane` has a `viewers` relation to the organization `EcoLife`, you would craft a REST call as such:
+
+```bash
+curl --location --request PUT 'http://localhost:4467/admin/relation-tuples' \
+--header 'Content-Type: application/json' \
+--data '{
+    "namespace": "Organization",
+    "object": "GlobalCorp",
+    "relation": "viewers",
+    "subject_id": "jane"
+  }'
+```
 
 # A Hands-on Integration of Ory Keto and Spring Boot
 
