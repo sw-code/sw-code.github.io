@@ -207,7 +207,7 @@ By cloning our repository, you get access to a fully equipped application for ou
 
 ```
 git clone https://github.com/sw-code/swcode-samples.git
-cd swcode-samples/authz-keto
+cd swcode-samples/authz/authz-keto
 ```
 
 ## Step 2: Explore the Code
