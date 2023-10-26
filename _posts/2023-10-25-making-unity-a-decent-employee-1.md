@@ -12,19 +12,13 @@ published: false
 # target publish date: december
 ---
 
-It's a monday morning. Your jeans are soaked from the rain on the way to the office. There's only a sip of cold coffee left in your mug as you are leaving your desk with your presentation notes.
 
-Your heart is pounding, as you open the door to the meeting room, knowing that a dozen of people sit there, waiting.
-Jeff, the coworker you teamed up with, nods and smiles, reassuring that everything is prepared.
 
-"So, this is the fantastic game Jeff and I worked on", you say nervously.
-"Jeff, could you please put it on the Screen?"
 
-Jeff goes "Alright!" and plugs his Laptop in. Everyone stares at the cat trying to eat cotton candy, his desktop background. 
-"Jeff could you please open the Game?" What is he waiting for?
 
-"No, I cannot open the Game", Jeff explains calmly, "the attachment in your mail last week was corrupted, so of course I don't have it."
-He attempts to open the corrupted game, but the app crashes immediately.
+[
+    hook with jeff: not considering two files equal because their path is different or similar. 
+]
 
 ### WTjeFf?!
 
@@ -38,50 +32,22 @@ Let's shift perspectives: What would you have done in Jeff's position?
 
 ## What could have been
 
-Just looking at the code and assets, it's hard to tell whether the game will even run. Every tiny little change has to be tested manually. A missing prefab will only result in an Error when encountered in the running Game, because Unity assumes you did that on Purpose??
-
-If you have had the chance in your life to program in more statically tight languages, like Elm or Rust, you will know that programming can be very different (If not, please do try those)! The Elm language, for example, prevents **all runtime errors**. Yes, you read that right. You will not experience a single runtime exception in Elm. How is that possible?
-
-If an operation can fail in Elm, BEFORE anything happens, the compiler gets up from his desk and walks over to yours:
-"Hey, if they don't have the pumpkin spiced latte grande with extra glitter, should I get you something else or just nothing?"
-His soothing voice is a grace. You're happy they asked you, instead of just returning with bare hands. You rest assured they'd let you know of a fire when it starts, not when your house burned down already.
-
-Sorry, I get emotional about this topic sometimes. The point is: The Elm compiler is your friend, your pair programmer. If he does not see any problem with your code, you can be pretty sure it works. Sprinkle a few unit tests on top, and you're safe. Yes, it's a bit tedious sometimes, but for me, it's definitely worth it.
-
-Unity however is quiet the opposite. In fact, Unity is more like the currently most popular language (he who must not be named).
-If anything goes wrong, they will try to pretend that nothing happened. Happily driving a car that is slowly falling as they are entering the highway. <!-- THIS METAPHOR COULD BE MORE EXTREME OR MORE FUNNY -->
-
-<!-- meme idea: this is fine -->
-
-BUT don't give up! You and me, we are clever developers, we will not restrain from employing dark magic to squeeze Unity into something we can work with.
-
-> If your strategy was instead to switch to Unreal, please let me know how it went in the comments. I might envy you :>
 
 # What this blog post series is about
-<!-- TODO: this section is as focused as the drawer in your kitchen that contains both the scissors and the banana shaped tupperware. delete everything except the table of contents? -->
+This blog post is part of a series: Making Unity a decent employee. Well, at least a little less horrible, I admit.
 
-Now, in my handful of years of fulltime Unity development, I have learned one or two things, that I'm happy to share today. Maybe this stuff is widely known, maybe it's a secret, maybe I'm an Idiot lol. All I know is that I'm writing the blog post I wish I had read when starting to developing real projects in Unity.
-
-> I can't be the only one thinking that Unity is horribly unreliable. I often wondered how all the professional studios deal with that, and my colleagues did too. In case you know, hit me up in the comment section! 
-
-Why care about developer confidence? Sure, you're not crashing and airplance on a mountain if you introduce a bug. But sooner or later you might want to ship something. And at that point, you want to know if everything is okay, not one month later, when the shitstorm hits your face and negative reviews rain on your dream product. However, I'm not here to convince you that you should add more tedious Tests. I'm here to show you what else is possible, so that, if you want to, you too might gain the magic powers to shape your Unity workflow.
-
-How?
-
-The key strategy is to find problems sooner in the development workflow, instead of at the last possible moment. Why sooner? Well, if Jeff had been telling you about the corrupted email attachment last week, you could have sent him a dropbox link the same day. This reduces the time needed to code and manually test, it increases your confidence, and therefore speeds up the whole development process.
-
-Learning from statically typed languages, we will add checks that run while Unity is building your application. We will automate error prone manual processes. We will craft our own C#, with blackmagic and hooks! We will exploit Unity's feature of adding scripts to the Editor to make up for missing functionality, which is actually a very neat feature of Unity c:
-
-While I'm at it, let me dial back a bit on my rant. Don't let me shit on Unity for something we can easily add ouselves. I just wish it was there by default.
+These posts are largely independent. However, you should go read the [introduction here] if you haven't done that yet, and then come back. Otherwise, you might be thinking "wtf, why are we doing all of this again?" when reading the wonderfully ridiculous code sections later in this post.
 
 > Disclaimer: I'm working in a rather unconventional project environment. For example, we embed a Unity View into an existing Android/iOS App. That's because we at [SWCode](https://swcode.io) build an app that uses AR, called [SoesTour](https://www.so-ist-soest.de/de/tourismus/sehenswertes/soestour.php). The app aims to revive historical sites that long vanished, by digitally showing them at their exact locations in the real world. Due to this complicated setup, I had to touch with some nasty Unity bits that most people might not have to touch. I want this article to be generally applicable, so don't worry about it. It might be fun either way!
 
-Oh MY GOD JOHANNES STOP talking already! Let's get GOING!
+Here's where we are at:
 
 The Four Strategies
 -------------------
 
-1. Write better code (duh!)
+0. Introduction
+
+1. [YOU ARE HERE] Write better code (duh!)
     - Raise the level of abstraction
     - Utilize basic C# language features because Unity doesn't
     - Add obvious missing C# language features using black magic
@@ -101,8 +67,6 @@ The Four Strategies
     - Check asset data
     - Check settings
     - Check code
-
-These are rather large topics and I want to go into detail about them, so this might be more than one article. Goo look for a link at the end of this blogpost in case I forgot to go back here and edit this text before I click the juicy UPLOAD BUTTON! :D <!-- Note to future self: I definitely don't ever want to remove this, I think it's cute -->
 
 Within each topic, I will first describe the problematic situation you too might have encountered in Unity. Afterwards I'll present my attempt at making it less horrible. I'll also share my experiences that I made after working with those solutions for quite some time. There will be code! Maybe a lot of it! Some will be controversial! 
 
@@ -361,6 +325,11 @@ For additional fun, the Asset Database knows exactly whether it currently is in 
 Unity doesn't support the C# null coalescing operator (`?`), but we can code up our own, kind of.
 
 
+Problem: 
+Solution: Logging. Disclaimer: Use AR Foundation Remote or Unity Remote, and the Editor as much as possible!! Debug your running game in scene view! Use a debugger!
+
+
+
 ## Add obvious missing C# language features using black magic
 
 Especially if you don't like writing unit tests, you should try to make it as painless as possible to write one. 
@@ -384,9 +353,10 @@ I cannot understate how much of a fundamental language feature is missing here. 
 
 What are our options? Code up a new for loop each time we want to compare two arrays? That's just infuriating! Adding `Equals` implementations to your classes? That's error prone! Even if your IDE can generate that once, how do you know that anyone modifying the class will not forget to update that method?
 
-My rule of thumb, coming from a UX Design standpoint, is this: 
-If it's possible to 'forget' to do a thing, someone WILL forget to do that sooner or later.
-That's just how humans work. Gosh, I just wish I had a computer that would take care of such repetitive tedium for me[!](https://eev.ee/blog/2016/12/01/lets-stop-copying-c/)
+My rule of thumb, coming from a UX Design standpoint and professional experience, is this:
+If it's possible to 'forget' to do a thing, someone WILL forget to do that sooner or later. That's 
+just how humans work. Gosh, I just wish I had a computer that would automatically take care of such repetitive tasks for me[!](https://eev.ee/blog/2016/12/01/lets-stop-copying-c/)
+
 
 
 #### The Code Solution
@@ -537,45 +507,9 @@ The `DataToString` function works similarly, but I won't torture you with more c
 - Add strongly typed paths instead of using string-based paths. I'll get to that later. It's fantastic, trust me.
 
 
-# II. Use code instead of assets (the controversial one)
-
-## generate at compile time
-
-## avoid using the editor to hook up objects
-
-# III. Smoothen the overall workflow (the one you might have expected)
-
-## Automate setting the settings
-
-## Automate clicking the clickies
-
-## Seriously, let me press ONE button and then give me twenty minutes to pet my cat ... UHHHH work on something else.
-
-# IV. Perform rigorous checks at build time (the banger! also black magic)
-
-## Check asset data
-
-## Check settings
-
-## Check code
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- THE FOLLOWING IS CRAP -->
-
+#### Raise the Level of Abstraction
 
 Problem Statement: You find yourself fiddling with details in the code to handle all the special cases. Moving code around results in errors. You have a hard time understanding what you wrote a few days ago.
 
@@ -637,21 +571,3 @@ void ActivateFirstElementOrThrow() =>
         .Activate();
 ```
 The `bool IsActive()` should have been on the Element class all along.
-
-
-Problem: Null Reference Exception
-Problem: 
-
-
-Problem: 
-Solution: Logging. Disclaimer: Use AR Foundation Remote or Unity Remote, and the Editor as much as possible!! Debug your running game in scene view! Use a debugger!
-
-
-
-
-Problem: Script/Object/Prefab Missing
-I just wish I had a robot that would take care of such repetitive tedium for me[.](https://eev.ee/blog/2016/12/01/lets-stop-copying-c/)
-
-
-
-
