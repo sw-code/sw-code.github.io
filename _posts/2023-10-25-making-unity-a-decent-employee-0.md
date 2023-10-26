@@ -12,18 +12,28 @@ published: false
 # target publish date: december
 ---
 
-[hook with jeff, that stupid asshole]
+It's a cloudy monday morning. Your jeans are soaked from the rain on the way to the office. There's only a sip of cold coffee left in your mug as you are leaving your desk with your presentation notes.
+
+Your heart is pounding, as you open the door to the meeting room, knowing that a dozen of people sit there, waiting.
+Jeff, the coworker you teamed up with, nods and smiles, reassuring that everything is prepared. Everyone's staring at you.
+
+"So, this is the fantastic game Jeff and I worked on", you say nervously.
+"Jeff, could you please put it on the Screen?"
+
+Jeff goes "Alright!" and plugs his Laptop in. Everyone sees the cat trying to eat cotton candy, his desktop background. 
+"Jeff could you please open the Game?" What is he waiting for?
+
+"No, I cannot open the Game", Jeff explains calmly, "the attachment in your mail last week was corrupted, so of course I don't have it. I didn't want to get in your way."
 
 ### WTjeFf?!
 
 You take a deep breath. Isn't that wonderful. What a bold move, Jeff.
 
-Think about it for a second: If your human colleague was doing what Unity does, you'd dig up their dead pet cat called Pumpkins, and plant its severed head on their bed while they're sleeping. Well, at least I would.
+Think about it for a second: If your human colleague was doing what Unity does, you'd dig up their dead pet cat called Pumpkins, and leave the stiff body on their bed while they're sleeping. Well, at least I would.
 
-![image of pumpkins the cat. if you are reading this instead of seeing the image: he was cute, trust me.]()
-<!-- maybe leave this image without a link intentionally? -->
+![image of pumpkins the cat. if you are reading this instead of seeing the image: he was cute, trust me. not in this image though. this is a picture of the exhumined cat.](<!-- leave this image without a link intentionally, might be funny -->)
 
-Let's shift perspectives: What would you have done in Jeff's position?
+Let's shift perspectives: What would you have done in Jeff's position? What would be the right thing to do? What would be the nicest thing you could imagine?
 
 ![graphic to make them pause and actually think about it](TODO)
 
@@ -44,14 +54,14 @@ If anything goes wrong, they will try to pretend that nothing happened. Happily 
 
 <!-- meme idea: this is fine -->
 
-BUT don't give up! You and me, we are clever developers, we will not restrain from employing dark magic to squeeze Unity into something we can work with.
+BUT don't give up! Let me tell you: You and me, we are clever developers, we will not restrain from employing dark magic to squeeze Unity into something we can work with.
 
 > If your strategy was instead to switch to Unreal (what are you doing here??!), please let me know how it went in the comments. I might envy you :>
 
-# Are you series
+# Why so series
 <!-- TODO: this section is as focused as the drawer in your kitchen that contains both the scissors and the banana shaped tupperware. delete everything except the table of contents? -->
 
-Now, in my handful of years of fulltime Unity development, I have learned one or two things, that I'm happy to share today. Maybe this stuff is widely known, maybe it's a secret, maybe I'm an Idiot lol. All I know is that I'm writing the blog posts I wish I had read when starting to developing real projects in Unity.
+Hi! I'm Johannes. In my handful of years of fulltime Unity development at [SWCode](https://swcode.io), I have discovered one or two goodies, that I'm happy to share with you now. Maybe this stuff is widely known, maybe it's a secret, maybe I'm an Idiot lol. All I know is that I'm writing the blog posts I wish I had read when starting to developing real projects in Unity.
 
 > I can't be the only one thinking that Unity is horribly unreliable. I often wondered how all the professional studios deal with that, and my colleagues did too. In case you know, hit me up in the comment section! 
 
@@ -63,11 +73,13 @@ The key strategy is to find problems sooner in the development workflow, instead
 
 Learning from statically typed languages, we will add checks that run while Unity is building your application. We will automate error prone manual processes. We will craft our own C#, with blackmagic and hooks! We will exploit Unity's feature of adding scripts to the Editor to make up for missing functionality, which is actually a very neat feature of Unity c:
 
+![a fantastic meme with bender making his own stuff](assets/image/make-our-own.jpg)
+
 While I'm at it, let me dial back a bit on my rant. Don't let me shit on Unity for something we can easily add ouselves. I just wish it was there by default.
 
 > Disclaimer: I'm working in a rather unconventional project environment. For example, we embed a Unity View into an existing Android/iOS App. That's because we at [SWCode](https://swcode.io) build an app that uses AR, called [SoesTour](https://www.so-ist-soest.de/de/tourismus/sehenswertes/soestour.php). The app aims to revive historical sites that long vanished, by digitally showing them at their exact locations in the real world. Due to this complicated setup, I had to touch with some nasty Unity bits that most people might not have to touch. I want this article to be generally applicable, so don't worry about it. It might be fun either way!
 
-Oh MY GOD JOHANNES STOP talking already! Let's get GOING!
+Oh my GOD JOHANNES STOP talking already! Let's get GOING!
 
 The Four Strategies
 -------------------
@@ -75,31 +87,58 @@ The Four Strategies
 0. [YOU ARE HERE] Introduction
 
 1. Write better code (duh!)
-    - Raise the level of abstraction
-    - Utilize basic C# language features because Unity doesn't
-    - Add obvious missing C# language features using black magic
-    - Create your high level Domain, instead of fiddling with unnecessary details all the time
 
+   In addition to utilizing the boring old clean code strategies, we will add missing basic features to both Unity and C#. Everything else builds on those.
+   
 2. Use code instead of assets (the controversial one)
-    - generate at compile time
-    - avoid using the editor to hook up objects
+   
+   We will use code to control Unity, generating and modifying assets, instead of manually editing them by hand.
 
 3. Smoothen the overall workflow (the one you might have expected)
-    - Automate import processes
-    - Automate setting the settings
-    - Automate clicking the clickies
-    - Seriously, let me press ONE button and then give me twenty minutes to pet my cat ... UHHHH work on something else.
+
+   Also we will automate clicking the clickies.
+   Seriously, let me press ONE button and then give me twenty minutes to pet my cat ... UHHHH work on something else.
 
 4. Perform rigorous checks at build time (the banger! also black magic)
-    - Check asset data
-    - Check settings
-    - Check code
+   
+   This one is huge. We will make sure that you notice bad project files before waiting for the 20 minute long build process to complete.
+   I've not seen this one anywhere else yet, but I'm sure any serious developer MUST be doing that... right?
 
-These are rather large topics and I want to go into detail about them, so this will probably be more than one article. Goo look for a link at the end of this blogpost in case I forgot to go back here and edit this text before I click the juicy UPLOAD BUTTON! :D <!-- Note to future self: I definitely don't ever want to remove this, I think it's cute -->
+These are rather large topics and I want to go into detail about them, so this will probably be more than one article. Goo look for a link at the end of this blogpost in case I forgot to go back here and edit this text before I click the juicy UPLOAD BUTTON! :D <!-- Note to future self: definitely don't ever remove this, I think it's cute -->
 
-Within each topic, I will first describe the problematic situation you too might have encountered in Unity. Afterwards I'll present my attempt at making it less horrible. I'll also share my experiences that I made after working with those solutions for quite some time. There will be code! Maybe a lot of it! Some will be controversial! 
+Within each topic, I will first describe the problematic situation that you too might have encountered in Unity. Afterwards I'll present my attempt at making it less horrible. I'll also try to share my experiences that I made after working with those solutions for quite some time. There will be code! Maybe a lot of it! Some will be controversial! 
 
-If there is one thing I hate more than badly designed software, it's blog posts that promise a wonderful world, but then never get to the point, leaving you hyped up. That's why I personally made sure, for you specifically, that this blog posts has some real code in it, and you're not left with a hollow promise yet again: The first blog post of this series is already online!
+## Find the Jeff
+<!-- todo: maybe move this hint from the introduction to a surprise at the end? -->
+> In each post, I'll challenge you to find the hidden Jeff.
+To find him, you'll have to find the matching code section for that posts Jeff story. If you find him, just be proud of yourself. Take the first character of each heading where Jeff's code section appears. These four letters are the secret code.
+<!-- TODO what to do with the code? GIMME SOMETHING -->
+
+This introduction does not contain a Jeff.
+<!-- because he hid in this markdown comment! congrats! :D there, get him!!
+<-- --<< JEFF (hiding) >>-- -->
+
+(Sorry if your name is Jeff, I had to choose a name. Visit me in Soest and the beer is on me!)
+
+## A note on performance
+<a name="performance"><!-- link to this anchor using `post-url/#performance` --></a>
+
+We're still not starting with the real content. Here's why:
+
+A recurring theme in this series will be performance. So let me get this straight, once, and link to this section a thousand times from those indivudal blog posts:
+
+- of course performance matters
+- but only in a fraction of the code
+- and developer time is more important
+- so use abstractions first, and optimize only where you've __measured__ a performance bottleneck
+
+We will use crazy Reflection and LINQ and write horribly inefficient code. That is, if you were to run it every frame unconditionally. But it's only used in tests, or once at initialization, or on build time. So get ready to unlearn those annoying for-loops and write better code in less time!
+
+All the time you save by choosing high-level abstractions, you gain for later optimization. It pays off. If this ever didn't work out for you, meet me outside, in the comment section.
+
+## The code is now.
+If there is one thing I hate more than badly designed software, it's blog posts that promise a wonderful world, but then never get to the point, leaving you all hyped up. That's why I personally made sure, for you specifically, that this blog posts has some real code in it, and you're not left with a hollow promise yet again: The first blog post of this series is already online!
 
 [Show me the code already!!1 Jesus...](TODO)
 
+Here you go, have fun! :)

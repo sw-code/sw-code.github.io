@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "The Unity Engine is your worst coworker - Here's 4 strategies to improve it"
+title:  "The Unity Engine is your worst coworker - Here's strategy #3 to improve it"
 date:   2023-10-25 10:30:00
 categories: unity
 tags: unity, csharp, workflow, testing, reliability
@@ -17,7 +17,7 @@ published: false
 
 You take a deep breath. Isn't that wonderful. What a bold move, Jeff.
 
-Think about it for a second: If your human colleague was doing what Unity does, you'd dig up their dead pet cat called Pumpkins, and plant its severed head on their bed while they're sleeping. Well, at least I would.
+Think about it for a second: If your human colleague was doing what Unity does, you'd [REDACTED].
 
 Let's shift perspectives: What would you have done in Jeff's position?
 
@@ -26,7 +26,7 @@ Let's shift perspectives: What would you have done in Jeff's position?
 ## What could have been
 
 
-# What this blog post series is about
+# Why so series
 This blog post is part of a series: Making Unity a decent employee. Well, at least a little less horrible, I admit.
 
 These posts are largely independent. However, you should go read the [introduction here] if you haven't done that yet, and then come back. Otherwise, you might be thinking "wtf, why are we doing all of this again?" when reading the wonderfully ridiculous code sections later in this post.
@@ -37,60 +37,28 @@ Here's where we are at:
 
 The Four Strategies
 -------------------
-
-0. Introduction
-
-1. [YOU ARE HERE] Write better code (duh!)
-    - Raise the level of abstraction
-    - Utilize basic C# language features because Unity doesn't
-    - Add obvious missing C# language features using black magic
-    - Create your high level Domain, instead of fiddling with unnecessary details all the time
-
-2. Use code instead of assets (the controversial one)
-    - generate at compile time
-    - avoid using the editor to hook up objects
-
-3. Smoothen the overall workflow (the one you might have expected)
-    - Automate import processes
-    - Automate setting the settings
-    - Automate clicking the clickies
-    - Seriously, let me press ONE button and then give me twenty minutes to pet my cat ... UHHHH work on something else.
-
-4. Perform rigorous checks at build time (the banger! also black magic)
-    - Check asset data
-    - Check settings
-    - Check code
-
-Within each topic, I will first describe the problematic situation you too might have encountered in Unity. Afterwards I'll present my attempt at making it less horrible. I'll also share my experiences that I made after working with those solutions for quite some time. There will be code! Maybe a lot of it! Some will be controversial! 
+<!-- TODO copy from introduction -->
 
 
 # III. Smoothen the overall workflow (the one you might have expected)
 
-## Automate setting the settings
-
 ## Automate clicking the clickies
+
+- Hook test execution into the build process.
+  This allows you to simply add a simple Editor Tests to add another build-check.
 
 ## Seriously, let me press ONE button and then give me twenty minutes to pet my cat ... UHHHH work on something else.
 
+- Writing a build script that runs all of your tasks
+
+## Postconditions and Caches
+
+Another chance to fix Unity. Sometimes, after running Play Tests, Unity doesn't care to cleanup the temporary scene file it writes to your HDD, each time you run the tests. This script automatically deletes those.
 
 
 
 
 
-
-
-Problem: Null Reference Exception
-Problem: 
-
-
-Problem: 
-Solution: Logging. Disclaimer: Use AR Foundation Remote or Unity Remote, and the Editor as much as possible!! Debug your running game in scene view! Use a debugger!
-
-
-
-
-Problem: Script/Object/Prefab Missing
-I just wish I had a robot that would take care of such repetitive tedium for me[.](https://eev.ee/blog/2016/12/01/lets-stop-copying-c/)
 
 
 

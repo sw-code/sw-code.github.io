@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "The Unity Engine is your worst coworker - Here's 4 strategies to improve it"
+title:  "The Unity Engine is your worst coworker - Here's strategy #2 to improve it"
 date:   2023-10-25 10:30:00
 categories: unity
 tags: unity, csharp, workflow, testing, reliability
@@ -12,13 +12,15 @@ published: false
 # target publish date: december
 ---
 
+It's a cold monday, 4pm. It has been one of those days without any energy. You have not smiled a single time today. You unsuccessfully try to yank the leash on your mind to stop it from wandering around like a young cute dog.
+
 [hook with jeff]
 
 ### WTjeFf?!
 
 You take a deep breath. Isn't that wonderful. What a bold move, Jeff.
 
-Think about it for a second: If your human colleague was doing what Unity does, you'd dig up their dead pet cat called Pumpkins, and plant its severed head on their bed while they're sleeping. Well, at least I would.
+Think about it for a second: If your human colleague was doing what Unity does, you'd  [REDACTED].
 
 Let's shift perspectives: What would you have done in Jeff's position?
 
@@ -27,7 +29,7 @@ Let's shift perspectives: What would you have done in Jeff's position?
 ## What could have been
 
 
-# What this blog post series is about
+# Why so series
 This blog post is part of a series: Making Unity a decent employee. Well, at least a little less horrible, I admit.
 
 These posts are largely independent. However, you should go read the [introduction here] if you haven't done that yet, and then come back. Otherwise, you might be thinking "wtf, why are we doing all of this again?" when reading the wonderfully ridiculous code sections later in this post.
@@ -38,38 +40,22 @@ Here's where we are at:
 
 The Four Strategies
 -------------------
-
-0. Introduction
-
-1. [YOU ARE HERE] Write better code (duh!)
-    - Raise the level of abstraction
-    - Utilize basic C# language features because Unity doesn't
-    - Add obvious missing C# language features using black magic
-    - Create your high level Domain, instead of fiddling with unnecessary details all the time
-
-2. Use code instead of assets (the controversial one)
-    - generate at compile time
-    - avoid using the editor to hook up objects
-
-3. Smoothen the overall workflow (the one you might have expected)
-    - Automate import processes
-    - Automate setting the settings
-    - Automate clicking the clickies
-    - Seriously, let me press ONE button and then give me twenty minutes to pet my cat ... UHHHH work on something else.
-
-4. Perform rigorous checks at build time (the banger! also black magic)
-    - Check asset data
-    - Check settings
-    - Check code
-
-Within each topic, I will first describe the problematic situation you too might have encountered in Unity. Afterwards I'll present my attempt at making it less horrible. I'll also share my experiences that I made after working with those solutions for quite some time. There will be code! Maybe a lot of it! Some will be controversial! 
+<!-- TODO copy from introduction -->
 
 
 # II. Use code instead of assets (the controversial one)
 
-## generate at compile time
+## Why?
 
-## avoid using the editor to hook up objects
+This section is rather philosophical.
+Reasons to use `GetComponent<X>` instead UI drag & drop. Reasons not to do it.
 
+## Automate setting the settings
 
+- Write a script that sets build settings depending on your mode (debug or release)
+- Also allows you to lock settings across projects
+  Regain control of variables that unity might set without your consent! (Looking at you, preloaded assets!)
+
+## Generate Assets at Compile Time
+- Write a script that replaces your android configuration depending on your build mode
 

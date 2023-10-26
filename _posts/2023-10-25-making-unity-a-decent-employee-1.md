@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "The Unity Engine is your worst coworker - Here's 4 strategies to improve it"
+title:  "The Unity Engine is your worst coworker - Here's strategy #1 to improve it"
 date:   2023-10-25 10:30:00
 categories: unity
 tags: unity, csharp, workflow, testing, reliability
@@ -12,19 +12,72 @@ published: false
 # target publish date: december
 ---
 
+The sun creates beautiful orange patterns on your desk, as your project finally seems complete. Finally, it's done! Such a relief. Only one single thing to check:
 
+```md
+> you
+hi jeff, have you received 
+the RX C# script i sent you?
 
+> jeff
+yup
 
+> you
+does it work?
 
-[
-    hook with jeff: not considering two files equal because their path is different or similar. 
-]
+> jeff
+it was already in the project. in `scripts/rx.cs`
+
+> you
+nice. is it the same script?
+
+> jeff
+it is the same script. no bugs
+
+> you 
+alright, thansk :)
+```
+
+What a great friday. Time for a beer!
+The weekend passes like a breeze, and you're happy to present your progress on monday.
+
+On Sunday night, you open the project once again. Shocked from the insights, you realize something is horribly wrong! Fouriously, you open the chat in the glorios teams app.
+
+```md
+> you
+JEFF
+
+> jeff
+what?
+
+> you
+JFEFF THE SCRIPT IS NOT THE SAME
+
+> jeff
+the script is the same, look at `scripts/rx.cs`
+
+> you
+BUT IT'S NOT THE SAME CODE
+
+> jeff
+of course it's not
+
+> you 
+WHAT?? I ASKED YOU ON FIRDAY
+YOU SAID ITS THE SAME!!!1
+
+> jeff
+it's the same script file name. i didn't check the code inside
+
+> microsoft teams note:
+it appears you are blocked in this chat
+```
 
 ### WTjeFf?!
 
 You take a deep breath. Isn't that wonderful. What a bold move, Jeff.
 
-Think about it for a second: If your human colleague was doing what Unity does, you'd dig up their dead pet cat called Pumpkins, and plant its severed head on their bed while they're sleeping. Well, at least I would.
+Think about it for a second: If your human colleague was doing what Unity does, you'd [REDACTED].
 
 Let's shift perspectives: What would you have done in Jeff's position?
 
@@ -32,8 +85,15 @@ Let's shift perspectives: What would you have done in Jeff's position?
 
 ## What could have been
 
+The programming languages we use today largely stem from an older era than you might think.
 
-# What this blog post series is about
+Very few programming languages invent new features. Most of the features can be found in languages from the 70s, languages that have been lost in the meantime. In 2023, for example, many languages start to add features from the ML family of languages.
+
+There is a saying that every programming language, adding more and more features, eventually converges into a slightly buggy version of LISP, which is 60 years old. Or so. [Here's an inspiring read for you that will make you want to learn LISP.](http://paulgraham.com/avg.html)
+
+C, for example, is over 50 years old, but it is used in so many places. The language of Unity, C#, is only about 20 years old, but it borrowed a lot from older languages. The age shows in many situations. All the new shiny features they added cannot hide the numerous scars of a long life. But before we have a look at those, we gently start with some easy Unity code, for our comfort.
+
+# Why so series
 This blog post is part of a series: Making Unity a decent employee. Well, at least a little less horrible, I admit.
 
 These posts are largely independent. However, you should go read the [introduction here] if you haven't done that yet, and then come back. Otherwise, you might be thinking "wtf, why are we doing all of this again?" when reading the wonderfully ridiculous code sections later in this post.
@@ -44,35 +104,12 @@ Here's where we are at:
 
 The Four Strategies
 -------------------
-
-0. Introduction
-
-1. [YOU ARE HERE] Write better code (duh!)
-    - Raise the level of abstraction
-    - Utilize basic C# language features because Unity doesn't
-    - Add obvious missing C# language features using black magic
-    - Create your high level Domain, instead of fiddling with unnecessary details all the time
-
-2. Use code instead of assets (the controversial one)
-    - generate at compile time
-    - avoid using the editor to hook up objects
-
-3. Smoothen the overall workflow (the one you might have expected)
-    - Automate import processes
-    - Automate setting the settings
-    - Automate clicking the clickies
-    - Seriously, let me press ONE button and then give me twenty minutes to pet my cat ... UHHHH work on something else.
-
-4. Perform rigorous checks at build time (the banger! also black magic)
-    - Check asset data
-    - Check settings
-    - Check code
-
-Within each topic, I will first describe the problematic situation you too might have encountered in Unity. Afterwards I'll present my attempt at making it less horrible. I'll also share my experiences that I made after working with those solutions for quite some time. There will be code! Maybe a lot of it! Some will be controversial! 
+<!-- TODO copy from introduction -->
 
 
-# I. Writter Better Code (duh!)
+# I. Writter Better Code in Unity (duh!)
 <!-- maybe this should be a new article? but let's not publish the teaser without at least one follow up article immediately -->
+Ye be warned, this might contain some opinionated advice. If you know better, quickly slash together a comment to explain why.
 
 At SWCode, we declare our Coding Bible be [Clean Code by Bob C. Martin](https://a.co/d/e3EVrb3). Even though I don't agree with every little detail, it's still a great book. A related website is [the cleancoders blog](https://cleancoders.com/blog). As you can see, clean coding is a widely covered topic. So I'll keep this section short and focused on Unity, I promise.
 
@@ -101,15 +138,17 @@ Working on a higher level allows you to make changes quickly. Move the code arou
 
 
 ### Paths
-Another feature missing from unity is path handling. In our project, there is a ton of code that needs to deal with Assets at paths. These path fiddling issues turned into bugs more often than I'd like to admit. After I created a strongly typed `Path` class, none of those bugs came again.
+Another feature missing from Unity is path handling. In our project, there is a ton of code that needs to deal with Assets, consequtively, paths. By default, simply Unity uses strings instead of a distinct path type. I say simply, because it looks easier at first, but writing code is actually harder that way. 
 
 Problem:
 - Want to concatenate two path strings? Use the verbose `Paths.Combine(folder, file)` method.
-- Want to check whether a file is in a specific folder? Too bad, there's nothing, mate.
+- Want to check whether a file is in a specific folder? Too bad, there's nothing, mate. Better not rely on `Substring` for such an operation.
 
-I have looked for existing path libraries, but I couldn't find any specifically for Unity. Maybe I'm an idiot. On the other hand, this class precisely fills the need of handling Unity Assets, with all the neat Unity features built-in. It's not even perfect, it doesn't handle paths with driver letters, but Unity doesn't use those, so it's not a big problem. What matters is that this new type reduced the number of path bugs I've had by 100%.
+These path/string fiddling issues turned into bugs more often than I'd like to admit. Until it was one bug too much for me. I created a strongly typed and well-tested `Path` class, none of those bugs ever came again.
 
-One use case is automating the workflows you might do in the Editor by hand.
+I have looked for existing path libraries, but I couldn't find any specifically for Unity. Maybe I'm an idiot. Maybe none for this niche existed. On the other hand, this class precisely fills the need of handling Unity Assets, with all the neat Unity features built-in. It's not even perfect, it doesn't handle paths with driver letters and definitely not URLS, but Unity Assets don't use those, so it's not a big problem. What matters is that this new type reduced the number of path bugs I've had by 100%.
+
+One use case where Path operations are requred, is automating the workflows you might do in the Editor by hand.
 For example, see this wonderful function, that plays a role in assigning asset bundles to assets:
 ```cs
 /// removes all assets except those in the specified folder from a given asset bundle 
@@ -151,10 +190,10 @@ public static Path ParsePath(this string path) => Path.ParseFilePath(path);
 ```
 
 
-This class is easily testable, and tests there are. The consequence is, that you can be confident in handling paths.
-Any algorithm that uses stringy paths would need more testing, because all those string operations might contain a bug.
+This class is easily testable, and tests there are. The consequence is, that I now could be confident in handling paths.
+Any algorithm that uses stringy paths would have needed more testing, because all those string operations might contain a bug.
 
-Of course, I did my best to avoid handling stringy paths everywhere else. For example, by using the following helper functions:
+Of course, I didn't stop there. I my best to avoid handling stringy paths everywhere else. For example, by using the following helper functions:
 
 
 ```cs
@@ -195,8 +234,7 @@ public static class EditorPaths {
 }
 ```
 
-> Are you interested in using this code? With a bit of luck, 
-and if the comments show us that you want it, we might publish this as a library. 
+> Are you interested in using this code? With a bit of luck, and if the comments show us that you want it, we might publish this as a library. 
 
 ### Exceptions
 
@@ -328,9 +366,18 @@ Unity doesn't support the C# null coalescing operator (`?`), but we can code up 
 Problem: 
 Solution: Logging. Disclaimer: Use AR Foundation Remote or Unity Remote, and the Editor as much as possible!! Debug your running game in scene view! Use a debugger!
 
+Problem: Null Reference Exception
+Problem: 
 
+
+Problem: 
+Solution: Logging. Disclaimer: Use AR Foundation Remote or Unity Remote, and the Editor as much as possible!! Debug your running game in scene view! Use a debugger!
 
 ## Add obvious missing C# language features using black magic
+
+Adding missing stuff to Unity is adventurous. Adding stuff to C# however is a pretty bold move. You think you know better than 10+ years of Microsoft's best Engineers? Well, I am, as you certainly already have guessed, based on my extensive use of high quality memes in this professional blog article series.
+
+#### C# Equals is useless
 
 Especially if you don't like writing unit tests, you should try to make it as painless as possible to write one. 
 
@@ -461,7 +508,7 @@ public static class DataExtensions {
 }
 ```
 
-This implementation does not attempt to be the silver bullet. For example, it will never consider a derived object equal any base object, except for collections. In fact, the intention of this method is to be used with plain old data types, such as arrays and simple classes. 
+This implementation does not attempt to be the definitive silver bullet. For example, it will never consider a derived object equal any base object, except for collections. In fact, the intention of this method is to be used with plain old data types, such as arrays and simple classes. It has not been a problem in our project, as I try to avoid inheritance anyways.
 
 Neat bonus: Because this is an extension function, it can also be called on null, so you never have to worry about that again:
 ```cs
@@ -507,7 +554,7 @@ The `DataToString` function works similarly, but I won't torture you with more c
 - Add strongly typed paths instead of using string-based paths. I'll get to that later. It's fantastic, trust me.
 
 
-
+<!-- WTF Johannes, you promised to be focused on unity? we've seen this advice a thousand times
 
 #### Raise the Level of Abstraction
 
@@ -516,7 +563,6 @@ Problem Statement: You find yourself fiddling with details in the code to handle
 
 Don't be afraid to use abstractions because of performance cost. I'm saying this now because this question might also pop up later.
 
-<!-- WTF Johannes, you promised to be focused on unity? we've seen this advice a thousand times -->
 ```c#
 void Start(){
     for (int i = 0; i < elements.Length; i++){
@@ -570,4 +616,4 @@ void ActivateFirstElementOrThrow() =>
     this.elements.FirstNotBeing(Element.IsActive)
         .Activate();
 ```
-The `bool IsActive()` should have been on the Element class all along.
+The `bool IsActive()` should have been on the Element class all along. -->
