@@ -113,7 +113,11 @@ Ye be warned, this might contain some opinionated advice. If you know better, qu
 
 At SWCode, we declare our Coding Bible be [Clean Code by Bob C. Martin](https://a.co/d/e3EVrb3). Even though I don't agree with every little detail, it's still a great book. A related website is [the cleancoders blog](https://cleancoders.com/blog). As you can see, clean coding is a widely covered topic. So I'll keep this section short and focused on Unity, I promise.
 
-So, here's some examples for Unity-Specific clean code strategies:
+So, here's some examples for Unity-Specific clean code strategies.
+
+In this post
+------------
+<!-- TODO: collect all the headlines into a table of contents, if possible with anchors -->
 
 ## Raising the Level of Abstraction
 
@@ -347,10 +351,10 @@ Later, deep down in the code, the script needed to copy a scene file. Why? Becau
 
 Anyways, that's [a different story](TODO). The script was trying to load the contents of the scene file that was just being copied. Quick quiz! What's going to happen?
 
-- the scene loads opens as expected (haha) 
+- the scene opens as expected (haha) 
 - the scene doesn't load, and an exception is thrown (ha)
-- the scene doesn't load, and an invalid scene is returned
-- THE SCENE DOESN'T LOAD, BUT A VALID EMPTY SCENE IS RETURNED
+- the scene doesn't load, and an invalid scene is returned, forcing you to check `isValid()`
+- the scene doesn't load, bUT A VALID EMPTY SCENE IS RETURNED???? ARE YOU FOR REAL?
 
 Wat.
 
@@ -377,25 +381,33 @@ Solution: Logging. Disclaimer: Use AR Foundation Remote or Unity Remote, and the
 
 Adding missing stuff to Unity is adventurous. Adding stuff to C# however is a pretty bold move. You think you know better than 10+ years of Microsoft's best Engineers? Well, I am, as you certainly already have guessed, based on my extensive use of high quality memes in this professional blog article series.
 
-#### C# Equals is useless
+#### C#'s `Equals()` is... useless
+<!-- this is the hidden jeff section. first letter of the header is first letter of the secret code. -->
 
-Especially if you don't like writing unit tests, you should try to make it as painless as possible to write one. 
+Especially if you don't like writing unit tests, you should try to make writing tests as painless as possible. A good way to write tests is to use the following form:
 
-A good test looks as simple as this:
+```
+assertEquals(
+    theFunction(exampleInput), 
+    expectedOutput
+)
+```
+
+In C#, this might look like this:
 
 ```cs
 [Test]
-void IsSorted() => Expect.Equals(
+void SortsSmallIntegers() => Expect.Equals(
     new int[]{ 4, 0, -5, 0 }.Sorted(), 
     new int[]{ -5, 0, 0, 4 }
 )
 ```
 
-If you say: "well my code doesn't look like that", then you will need to start writing code that looks like `Sorted`. Move your logic into [pure](https://betterprogramming.pub/what-is-a-pure-function-3b4af9352f6f) helper functions. I know this is hard - don't give up.
+If you say: "well my code doesn't look like that", then you will need to start writing code that looks like `Sorted`. Move your logic into [pure](https://betterprogramming.pub/what-is-a-pure-function-3b4af9352f6f) helper functions. I know this is hard - don't give up. Those pure functions are easier to test. The more logic you are able to move there, the more logic you can test easily.
 
-But even then, there will still be more problems. See, in C#, arrays are only considered equal if you give it the **same array twice, not if you have two arrays with the same content**. This being the default is ... slightly questionable.
+Actually, I lied. The C# example above will fail. Why? See, in C#, arrays are only considered equal if you give it the **same array twice, not if you have two arrays with the same content**. This being the default is ... slightly questionable.
 
-But even outside of tests, you will want to compare equality all over the place. 
+But even outside of tests, in your runtime code, you will want to compare equality all over the place. 
 I cannot understate how much of a fundamental language feature is missing here. Seriously. <!-- make it a joke? --> 
 
 What are our options? Code up a new for loop each time we want to compare two arrays? That's just infuriating! Adding `Equals` implementations to your classes? That's error prone! Even if your IDE can generate that once, how do you know that anyone modifying the class will not forget to update that method?
@@ -411,6 +423,10 @@ Here's what I did to improve the testing situation:
 
 - Unlock `a.Equals(b)` for all types using Reflection
 - Unlock `a.ToString()` for all types using Reflection
+
+Let's have a look at how to start to implement generic equality using Reflection. We create an extension functions, called `DataEquals`. The name emphasizes that this implementation is meant for data classes, not for complex inheritance hierarchies.
+
+In modern C#, we would probably use Records, but Unity lags behind the official C# standard, and they definitely will not change their own types to Records. Also, arrays still don't implement the common equality interface.
 
 ```cs
 public static class DataExtensions {
@@ -474,6 +490,8 @@ public static class DataExtensions {
         return DataExtensions.EqualsOverriddenOrEqualProperties(first, second, type);
     }
 
+    /// If the type implements equals, we call it, otherwise compare property by property.
+    /// For structs with auto generated equals type, we also compare field by field: Their generated equality method will not compare float using approximate equality (lol thanks). 
     private static bool EqualsOverriddenOrEqualProperties(object first, object second, Type type) {
         var equalsMethod = type.GetMethod("Equals", new [] { typeof(object) });
 
@@ -495,6 +513,7 @@ public static class DataExtensions {
         else return DataExtensions.PublicPropertiesEqualReflective(first, second, type);
     }
     
+    /// Our last resort - compare field by field, using DataEquals for each field again.
     private static bool PublicPropertiesEqualReflective(object first, object second, Type type) {
         var fieldsMatch = type.GetFields(BindingFlags.Instance | BindingFlags.Public)
             .Select(field => field.GetValue(first).DataEquals(field.GetValue(second)));
@@ -508,7 +527,7 @@ public static class DataExtensions {
 }
 ```
 
-This implementation does not attempt to be the definitive silver bullet. For example, it will never consider a derived object equal any base object, except for collections. In fact, the intention of this method is to be used with plain old data types, such as arrays and simple classes. It has not been a problem in our project, as I try to avoid inheritance anyways.
+This implementation does not attempt to be the definitive silver bullet. For example, it will never consider a derived object equal any base object, except for collections. In fact, the intention of this method is to be used with plain old data types, such as arrays and simple classes, that have public fields, and not too much wizardry. It has not been a problem in our project, as I try to avoid inheritance anyways.
 
 Neat bonus: Because this is an extension function, it can also be called on null, so you never have to worry about that again:
 ```cs
@@ -545,75 +564,13 @@ public static class Expect {
 
 This function is also used for runtime assertions in our code. Performance did not pose to be a problem yet. Using `IL2CPP` in Unity, this could in theory compile down to something more efficient, as the compiler knows all the types at compile time (which is not the case in interpreted .NET code).
 
-The `DataToString` function works similarly, but I won't torture you with more code. You can have a look [here](TODO). @osca can we publish this code?
+The `DataToString` function works similarly, but I won't torture you with more code. You can have a look [here](TODO). 
+<!-- @osca can we publish this code? -->
 
 ## Create your high level Domain, instead of fiddling with unnecessary details all the time
+
+The topic of your game is your "domain". But another domain you code in is the spatial world, so you should make it effortless to code. For example, add units for real world distances.
 
 - Add strongly typed measurement units such as Seconds or Metres
 - Add stronlgy typed quantities such as Angles, so you never have to write `Mathf.Pi*2` again ever.
 - Add strongly typed paths instead of using string-based paths. I'll get to that later. It's fantastic, trust me.
-
-
-<!-- WTF Johannes, you promised to be focused on unity? we've seen this advice a thousand times
-
-#### Raise the Level of Abstraction
-
-Problem Statement: You find yourself fiddling with details in the code to handle all the special cases. Moving code around results in errors. You have a hard time understanding what you wrote a few days ago.
-
-
-Don't be afraid to use abstractions because of performance cost. I'm saying this now because this question might also pop up later.
-
-```c#
-void Start(){
-    for (int i = 0; i < elements.Length; i++){
-        if (elements[i].isActive){
-            elements[i].active = true;
-            return;
-        }
-
-        Debug.LogError("failed");
-    }
-}
-```
-
-If, at the end of reading a complicated for loop, you think "aaah, this just finds the next active element in a list and then activates it", you should ask, why does the code hide this fact? Instead, try to put into code the words you just thought:
-
-```c#
-void Start() { 
-    ActivateFirstElementOrThrow();
-}
-
-void ActivateFirstElementOrThrow() =>
-    this.elements.First(IsInactive).Activate();
-
-bool IsInactive(Element elem) => 
-    !(elem.isActive);
-```
-
-But won't using LINQ allocations destroy your Performance? The answer is: most likely not. Only very few methods in your codebase will be called in a critical tight loops, yes, even in games. The answer you dont want to hear: The #1 resource is developer time. Build code that is flexible, and make it fast only when needed.
-
-Similarly, initially use Lists instead of Arrays, as they are more flexible, and only replace if proven slow.
-
-But we're not going to stop here. We're going to make the code our own!
-
-Add a static extension function, which is a fantastic C# feature:
-```c#
-/// The first element that does NOT satisfy the predicate.
-static IENumerable<T> FirstNotBeing<T>
-    (this IENumerable<T> elements, Func<T, bool> predicate) =>
-        elements.First(element => !predicate(element));
-```
-
-This function is now available on all your collections, use it everywhere in your Project.
-
-Our old code becomes simpler:
-```c#
-void Start() { 
-    ActivateFirstElementOrThrow();
-}
-
-void ActivateFirstElementOrThrow() =>
-    this.elements.FirstNotBeing(Element.IsActive)
-        .Activate();
-```
-The `bool IsActive()` should have been on the Element class all along. -->
