@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "transactional-outbox"
+title:  "Mastering Data Consistency in Distributed Systems: A Deep Dive into the Transactional Outbox Pattern"
 date:   2023-10-17 10:30:00
 categories: authz
 tags: authentication, authorization, security, rbac, abac, acl, rebac, keto
