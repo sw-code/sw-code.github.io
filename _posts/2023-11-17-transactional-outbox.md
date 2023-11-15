@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "transactional-outbox"
-date:   2023-11-17 10:30:00
+date:   2023-10-17 10:30:00
 categories: authz
 tags: authentication, authorization, security, rbac, abac, acl, rebac, keto
 image: /assets/article_images/2023-11-17-transactional-outbox/header.png
@@ -33,7 +33,7 @@ This results in a scenario where an event indicating a business action is publis
 but the corresponding database state does not reflect this action because the transaction was not completed successfully. 
 The system thus ends up in an inconsistent state, with the event bus reflecting a change that the database does not.
 
-When integrating an event bus (or any other external service) within an application in a distributed system, there are two naive approaches one might consider. 
+When integrating an event bus or any other external service within an application in a distributed system, there are two naive approaches one might consider. 
 Each approach has its own set of challenges and potential pitfalls:
  
 ## 1. Execute Business Logic Within the Transaction and Publish Events After Committing the Transaction
@@ -49,8 +49,11 @@ This leads to a situation where the database state has changed, but the correspo
 * **Inconsistency in Distributed Systems**: Other services relying on these events for triggering their own processes will not be aware of the changes, leading to data inconsistency across the system.
 * **Complex Recovery Mechanisms**: Implementing a mechanism to check for such failures and recover from them can be complex and error-prone.
 
-## 2. Execute Business Logic and Publish Events Within the Transaction
+This approach can be suitable for situations where the events being published are not critical to the core business logic or data integrity of the application. 
+An example of this might be events used for monitoring or logging purposes. 
+In these cases, the loss of some events due to system failures or crashes might be considered an acceptable risk.
 
+## 2. Execute Business Logic and Publish Events Within the Transaction
 In this approach, the application attempts to execute business logic and publish events to the event bus, all within the same database transaction. 
 
 
@@ -92,3 +95,119 @@ The consequences of this oversight are not just theoretical inconsistencies but 
 This challenge highlights the inherent difficulty in ensuring atomicity and consistency when dealing with internal transactions and external communication within the same operational scope. 
 It underlines the necessity for a pattern like the Transactional Outbox, which offers a way to decouple these concerns, 
 ensuring that events are only published after the transaction’s successful commitment, thereby maintaining the integrity and consistency of the overall system.
+
+# Understanding the Transactional Outbox Pattern
+
+The Transactional Outbox Pattern is a design pattern used in microservices architectures to ensure consistent and reliable message publishing in distributed systems. 
+At its core, the pattern solves a fundamental problem: how to update a database and publish messages/events to a message bus or event-driven system and keep the state consistent.
+
+![transactional-outbox](/assets/article_images/2023-11-17-transactional-outbox/transactional-outbox.png)
+
+## How It Works
+
+1. **Local Transaction with Outbox Table:** Instead of directly publishing an event to the message bus, the application writes the event into a special table within the same database as part of the business logic transaction. This table is commonly referred to as the **outbox**.
+2. **Atomic Commit:** The key to this pattern is the atomic commit. The changes to the business data and the insertion of the event into the outbox are done in the same database transaction. This ensures that either both are committed or neither, maintaining the atomic nature of operations.
+3. **Reliable Event Publishing:** After the transaction commits, a separate process (which could be a service, a scheduled job, or a database trigger) reliably reads events from the outbox and publishes them to the message bus. This process ensures that each event is eventually published without being lost.
+4. **Event Deletion/Mark as Processed:** Once the event is successfully published to the message bus, it is either deleted from the outbox or marked as processed, preventing it from being published again.
+
+By using the transactional outbox, the application ensures that the state in the database and the published events are always consistent.
+Moreover, the pattern exhibits a remarkable resilience to system failures. If the application crashes after committing the transaction but before the event is published, the separate process ensures that the event will still be published later.
+Another significant advantage of the Transactional Outbox Pattern is the decoupling it offers. By separating the concerns of database transactions and event publishing, the pattern allows each to operate independently. This separation not only simplifies the architecture but also enhances scalability and maintainability. 
+It allows the system to evolve more flexibly, adapting to changes and scaling components independently without disrupting the fundamental operations of transaction management and event distribution.
+
+Additionally, an often overlooked yet significant aspect of the Transactional Outbox Pattern is its efficiency, 
+particularly regarding the speed of writing to the outbox. 
+Writing an event to the outbox involves merely appending a row to a table, which is one of the fastest operations in database management. This efficiency means that the pattern does not impose a notable performance penalty.
+
+# Challenges and Solutions
+
+Implementing the Transactional Outbox Pattern, while beneficial, brings its own set of challenges that need careful consideration and handling.
+
+## At least once delivery
+
+When implementing the Transactional Outbox Pattern in a distributed system, it's important to understand that this pattern inherently guarantees at-least-once-delivery semantics. 
+At-least-once-delivery is a delivery approach where the system ensures that a message is definitely delivered to its destination at least once.
+Since the delivery mechanism is designed to ensure that messages are not lost, it errs on the side of sending duplicates rather than risking a message not being delivered at all. 
+As a result, the receiving services or components must be equipped to identify and appropriately handle these duplicate messages. 
+This involves implementing logic to detect if a message has already been processed and ensuring that processing it again does not adversely affect the system's state or lead to incorrect operations.
+
+A common approach to handle duplicate messages is implementing idempotency at the technical level. 
+This involves recording the IDs of consumed events and checking against this record before processing new events. 
+If an incoming event's ID matches one that has already been processed, it is ignored, thus preventing duplicate processing.
+
+A more sophisticated approach is to design idempotency based on business rules. 
+Instead of just tracking event IDs, this approach involves designing the business logic and data models in such a way that repeating the same operation does not have adverse effects. 
+For example, applying the same update twice would result in the same state as applying it once. This method requires a deeper understanding of the business context but can lead to a more robust solution.
+
+The importance of **Business Rule Idempotency** becomes even more pronounced when considering the potential for out-of-order event delivery.
+Depending on the specific implementation utilized for the Transactional Outbox Pattern, the ordering of events may not be guaranteed. 
+This means that events may arrive at their destination in a different order than they were sent. 
+In such scenarios, relying solely on technical idempotency controls like recording event IDs might not be sufficient, as out-of-order processing could still lead to inconsistent states.
+
+## Eventual Consistency: Understanding and Embracing Real-World Parallels
+
+Eventual consistency refers to a model where the state of the system is not immediately synchronized across all its components following a change. 
+Instead, these changes propagate through the system over time, resulting in a lag during which different services might have different views of the system’s state. 
+Eventually, however, all services reach a consistent state, hence the term "eventual consistency." 
+This concept contrasts with "strong consistency," where a system ensures immediate consistency across all nodes after any operation.
+
+In the realm of distributed systems, particularly those transitioning from traditional SQL database architectures, the concept of eventual consistency often poses a significant mental shift for developers. 
+Accustomed to the strong consistency guarantees of SQL databases, where the most recent write operation is immediately visible to all subsequent read operations, developers may find the notion of eventual consistency unsettling. 
+This model, where data is not immediately consistent across all services of the system but becomes consistent over time, can seem counterintuitive and raise concerns about data integrity and application behavior.
+
+In discussing the eventual consistency inherent in the Transactional Outbox Pattern, it's important to clarify a common misconception: 
+the introduction of the Transactional Outbox Pattern does not, in itself, bring about eventual consistency in a system. 
+Rather, if your system already incorporates an event bus, it is by design operating under the principles of eventual consistency.
+
+The nature of an event bus in a distributed architecture inherently implies that there's a delay between when an event is generated and when it is received and processed by other parts of the system. 
+This delay, albeit often brief, is a characteristic example of eventual consistency. 
+When an event is published to the bus, it doesn't instantly synchronize the state across all services and components. 
+Instead, these components update their state as and when they process the event, leading to a period during which different parts of the system may have slightly different views of the overall state.
+
+However, a closer examination of real-world processes reveals that eventual consistency is not only natural but often the norm. Consider the example of ordering a meal in a restaurant:
+
+* **Ordering Process:** When you place an order with the waiter, there's no immediate check with the kitchen to confirm if every ingredient is available. The waiter takes orders from multiple tables, and only later are these orders processed by the kitchen.
+* **Handling Unavailability:** If an ingredient is unavailable, the waiter informs you later, and you're given the option to choose an alternative. This delay in information and the need to adapt is a classic example of eventual consistency at play.
+
+The same principle applies to many everyday business processes:
+
+* **Hotel Bookings:** When you book a hotel room online, there's often a delay before the booking is confirmed. During high-demand periods, you might even receive a notification later that the room is no longer available, prompting you to find an alternative.
+* **Online Shopping:** Shopping on platforms like Amazon involves a period where the order is processed, and only later do you get confirmation. In some cases, you might be notified of out-of-stock items or shipping delays.
+* **Flight Bookings:** Booking a flight doesn’t guarantee a seat until various checks are completed, and occasionally, overbookings lead to last-minute changes.
+
+Just as these real-world scenarios adapt and manage eventual consistency, applications in distributed systems must be designed to handle it gracefully. 
+It's essential to recognize that eventual consistency is not a flaw but a characteristic of distributed systems that, when properly managed, can lead to greater scalability and resilience. 
+Applications should be designed to expect and handle delays in data synchronization and to manage the exceptions that arise when things don't go as expected.
+
+Developers can draw lessons from these real-world analogies to better understand and implement eventual consistency in their systems. 
+By acknowledging that not all processes require or benefit from strong consistency, and by designing systems that can handle inconsistencies and adapt as needed, developers can build more robust, flexible, and scalable applications. 
+This mindset shift is crucial in successfully navigating the complexities of modern distributed systems.
+
+
+# Implementation Considerations
+
+   Outbox table design.
+   Transaction management for atomicity.
+   Choosing the right message relaying mechanism.
+
+
+
+# Real-World Applications
+
+   Presenting case studies or examples where the Transactional Outbox Pattern is effectively used.
+
+# Comparing with Alternative Approaches
+
+   Brief comparison with other patterns like the Saga Pattern, highlighting when to use each.
+
+# Future Trends and Developments
+
+   Speculating on how the Transactional Outbox Pattern might evolve or be used in new ways.
+
+# Conclusion
+
+   Summarizing the key takeaways and the importance of the pattern in modern software architectures.
+
+# References and Further Reading
+
+    Listing resources for further exploration on the topic.
