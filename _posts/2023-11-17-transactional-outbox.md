@@ -2,8 +2,8 @@
 layout: post
 title:  "Mastering Data Consistency in Distributed Systems: A Deep Dive into the Transactional Outbox Pattern"
 date:   2023-10-17 10:30:00
-categories: authz
-tags: authentication, authorization, security, rbac, abac, acl, rebac, keto
+categories: microservices
+tags: microservice, technology, database, consistency, distributed
 image: /assets/article_images/2023-11-17-transactional-outbox/header.png
 author_name: Viktor Gottfried
 author_link: /authors/viktor-gottfried
@@ -62,7 +62,7 @@ In these cases, the loss of some events due to system failures or crashes might 
 In this approach, the application attempts to execute business logic and publish events to the event bus, all within the same database transaction. 
 
 
-![commit-publish](/assets/article_images/2023-11-17-transactional-outbox/publish-commit.png)
+![publish-commit](/assets/article_images/2023-11-17-transactional-outbox/publish-commit.png)
 
 **Challenges:**
 * **Event Publication Preceding Transaction Commit:** When events are published to the event bus as part of the database transaction, there's a risk that the transaction might not successfully commit even after the event has been sent out. 
