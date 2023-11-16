@@ -164,8 +164,7 @@ In discussing the eventual consistency inherent in the Transactional Outbox Patt
 the introduction of the Transactional Outbox Pattern does not, in itself, bring about eventual consistency in a system. 
 Rather, if your system already incorporates an event bus, it is by design operating under the principles of eventual consistency.
 
-The nature of an event bus in a distributed architecture inherently implies that there's a delay between when an event is generated and when it is received and processed by other parts of the system. 
-This delay, albeit often brief, is a characteristic example of eventual consistency. 
+The nature of an event bus in a distributed architecture inherently implies that there's a delay between when an event is generated and when it is received and processed by other parts of the system.
 When an event is published to the bus, it doesn't instantly synchronize the state across all services and components. 
 Instead, these components update their state as and when they process the event, leading to a period during which different parts of the system may have slightly different views of the overall state.
 
