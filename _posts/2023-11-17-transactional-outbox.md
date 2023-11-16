@@ -188,11 +188,108 @@ By acknowledging that not all processes require or benefit from strong consisten
 This mindset shift is crucial in successfully navigating the complexities of modern distributed systems.
 
 
-# Hands`on
+# Hands-On Guide: Implementing the Transactional Outbox Pattern with Spring Boot and RabbitMQ
+
+We will demonstrate how to implement the Transactional Outbox Pattern in a Spring Boot application, integrated with RabbitMQ for message handling. 
+For the transactional outbox mechanism, we'll utilize the [Transaction Outbox library](https://github.com/gruelbox/transaction-outbox), 
+a well-curated Java library that offers seamless integration with Spring Boot and other frameworks like Quarkus.
+
+## 1. Cloning the Repository
+
+Our example project repository is available at [SWCode Samples on GitHub](https://github.com/sw-code/swcode-samples). 
+This repository provides a "plug and play" setup with a docker-compose file that includes a PostgreSQL database and a RabbitMQ container, offering a hassle-free way to get the environment up and running.
+
+```
+git clone https://github.com/sw-code/swcode-samples.git
+cd swcode-samples/transactional-outbox
+```
+
+## Running Application
+
+1. **Starting the Application:** Use Docker to start the PostgreSQL and RabbitMQ services `docker-comose up`, 
+and then run the Spring Boot application.
+2. **Creating Users:** To test user creation and the subsequent event publishing, you can use the `/users` endpoint. 
+This will trigger the flow from the user creation in the `UserService` to the publishing and handling of the `UserCreatedEvent`.
+3. **Observing Event Handling:** As you create users through the endpoint, keep an eye on the logs of the RabbitMqConsumer. 
+You should see the `UserCreatedEvent` payloads being logged, indicating that the events are successfully being consumed from RabbitMQ.
+
+For convenience, the repository includes a `sample-requests.http` file,
+which provides easy access to all the endpoints if you are using IntelliJ IDEA.
+This file simplifies the process of making requests to the application for testing purposes.
+
+## Explore the Code
+
+The `UserController` controller provides an endpoint to create users.
+```kotlin
+@PostMapping("/users")
+fun createUser(@RequestBody request: UserCreateRequestDto): User {
+    return userService.createUser(request.name)
+}
+```
+
+When a user is created, a `UserCreatedEvent` is published. 
+This is done using the OutboxPublisher to persist the event in the outbox first, and then forward it to RabbitMQ.
+```kotlin
+class UserService(
+    private val userRepository: UserRepository, 
+    private val eventPublisher: EventPublisher) {
+    
+    fun createUser(name: String): User {
+        return userRepository.save(User(UUID.randomUUID(), name)).also {
+            eventPublisher.publish(UserCreatedEvent(it.id, it.name))
+        }
+    }
+}
+
+class OutboxPublisher(private val outbox: TransactionOutbox): EventPublisher {
+    override fun publish(event: DomainEvent) {
+        outbox.schedule(RabbitMqSender::class.java).send(event)
+    }
+}
+```
+
+The `schedule` method leads to the persisting of the task, which involves sending the event to RabbitMQ. 
+This task is stored in the outbox. 
+Then, it schedules the execution of this task for after the current transaction has been committed. 
+This ensures that the event is only sent after the transaction is successfully completed.
+
+In the context of handling potential failures during event sending after a transaction, the `TransactionalOutboxScheduler` class provides a robust fallback mechanism. 
+This class periodically executes a run method that continuously calls `transactionOutbox.flush()`.
+The `flush` method in `TransactionOutbox` is responsible for finding and retrying events that haven't been successfully executed after a certain amount of time. 
+It specifically targets events that were initially set up to be executed but haven't been completed as expected and have not exceeded a predefined number of retry attempts.
+
+```kotlin
+class TransactionalOutboxScheduler(private val transactionOutbox: TransactionOutbox) {
+    @Scheduled(fixedDelay = 2000)
+    fun run() {
+        while (transactionOutbox.flush()) {
+            // NOP
+        }
+    }
+}
+```
+
+To simulate errors in event sending, utilize the `/failing-events` endpoint. 
+This endpoint generates a `FailingEvent` and attempts to send it to RabbitMQ. 
+The `RabbitMqSender` is programmed to mimic an error by intentionally failing once for each instance of `FailingEvent`.
 
 # Conclusion
 
-   Summarizing the key takeaways and the importance of the pattern in modern software architectures.
+As we conclude our exploration of the Transactional Outbox Pattern, 
+it's evident that this pattern is more than just a technical solution—it's 
+a strategic approach to ensure data consistency and reliability in the increasingly complex landscape of distributed systems and microservices.
+
+The key takeaway from this discussion is the importance of understanding and adapting to the nuances of distributed systems. 
+The shift from traditional SQL database architectures to distributed models, while challenging, opens up new avenues for building scalable, resilient, and flexible applications. 
+The Transactional Outbox Pattern is a testament to the innovative solutions that emerge when we rethink how data consistency and reliability should be handled in modern application development.
+
+As you implement this pattern in your projects, remember that the journey towards mastering distributed systems is ongoing. 
+The Transactional Outbox Pattern is just one of the many tools in your arsenal, equipping you to tackle the challenges and leverage the opportunities presented by distributed architectures. 
+Stay curious, continue exploring, and most importantly, keep building systems that not only meet today's demands but are also prepared for tomorrow's challenges.
 
 # References and Further Reading
-    Listing resources for further exploration on the topic.
+
+* [Microservices.io - Transactional Outbox Pattern](https://microservices.io/patterns/data/transactional-outbox.html) An excellent resource for a concise overview of the pattern and its applications in microservices.
+* [Designing Data-Intensive Applications](https://www.oreilly.com/library/view/designing-data-intensive-applications/9781491903063/) by Martin Kleppmann: This book offers an in-depth exploration of various patterns and models used in designing modern data-intensive applications, including considerations for consistency and reliability in distributed systems.
+* [Building Microservices](https://www.oreilly.com/library/view/building-microservices-2nd/9781492034018/) by Sam Newman: A comprehensive guide to designing, building, and maintaining microservices-based applications, with insights into communication patterns and data management in distributed environments.
+* [Transaction Outbox Library](https://github.com/gruelbox/transaction-outbox) Dive into the source code and documentation of the Transaction Outbox library to understand its implementation and how it facilitates the Transactional Outbox Pattern.
