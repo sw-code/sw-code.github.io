@@ -45,7 +45,7 @@ Each approach has its own set of challenges and potential pitfalls:
 In this approach, the application first executes all the required business logic within a database transaction. 
 After this transaction is successfully committed, it then publishes the relevant events to the event bus.
 
-![commit-publish](/assets/article_images/2023-11-17-transactional-outbox/commit-publish.png)
+![commit-publish](/assets/article_images/commit-publish.png)
 
 **Challenges:**
 
@@ -62,7 +62,7 @@ In these cases, the loss of some events due to system failures or crashes might 
 In this approach, the application attempts to execute business logic and publish events to the event bus, all within the same database transaction. 
 
 
-![publish-commit](/assets/article_images/2023-11-17-transactional-outbox/publish-commit.png)
+![publish-commit](/assets/article_images/publish-commit.png)
 
 **Challenges:**
 * **Event Publication Preceding Transaction Commit:** When events are published to the event bus as part of the database transaction, there's a risk that the transaction might not successfully commit even after the event has been sent out. 
