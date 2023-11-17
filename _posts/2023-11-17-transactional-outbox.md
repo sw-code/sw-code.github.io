@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Mastering Data Consistency in Distributed Systems: A Deep Dive into the Transactional Outbox Pattern"
+title:  "Mastering Data Consistency: A Deep Dive into the Transactional Outbox Pattern"
 date:   2023-10-17 10:30:00
 categories: microservices
 tags: microservice, technology, database, consistency, distributed
