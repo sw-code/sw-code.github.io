@@ -159,7 +159,7 @@ Eventually, however, all services reach a consistent state, hence the term "even
 This concept contrasts with "strong consistency," where a system ensures immediate consistency across all nodes after any operation.
 
 In the realm of distributed systems, particularly those transitioning from traditional SQL database architectures, the concept of eventual consistency often poses a significant mental shift for developers. 
-Accustomed to the strong consistency guarantees of SQL databases, where the most recent write operation is immediately visible to all subsequent read operations, developers may find the notion of eventual consistency unsettling. 
+Accustomed to the strong consistency guarantees of SQL databases, where the recent write operation is immediately visible to all subsequent read operations, developers may find the notion of eventual consistency unsettling. 
 This model, where data is not immediately consistent across all services of the system but becomes consistent over time, can seem counterintuitive and raise concerns about data integrity and application behavior.
 
 In discussing the eventual consistency inherent in the Transactional Outbox Pattern, it's important to clarify a common misconception: 
