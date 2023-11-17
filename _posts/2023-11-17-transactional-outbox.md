@@ -11,9 +11,7 @@ author_image: /assets/images/authors/viktor-gottfried/thumbnail.jpg
 ---
 
 Unlock the potential of modern distributed systems with our latest exploration: The Transactional Outbox Pattern. 
-Discover how this pattern enhances data consistency, reliability, and system resilience in microservices architectures. 
-Dive into our comprehensive guide where we demystify the complexities of handling data in a world where traditional ACID properties meet the challenges of distributed environments. 
-Get ready to transform your approach to event publishing and data synchronization, ensuring your applications are not just robust, but also ready for the future of scalable technology.
+Discover how this pattern enhances data consistency, reliability, and system resilience in microservices architectures.
 
 # Introduction: Navigating the Complexities of Modern Software Development
 
@@ -49,7 +47,7 @@ After this transaction is successfully committed, it then publishes the relevant
 
 **Challenges:**
 
-* **Risk of Event Loss:** If the application crashes or encounters an issue between the transaction commit and the event publication, the event may never get published. 
+* **Risk of Event Loss:** If the application crashes or encounters an issue between the transaction [commit](https://en.wikipedia.org/wiki/Commit_(data_management)) and the event publication, the event may never get published. 
 This leads to a situation where the database state has changed, but the corresponding event informing other services of this change is lost.
 * **Inconsistency in Distributed Systems**: Other services relying on these events for triggering their own processes will not be aware of the changes, leading to data inconsistency across the system.
 * **Complex Recovery Mechanisms**: Implementing a mechanism to check for such failures and recover from them can be complex and error-prone.
@@ -144,10 +142,14 @@ A more sophisticated approach is to design idempotency based on business rules.
 Instead of just tracking event IDs, this approach involves designing the business logic and data models in such a way that repeating the same operation does not have adverse effects. 
 For example, applying the same update twice would result in the same state as applying it once. This method requires a deeper understanding of the business context but can lead to a more robust solution.
 
-The importance of **Business Rule Idempotency** becomes even more pronounced when considering the potential for out-of-order event delivery.
-Depending on the specific implementation utilized for the Transactional Outbox Pattern, the ordering of events may not be guaranteed. 
-This means that events may arrive at their destination in a different order than they were sent. 
-In such scenarios, relying solely on technical idempotency controls like recording event IDs might not be sufficient, as out-of-order processing could still lead to inconsistent states.
+Consider the process of stock reservation in a warehouse. 
+In this scenario, every time an item is reserved for a shipping order, the system communicates not just the quantity reserved, but also the remaining quantity in stock.
+When an article is reserved, the system sends an update that includes both the number of pieces reserved and the current stock level. 
+This comprehensive update provides a complete picture of the stock status after each transaction.
+With the detailed stock information at hand, a replenishment component in the system can easily apply business rules to monitor stock levels. 
+For instance, if the system receives multiple updates about the same reservation due to a duplicate message, it can discern that the stock level hasn't further decreased since the quantity and remaining stock are consistently reported.
+By structuring the update messages in this way, applying the same stock reservation update more than once does not lead to incorrect stock calculations. 
+The system remains aware of the actual stock level, regardless of duplicate messages, ensuring that replenishment decisions are based on accurate and current information.
 
 ## Eventual Consistency
 
@@ -193,6 +195,9 @@ This mindset shift is crucial in successfully navigating the complexities of mod
 We will demonstrate how to implement the Transactional Outbox Pattern in a Spring Boot application, integrated with RabbitMQ for message handling. 
 For the transactional outbox mechanism, we'll utilize the [Transaction Outbox library](https://github.com/gruelbox/transaction-outbox), 
 a well-curated Java library that offers seamless integration with Spring Boot and other frameworks like Quarkus.
+
+The sample project provides an REST endpoint for creating user profiles. 
+Upon creating a user, it publishes a `UserCreatedEvent` to RabbitMQ, demonstrating the Transactional Outbox Pattern's capabilities.
 
 ## 1. Cloning the Repository
 
@@ -272,6 +277,8 @@ class TransactionalOutboxScheduler(private val transactionOutbox: TransactionOut
 To simulate errors in event sending, utilize the `/failing-events` endpoint. 
 This endpoint generates a `FailingEvent` and attempts to send it to RabbitMQ. 
 The `RabbitMqSender` is programmed to mimic an error by intentionally failing once for each instance of `FailingEvent`.
+
+Play around and have fun exploring the outbox pattern!
 
 # Conclusion
 
