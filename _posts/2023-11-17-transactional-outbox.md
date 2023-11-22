@@ -262,6 +262,7 @@ In the context of handling potential failures during event sending after a trans
 This class periodically executes a run method that continuously calls `transactionOutbox.flush()`.
 The `flush` method in `TransactionOutbox` is responsible for finding and retrying events that haven't been successfully executed after a certain amount of time. 
 It specifically targets events that were initially set up to be executed but haven't been completed as expected and have not exceeded a predefined number of retry attempts.
+This loop continues to invoke `flush` as long as it returns true, indicating there are events to be processed. Once `flush` returns false, signifying that there are no more events requiring attention, the loop terminates. This approach ensures that all pending events are addressed promptly.
 
 ```kotlin
 class TransactionalOutboxScheduler(private val transactionOutbox: TransactionOutbox) {
