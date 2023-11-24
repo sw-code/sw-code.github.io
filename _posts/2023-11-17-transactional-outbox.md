@@ -101,7 +101,7 @@ ensuring that events are only published after the transaction’s successful com
 
 # Understanding the Transactional Outbox
 
-The Transactional Outbox Pattern is a design pattern used in microservices architectures to ensure consistent and reliable message publishing in distributed systems. 
+The Transactional Outbox is a design pattern used in microservices architectures to ensure consistent and reliable message publishing in distributed systems. 
 At its core, the pattern solves a fundamental problem: how to update a database and publish messages/events to a message bus or event-driven system and keep the state consistent.
 
 ![transactional-outbox](/assets/article_images/2023-11-17-transactional-outbox/transactional-outbox.png)
