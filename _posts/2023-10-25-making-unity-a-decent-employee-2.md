@@ -16,7 +16,7 @@ It's a cold monday, 4pm. It has been one of those days without any energy. You h
 
 [hook with jeff]
 
-### WTjeFf?!
+### WTjeFf?! (sing along!)
 
 You take a deep breath. Isn't that wonderful. What a bold move, Jeff.
 
@@ -46,16 +46,49 @@ The Four Strategies
 # II. Use code instead of assets (the controversial one)
 
 ## Why?
+When first learning Unity, you will soon learn that compiling is slow, and tweaking values should better be done in the Editor. However, there are good reasons to use code instead of the Unity Editor in select situations.
 
-This section is rather philosophical.
-Reasons to use `GetComponent<X>` instead UI drag & drop. Reasons not to do it.
+Some advantages of code compared to the Editor:
 
-## Automate setting the settings
+1. Code is easier to reason about in source control diffs <!-- example: than manually hunting down those entity IDs --> 
+2. Code is less fragile than checkboxes. <!-- example: settings mesh attributes stripped. also: UnityEvents references vs Components implementing Interfaces -->
+3. Code allows comments. <!-- this one is important. why did we check that checkbox again? maybe something broke on ios? -->
+4. Code can change a checkbox depending on some logic. <!-- otherwise only possible by hand -->
+
+Of course you will have to try and experiment. Let me go into detail.
+
+Reasons to use `GetComponent<X>` instead UI drag & drop:
+-
+-
+
+Reasons not to do it:
+-
+-
+
+## 1| Reasoning: Source control diffs
+
+## 2| Confidence: Harder to break
+
+Two points to explain. 
+
+First:
+Serialized data is harder to refactor than an interface definition. For example, using `UnityEvents` to reference an object may silently break. But calling a method on an interface will refactor easier.
+
+Second: 
+Fiddling with the Project Settings can make or break a build, especially when building as an embedded view into an existing iOS/Android app. 
+
+## 3| Explain: Comments
+
+God, I miss this feature so much! Unity is a complex beast, and unchecking a harmless checkbox can break all your animations without warning! I'd wish for some way to write down why this checkbox MUST REMAIN CHECKED in all circumstances. 
+
+> Is there any app whoose graphical user interface that can do this? Hit me up in the comments if you know one!
+
+## 4| Conditionally: Automate setting the settings
 
 - Write a script that sets build settings depending on your mode (debug or release)
 - Also allows you to lock settings across projects
-  Regain control of variables that unity might set without your consent! (Looking at you, preloaded assets!)
+  Regain control of variables that unity, or a plugin, might set without your consent! (Looking at you, preloaded assets!)
 
-## Generate Assets at Compile Time
+## 4| Conditionally: Generate Assets at Compile Time
 - Write a script that replaces your android configuration depending on your build mode
 

@@ -39,9 +39,9 @@ Let's shift perspectives: What would you have done in Jeff's position? What woul
 
 ## What could have been
 
-Just looking at the code and assets, it's hard to tell whether the game will even run. Every tiny little change has to be tested manually. A missing prefab will only result in an Error when encountered in the running Game, because Unity assumes you did that on Purpose??
+Just looking at the code and assets, it's hard to tell whether the game will even run. Every tiny little change has to be tested manually. A missing prefab will only result in an Error when encountered in the running Game, because Unity ... assumes you did that on purpose????
 
-If you have had the chance in your life to program in more statically tight languages, like Elm or Rust, you will know that programming can be very different (If not, please do try those)! The Elm language, for example, prevents **all runtime errors**. Yes, you read that right. You will not experience a single runtime exception in Elm. How is that possible?
+If you have had the chance in your life to program in more statically tight languages, like Elm or Rust, you will know that programming can be very different. (If not, please do try those!) The Elm language, for example, prevents **all runtime errors**. Yes, you read that right. You will not experience a single runtime exception in Elm. How is that possible?
 
 If an operation can fail in Elm, BEFORE anything happens, the compiler gets up from his desk and walks over to yours:
 "Hey, if they don't have the pumpkin spiced latte grande with extra glitter, should I get you something else or just nothing?"
@@ -49,10 +49,13 @@ His soothing voice is a grace. You're happy they asked you, instead of just retu
 
 Sorry, I get emotional about this topic sometimes. The point is: The Elm compiler is your friend, your pair programmer. If he does not see any problem with your code, you can be pretty sure it works. Sprinkle a few unit tests on top, and you're safe. Yes, it's a bit tedious sometimes, but for me, it's definitely worth it.
 
-Unity however is quiet the opposite. In fact, Unity is more like the currently most popular language (he who must not be named).
-If anything goes wrong, they will try to pretend that nothing happened. Happily driving a car that is slowly falling as they are entering the highway. <!-- THIS METAPHOR COULD BE MORE EXTREME OR MORE FUNNY -->
+Unity however is quiet the opposite, just like most popular language in 2023 (he who must not be named).
+If anything goes wrong, they will try to pretend that nothing happened. Happily driving a car that is slowly falling 
+as they are entering the highway. <!-- THIS METAPHOR COULD BE MORE EXTREME OR MORE FUNNY -->
 
 <!-- meme idea: this is fine -->
+
+This is unacceptable behaviour in any professional environment with money at stakes. Well, at least for humans, but not for software apparently.
 
 BUT don't give up! Let me tell you: You and me, we are clever developers, we will not restrain from employing dark magic to squeeze Unity into something we can work with.
 
@@ -75,9 +78,9 @@ Learning from statically typed languages, we will add checks that run while Unit
 
 ![a fantastic meme with bender making his own stuff](assets/image/make-our-own.jpg)
 
-While I'm at it, let me dial back a bit on my rant. Don't let me shit on Unity for something we can easily add ouselves. I just wish it was there by default.
+While I'm at it, let me dial back a bit on my rant. Don't let me shit on Unity for something we can easily add ouselves. Unity is an amazing piece of 21st century technology right at our hands! I just sometimes wish some minor features were there by default, so we wouldn't have to add them by hand.
 
-> Disclaimer: I'm working in a rather unconventional project environment. For example, we embed a Unity View into an existing Android/iOS App. That's because we at [SWCode](https://swcode.io) build an app that uses AR, called [SoesTour](https://www.so-ist-soest.de/de/tourismus/sehenswertes/soestour.php). The app aims to revive historical sites that long vanished, by digitally showing them at their exact locations in the real world. Due to this complicated setup, I had to touch with some nasty Unity bits that most people might not have to touch. I want this article to be generally applicable, so don't worry about it. It might be fun either way!
+> Disclaimer: I'm working in a rather unconventional project environment. For example, we embed a Unity View into an existing Android/iOS App. That's because we at [SWCode](https://swcode.io) build an app that uses AR, called [SoesTour](https://www.so-ist-soest.de/de/tourismus/sehenswertes/soestour.php). The app aims to revive historical sites that long vanished, by digitally showing them at their exact locations in the real world. Due to this complicated setup, I had to touch with some nasty Unity bits that most people might not have to touch. Also, I didn't touch a lot of the stuff that you might be using regularly! But don't worry, I won't jugde you for reading these articles only because of the Jeff stories.
 
 Oh my GOD JOHANNES STOP talking already! Let's get GOING!
 
@@ -106,13 +109,13 @@ The Four Strategies
 
 These are rather large topics and I want to go into detail about them, so this will probably be more than one article. Goo look for a link at the end of this blogpost in case I forgot to go back here and edit this text before I click the juicy UPLOAD BUTTON! :D <!-- Note to future self: definitely don't ever remove this, I think it's cute -->
 
-Within each topic, I will first describe the problematic situation that you too might have encountered in Unity. Afterwards I'll present my attempt at making it less horrible. I'll also try to share my experiences that I made after working with those solutions for quite some time. There will be code! Maybe a lot of it! Some will be controversial! 
+Within each topic, I will first describe the problematic situation that you too might have encountered in Unity. Afterwards I'll present my attempt at making it less horrible. I'll also try to share my experiences that I made after working with those solutions for quite some time. There will be code! Maybe a lot of it! Some will be controversial!
 
 ## Find the Jeff
 <!-- todo: maybe move this hint from the introduction to a surprise at the end? -->
 > In each post, I'll challenge you to find the hidden Jeff.
 To find him, you'll have to find the matching code section for that posts Jeff story. If you find him, just be proud of yourself. Take the first character of each heading where Jeff's code section appears. These four letters are the secret code.
-<!-- TODO what to do with the code? GIMME SOMETHING -->
+<!-- TODO what to do with the secret code? GIMME SOMETHING -->
 
 This introduction does not contain a Jeff.
 <!-- because he hid in this markdown comment! congrats! :D there, get him!!

@@ -15,69 +15,71 @@ published: false
 The sun creates beautiful orange patterns on your desk, as your project finally seems complete. Finally, it's done! Such a relief. Only one single thing to check:
 
 ```md
-> you
+> You
 hi jeff, have you received 
 the RX C# script i sent you?
 
-> jeff
+> Jeff
 yup
 
-> you
+> You
 does it work?
 
-> jeff
+> Jeff
 it was already in the project. in `scripts/rx.cs`
 
-> you
+> You
 nice. is it the same script?
 
-> jeff
-it is the same script. no bugs
+> Jeff
+yes, it is the same script. no bugs
 
-> you 
+> You 
 alright, thansk :)
 ```
 
 What a great friday. Time for a beer!
 The weekend passes like a breeze, and you're happy to present your progress on monday.
 
-On Sunday night, you open the project once again. Shocked from the insights, you realize something is horribly wrong! Fouriously, you open the chat in the glorios teams app.
+On Sunday night, you open the project once again, just to feel the satisfaction again. But then you notice something weird... you realize something is horribly wrong! Fouriously, you open the chat in the glorios teams app.
 
 ```md
-> you
+> You
 JEFF
 
-> jeff
+> You
+JEFF!!!!
+
+> Jeff
 what?
 
-> you
+> You
 JFEFF THE SCRIPT IS NOT THE SAME
 
-> jeff
+> Jeff
 the script is the same, look at `scripts/rx.cs`
 
-> you
+> You
 BUT IT'S NOT THE SAME CODE
 
-> jeff
-of course it's not
+> Jeff
+of course it's not the same code
 
-> you 
+> You 
 WHAT?? I ASKED YOU ON FIRDAY
 YOU SAID ITS THE SAME!!!1
 
-> jeff
-it's the same script file name. i didn't check the code inside
+> Jeff
+it's the same script file name. i didn't check the code inside. you didn't tell me to check each line in the file!!?
 
-> microsoft teams note:
-it appears you are blocked in this chat
+> You have blocked 'Jeff (jefferson_magnotastic_x3000)'. Unblock to see their new messages.
 ```
 
 ### WTjeFf?!
 
 You take a deep breath. Isn't that wonderful. What a bold move, Jeff.
 
-Think about it for a second: If your human colleague was doing what Unity does, you'd [REDACTED].
+Think about it for a second: If your human colleague was doing what Unity does, you'd place a few pieces of raw fish and meat in their curtain poles and let it rot over months. Well, at least I would.
 
 Let's shift perspectives: What would you have done in Jeff's position?
 
@@ -85,11 +87,16 @@ Let's shift perspectives: What would you have done in Jeff's position?
 
 ## What could have been
 
-The programming languages we use today largely stem from an older era than you might think.
+Did you know? Pretty much all of the features that your favorite language recently added were already invented in the 70s, or even earlier. 
 
-Very few programming languages invent new features. Most of the features can be found in languages from the 70s, languages that have been lost in the meantime. In 2023, for example, many languages start to add features from the ML family of languages.
+In C#: Records, Tuples, Non-Nullable, all of these concepts are multiple centuries old. 
+Yet, today's systems needlessly struggle a lot from missing those concepts. They seem to ignore all of those old discoveries, for example Non-Nullability.
 
-There is a saying that every programming language, adding more and more features, eventually converges into a slightly buggy version of LISP, which is 60 years old. Or so. [Here's an inspiring read for you that will make you want to learn LISP.](http://paulgraham.com/avg.html)
+<!-- The programming languages we use today largely stem from an older era than you might have thought. Most programming concepts were developed before the 70s, and still find their way into modern languages today. -->
+
+<!-- Very few programming languages invent new features. Most of the features recently added to modern languages can be found in languages from the 70s, languages that have been lost in the meantime. For a few years, many languages start to add features from the ML family of languages. -->
+
+Lisp is one of the oldest programming languages, being 60 years old, yet it hat a lot of features. Some might say, it has ALL the features. There is a saying that every programming language, adding more and more features, eventually converges into a slightly buggy version of LISP. Or so. [Here's an inspiring read that might make you want to learn LISP.](http://paulgraham.com/avg.html)
 
 C, for example, is over 50 years old, but it is used in so many places. The language of Unity, C#, is only about 20 years old, but it borrowed a lot from older languages. The age shows in many situations. All the new shiny features they added cannot hide the numerous scars of a long life. But before we have a look at those, we gently start with some easy Unity code, for our comfort.
 
@@ -405,17 +412,20 @@ void SortsSmallIntegers() => Expect.Equals(
 
 If you say: "well my code doesn't look like that", then you will need to start writing code that looks like `Sorted`. Move your logic into [pure](https://betterprogramming.pub/what-is-a-pure-function-3b4af9352f6f) helper functions. I know this is hard - don't give up. Those pure functions are easier to test. The more logic you are able to move there, the more logic you can test easily.
 
-Actually, I lied. The C# example above will fail. Why? See, in C#, arrays are only considered equal if you give it the **same array twice, not if you have two arrays with the same content**. This being the default is ... slightly questionable.
+> Quick Tip: Put your tests as close as possible to your source code. In Rust, for example, we can put our tests in __the same file as our logic__. This is amazing! Things related to each other should be close to each other. 
+
+Back to topic. You know what? I lied!! The C# example above will fail. See, in C#, arrays are only considered equal if you give it the **same array twice, not if you have two arrays with the same content**. This being the default is ... slightly questionable.
 
 But even outside of tests, in your runtime code, you will want to compare equality all over the place. 
 I cannot understate how much of a fundamental language feature is missing here. Seriously. <!-- make it a joke? --> 
 
 What are our options? Code up a new for loop each time we want to compare two arrays? That's just infuriating! Adding `Equals` implementations to your classes? That's error prone! Even if your IDE can generate that once, how do you know that anyone modifying the class will not forget to update that method?
 
+Calling an external method? Won't work if the array is inside another class you don't control, for example in another List. Furthermore, it will only work in specific circumstances, for example it won't work for nested arrays.
+
 My rule of thumb, coming from a UX Design standpoint and professional experience, is this:
 If it's possible to 'forget' to do a thing, someone WILL forget to do that sooner or later. That's 
-just how humans work. Gosh, I just wish I had a computer that would automatically take care of such repetitive tasks for me[!](https://eev.ee/blog/2016/12/01/lets-stop-copying-c/)
-
+just how humans work. Gosh, I just wish I had [some kind of machine]((https://eev.ee/blog/2016/12/01/lets-stop-copying-c/)) that would automatically take care of such simple repetitive tasks for me!
 
 
 #### The Code Solution
@@ -476,6 +486,7 @@ public static class DataExtensions {
 
     // --- snip ---
     
+    /// The objects types must be exactly the same for this function to ever return true, no inheritance respected!
     private static bool CompareExcludingInheritance(object first, object second) {
         var type = first.GetType();
 
@@ -527,12 +538,12 @@ public static class DataExtensions {
 }
 ```
 
-This implementation does not attempt to be the definitive silver bullet. For example, it will never consider a derived object equal any base object, except for collections. In fact, the intention of this method is to be used with plain old data types, such as arrays and simple classes, that have public fields, and not too much wizardry. It has not been a problem in our project, as I try to avoid inheritance anyways.
+This implementation does not attempt to be the definitive silver bullet. For example, it will never consider a derived object equal any base object, except for collections. In fact, the intention of this method is to be used with plain old data types, such as arrays and simple classes, that have public fields, and not too much wizardry. It has not been a problem in our project, as we try to avoid inheritance anyways.
 
 Neat bonus: Because this is an extension function, it can also be called on null, so you never have to worry about that again:
 ```cs
 object nothing = null;
-nothing.DataEquals((object)5); // works as expected: just returns false
+nothing.DataEquals((object)5); // works not as expected, but works as hoped for: just returns false
 ```
 
 #### REFLECTION???
@@ -562,7 +573,7 @@ public static class Expect {
 }
 ```
 
-This function is also used for runtime assertions in our code. Performance did not pose to be a problem yet. Using `IL2CPP` in Unity, this could in theory compile down to something more efficient, as the compiler knows all the types at compile time (which is not the case in interpreted .NET code).
+This function is also used for runtime assertions in our code. Performance did not pose to be a problem yet. Using `IL2CPP` in Unity, this could in theory compile down to something more efficient, as the compiler knows all the types at compile time (which is not the case in interpreted .NET code, where more code could always be loaded at runtime).
 
 The `DataToString` function works similarly, but I won't torture you with more code. You can have a look [here](TODO). 
 <!-- @osca can we publish this code? -->
