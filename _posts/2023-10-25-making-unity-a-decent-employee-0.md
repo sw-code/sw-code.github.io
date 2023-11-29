@@ -80,7 +80,8 @@ Learning from statically typed languages, we will add checks that run while Unit
 
 While I'm at it, let me dial back a bit on my rant. Don't let me shit on Unity for something we can easily add ouselves. Unity is an amazing piece of 21st century technology right at our hands! I just sometimes wish some minor features were there by default, so we wouldn't have to add them by hand.
 
-> Disclaimer: I'm working in a rather unconventional project environment. For example, we embed a Unity View into an existing Android/iOS App. That's because we at [SWCode](https://swcode.io) build an app that uses AR, called [SoesTour](https://www.so-ist-soest.de/de/tourismus/sehenswertes/soestour.php). The app aims to revive historical sites that long vanished, by digitally showing them at their exact locations in the real world. Due to this complicated setup, I had to touch with some nasty Unity bits that most people might not have to touch. Also, I didn't touch a lot of the stuff that you might be using regularly! But don't worry, I won't jugde you for reading these articles only because of the Jeff stories.
+### Disclaimer
+I'm working in a rather unconventional project environment. For example, we embed a Unity View into an existing Android/iOS App. That's because we at [SWCode](https://swcode.io) build an app that uses AR, called [SoesTour](https://www.so-ist-soest.de/de/tourismus/sehenswertes/soestour.php). The app aims to revive historical sites that long vanished, by digitally showing them at their exact locations in the real world. Due to this complicated setup, I had to touch with some nasty Unity bits that most people might not have to touch. Also, I didn't touch a lot of the stuff that you might be using regularly! But don't worry, I won't jugde you for reading these articles only because of the Jeff stories.
 
 Oh my GOD JOHANNES STOP talking already! Let's get GOING!
 
@@ -89,7 +90,7 @@ The Four Strategies
 
 0. [YOU ARE HERE] Introduction
 
-1. Write better code (duh!)
+1. Make it your own, make it your home!
 
    In addition to utilizing the boring old clean code strategies, we will add missing basic features to both Unity and C#. Everything else builds on those.
    
@@ -113,15 +114,15 @@ Within each topic, I will first describe the problematic situation that you too 
 
 ## Find the Jeff
 <!-- todo: maybe move this hint from the introduction to a surprise at the end? -->
-> In each post, I'll challenge you to find the hidden Jeff.
-To find him, you'll have to find the matching code section for that posts Jeff story. If you find him, just be proud of yourself. Take the first character of each heading where Jeff's code section appears. These four letters are the secret code.
-<!-- TODO what to do with the secret code? GIMME SOMETHING -->
+In each post, I'll challenge you to find the hidden Jeff.
+To find him, you'll have to find the matching code section for that posts Jeff story. Take the first character of each heading where Jeff's code section appears. These four letters are the secret code. 
+<!-- TODO what to do with the secret code? THERE MUST BE SOMETHING -->
 
 This introduction does not contain a Jeff.
 <!-- because he hid in this markdown comment! congrats! :D there, get him!!
 <-- --<< JEFF (hiding) >>-- -->
 
-(Sorry if your name is Jeff, I had to choose a name. Visit me in Soest and the beer is on me!)
+> Sorry if your name is Jeff, I had to choose a name. Visit me in Soest and the beer is on me!
 
 ## A note on performance
 <a name="performance"><!-- link to this anchor using `post-url/#performance` --></a>
