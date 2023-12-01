@@ -64,7 +64,7 @@ BUT don't give up! Let me tell you: You and me, we are clever developers, we wil
 # Why so series
 <!-- TODO: this section is as focused as the drawer in your kitchen that contains both the scissors and the banana shaped tupperware. delete everything except the table of contents? -->
 
-Hi! I'm Johannes. In my handful of years of fulltime Unity development at [SWCode](https://swcode.io), I have discovered one or two goodies, that I'm happy to share with you now. Maybe this stuff is widely known, maybe it's a secret, maybe I'm an Idiot lol. All I know is that I'm writing the blog posts I wish I had read when starting to developing real projects in Unity.
+Hi! I'm Johannes. In my handful of years of fulltime Unity development at [SWCode](https://swcode.io), I have discovered one or two goodies, that I'm happy to share with you now. Maybe this stuff is widely known and my Google Fu is just not good enough. All I know is that I'm writing the blog posts I wish I had read when starting to developing real projects in Unity.
 
 > I can't be the only one thinking that Unity is horribly unreliable. I often wondered how all the professional studios deal with that, and my colleagues did too. In case you know, hit me up in the comment section! 
 

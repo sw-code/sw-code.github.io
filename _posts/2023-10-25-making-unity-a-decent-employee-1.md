@@ -139,24 +139,29 @@ In this post
 
 Working on a higher level allows you to make changes quickly. Move the code around like a sculptor moves clay. Change the large-scale behaviour without touching a single loop. Be the GOD in Age of Empires, not the little guy slamming a pile of rubbish with a hammer until it becomes a tower. Stay in control.
 
-Why are we doing this? Let me convince you with an example that compares two different approaches of the same algorithm.
+To illustrate the techniques in this blog post, I'll start with an exemplary piece of code. After discussing all the techniques, we will rewrite the script on a higher level of abstraction.
+
+<!-- the reason for this is that we can tie together this huge list of techniques using this code example, and go full circle in the story telling. the end will reference the beginning -->
 
 ```cs
 
 ```
 
+<!-- at the end, we will arrive at the following code: -->
 ```cs
 
 ```
 
 
+# Utilize the Type System
 <!-- ## Create your high level Domain, instead of fiddling with unnecessary details all the time -->
-
 The topic of your game is your "domain". But another domain you code in is the spatial world, so you should make it effortless to code. For example, add units for real world distances.
 
 - Add strongly typed measurement units such as Seconds or Metres
 - Add stronlgy typed quantities such as Angles, so you never have to write `Mathf.Pi*2` again ever. Also, why didn't you use `Mathf.Deg2Rad`?
 - Add strongly typed paths instead of using string-based paths. I'll get to that later. It's fantastic, trust me.
+
+C# structs have no runtime overhead, so you can use them without any bad feelings. 
 
 ### Extension Methods
 How often do you attempt to use an API in Unity and think: "Gosh, I wish there was just this one slightly different function instead of this mess!"? C# has a wonderuful feature called [extension methods](https://www.tutorialsteacher.com/csharp/csharp-extension-method), and they allow us to make this place our own. They don't even have any kind of performance overhead!
@@ -268,7 +273,11 @@ This is especially useful for functions like `Equals` or `ToString`, where null 
 You might have noticed this in the earlier example mentioning `bool IsNullOrEmptySpace(this string value)`. 
 
 ```cs
-// example. anchor will never be null
+// examples:
+var animator = gameObject.GetComponentOrNull<Animator>();
+animator.ToString();
+
+// anchor will never be null
 var anchor = this.GetAnchorOrNull().ThrowIfDead("uploading anchor");
 
 // -- the extension method defined somewhere else --
@@ -287,16 +296,18 @@ public static IEnumerable<T> EnumerateIfNotNull<T>(this T value) where T: class 
 /// Enumerate this value if it is present. If it is null, enumerate nothing.
 public static IEnumerable<T> EnumerateIfHasValue<T>(this T? unityObject) where T: struct => 
     unityObject.HasValue ? unityObject.Value.Enumerate() : Enumerable.Empty<T>();
-        
+
+// 'class' is always nullable
+public static string NullableToString<T>(this T self) where T: class => 
+    self == null ? "null" : self.ToString();
+
+// 'struct' is never nullable, unless decorated with '?'
+public static string NullableToString<T>(this T? self) where T: struct => 
+    self.HasValue ? self.Value.ToString() : "null";
 ```
 
 #### Extension Methods can improve the Signal to Noise Ratio
-Functions are the single most important programming primitive. 
-They can even be surpass than built-in syntax constructs.
-For example, the `ForEach` helper function allows us to use method references,
-which is more concise, once you are used to the thought. This way,
-your code looks more like pseudo code, which is great, because
-it allows you to make high-level decisions instead of wrestling with all the details.
+Functions are the single most important programming primitive. They can even be surpass some built-in syntax constructs. For example, the `ForEach` helper function allows us to use method references, which is more concise, once you are used to the thought. This way, your code looks more like pseudo code, which is great, because it allows you to make high-level decisions instead of wrestling with all the details.
 
 ```cs
 // without `ForEach`. means the same, but with more visual noise.
@@ -319,6 +330,8 @@ public static void ForEach<T>(this IEnumerable<T> enumerator, Action<T> action) 
         action(element);
 }
 ```
+
+Ha, I bet you didn't expect we could do better than the built-in loop syntax! Amazing.
 
 Similarly, I often found myself negating a condition in a filter clause.
 Having a negated version `ExceptWhere` in addition to `Where` allows us to use method references again.
@@ -722,11 +735,44 @@ The most spicy case of missing Exceptions in Unity must be scene loading. Let's 
 
 ```cs
 // attempt to load the scene
-SceneManager.LoadScene("owo");
-var scene = SceneManager.GetSceneByName("owo"); 
-// FAILURE: this returns a real scene object, but it has no name and no path!
-Debug.Log(scene.name); 
+SceneManager.LoadScene( "owo" );
+
+// examine the scene
+var scene = SceneManager.GetSceneByName( "owo" );
+Debug.Log(scene.name);
 ```
+
+Quick quiz! What will it print?
+- A) owo
+- B) Unhandled NullReferenceException: ...
+- C)
+
+Correct, it's answer C: nothing. To be exact, it will print an empty string. That's because Unity will always return a scene object, event if there is no scene at all!
+
+Okay, let's try again:
+```cs
+// LoadScene, as opposed to LoadSceneAsync, loads immediately.
+// Well, actually it loads on the next frame, 
+// which you had known if you had read the documentation!!
+SceneManager.LoadScene( "owo" );
+
+yield return null; // wait 1 frame
+
+// examine the scene
+var realScene = SceneManager.GetSceneByName( "owo ");
+Debug.Log(scene.name);
+```
+
+What will it print?
+- A) owo
+- B) Unhandled NullReferenceException: ...
+- C) 
+
+Correct, it's answer C again. That's because we had an (obnoxiously artificial) typo in the scene name. The scene was loaded, but we didn't ask for the correct one.
+
+So, how can we find out whether it worked or failed? Fortunately, the Unity developers have thought of this, and provided a neat little `scene.IsValid()` for us. Silly you, you just forgot to call it! It's your fault, you're just not good enough!!!1
+
+Sorry. I just wish there was a builtin C# language feature to indicate failure that won't silently continue if something goes wrong.
 
 ```cs
 // LoadScene, as opposed to LoadSceneAsync, loads immediately,
@@ -736,17 +782,19 @@ yield return null; // wait 1 frame
 
 // now we want to inspect the scene and find out whether loading was successfull:
 var realScene = SceneManager.GetSceneByName("owo");
-Debug.Log(scene.name); 
-// FAILURE if the scene does not exist or didn't load somehow
-// again, we get a scene object, but it has no name
+if (!realScene.IsValid()) throw new Exception("failed to load the scene");
+
+Debug.Log(scene.name); // if reached, prints the real scene name
 ```
 
-When will you notice that it failed? I hope as soon as it happens, but who knows. Fortunately, the Unity developers have thought of this, and provided a neat little `scene.IsValid()` for us. Silly you just forgot to call it! It's your fault, you're just not good enough!!!1
+Now that we found out how it is possible, we can code up some trivial helper functions.
 
-I just wish there was a builtin C# language feature to indicate failure that won't silently continue if something goes wrong.
-
-We are better than that. We code up our own helper functions.
 ```cs
+// this line is ugly:
+if (!realScene.IsValid()) 
+    throw new Exception("failed to load the scene");
+
+// -- we add helper functions --
 
 public static Scene? OrNullIfInvalid(this Scene sceneOrInvalid) =>
 sceneOrInvalid.IsValid() ? (Scene?) sceneOrInvalid : null;
@@ -771,6 +819,7 @@ static class SceneExtensions {
     public static IEnumerator WaitForLoadScene(string scene, LoadSceneMode mode) {
         SceneManager.LoadScene(scene, mode);
         
+        // should run only once
         while (!FindLoadedSceneByPathOrNull(scene).HasValue) 
             yield return null;
     }
@@ -779,23 +828,26 @@ static class SceneExtensions {
 }
 ```
 
+This code is not optimal, due tue `IEnumerator` lacking the ability to return a value, but it's better than before.
+
 Actually, scene loading can be very complex. If you want to hear another story about it, have a look at [my other blog post about that](TODO).
 
 #### Worst Case: Loading a Scene in an Editor Script
-This is a true story. I was writing an script that opens scenes in the Editor. To make performance acceptable, I was using the `DataBase.StartAssetEditing()`, which avoids reloading the project after every individual file.
+Storytime! I was writing an script to peek into scene files and check it for common problems. The only sane way to do that in a script is to actually open scenes in the Editor and then close them afterwards. To make performance acceptable, I was using the `DataBase.StartAssetEditing()`, which avoids reloading the project after every individual operation.
 
-Later, deep down in the code, the script needed to copy a scene file. Why? Because Unity does not support opening scene files from an external package, or your own embedded package, so the only solution is to temporarily copy it to your assets folder.
+Later, deep down in the code, the script needed to copy a scene file temporarily. Why? Because Unity does not support opening scene files from an external package, or your own embedded package (wtf!?). Therefore, the only solution is to temporarily copy the scene file to your assets folder.
 
 [a clown developer](<!-- TODO insert image of a clown -->)
 
 Anyways, that's [a different story](TODO). The script was trying to load the contents of the scene file that was just being copied. Quick quiz! What's going to happen?
 
-- the scene opens as expected (haha) 
-- the scene doesn't load, and an exception is thrown (ha)
-- the scene doesn't load, and an invalid scene is returned, forcing you to check `isValid()`
-- the scene doesn't load, bUT A VALID EMPTY SCENE IS RETURNED???? ARE YOU FOR REAL?
+- A) the scene opens as expected (haha) 
+- B) the scene doesn't load, and an exception is thrown (ha)
+- C) the scene doesn't load, and an invalid scene is returned, forcing you to check `isValid()`
+- D) the scene doesn't load, bUT A __VALID__ EMPTY SCENE IS RETURNED???? ARE YOU FOR REAL UNITY???
 
-Wat.
+![A horse human holding a cat on the sea](assets/articles/unity/wat.jpg)
+[Wat.](https://www.destroyallsoftware.com/talks/wat) Check out the [other talks](https://www.destroyallsoftware.com/talks/) too.
 
 Unity, are you serious? You know how long it took for me to find out that my scene files actually were correct, but Unity just pretendet that everything is okay? It took a whole day. And the solution now implies that the asset database needs to be reloaded after every single scene, wich unfortunately we only have a few of.
 
@@ -953,11 +1005,11 @@ public static class DataExtensions {
         if (type != second.GetType())
             return false;
 
-        if (type.IsPrimitive)
+        else if (type.IsPrimitive)
             return first.Equals(second); // this uses approximate equality for floats
 
         // if the type does not override ToString, iterate all public fields and properties
-        return DataExtensions.EqualsOverriddenOrEqualProperties(first, second, type);
+        else return DataExtensions.EqualsOverriddenOrEqualProperties(first, second, type);
     }
 
     /// If the type implements equals, we call it, otherwise compare property by property.
@@ -1009,7 +1061,9 @@ nothing.DataEquals((object)5); // works not as expected, but works as hoped for:
 In case it wasn't clear until now, or if you've skipped previous articles:
 Is it slow? Maybe. Not so slow that I needed to change it yet. Does it matter? No, it doesn't matter 99% of the time. Developer time is the single most valuable resource.
 
-Only if you need to use this in the `Update` function, and you notice that your framerate drops, do something about it. If you really need that, you should probably override `Equals` for that type, and that type only!
+Only if you need to use this in the `Update` function, and you profile your game and notice this call, do something about it. If you really need to check for equality each frame, you should probably override `Equals` for that type (and that type only)!
+
+Aside: When using the IL2CPP compilation mode, reflection is resolved at compile time, but it still does perform some allocations, so please just profile it. In our code, equality is checked every frame for one component, but the code is written such that the object is always the same in 99.9% of the cases. This means that the equality check succeeds immediately without using reflection, as `ReferenceEquals` is always checked first. 
 
 #### Going Further
 
@@ -1036,3 +1090,64 @@ This function is also used for runtime assertions in our code. Performance did n
 
 The `DataToString` function works similarly, but I won't torture you with more code. You can have a look [here](TODO). 
 <!-- @osca can we publish this code? -->
+
+# Async Abstractions
+
+Let's say you want to load an audio clip dynamically from a file. In our project, the audio file was downloaded dynamically, because our customers can upload their own sound files. This must happen asynchronously, because we don't want the Game to freeze.
+
+In Unity, we have a rich selection of async programming primitives at our hands. They do the same thing, in essence, but they make it slightly differently hard to catch bugs.
+
+- __Unity Coroutines__ (ab)using C# `IEnumerable` and `yield`
+
+    Doesn't compose well, leading to a lot of code duplication.
+    For example, you can't return values, and can't throw exceptions.
+
+- C# Tasks using `async` and `await`
+
+    Quite nice, but cancellation requires you to sprinkle `cancellationToken?.ThrowIfCancellationRequested()` __ATER EVERY SINGLE AWAIT CALL, LITERALLY__. Otherwise, you will have leftover code running and crashing ungracefully.
+
+    Furthermore, it doesn't show print errors to the console by default, you have to wrap every async task in a `try` statement to log the errors.
+
+- `Observables` [using UniRX](https://github.com/neuecc/UniRx)
+
+    Requires you to shift your thinking, because it's a whole different paradigm. Sometimes, just nothing happens. Also, you have to explicitly manage subscribers, which is error-prone and annoying.
+
+
+Fortunately, it's relatively easy to convert between the three async models.
+
+Perhaps surprisingly, I found the third-party `UniRX` to have the best tradeoffs for our project than the official built-in solutions. Specifically, because it composes well: It allows me to write one generic function and use it everywhere. For example, look at this asynchronous audio clip loader:
+
+```cs
+/// Loads Audio asynchronously using `UnityWebRequestMultimedia` (also works for local files)
+public static IObservable<AudioClip> LoadAudioClip(
+    Uri absoluteUri, AudioType type, 
+    IProgress<float> progress = null
+) {
+    var path = absoluteUri.NonVideoFileUriToUnityPathString();
+    var disposableWebRequest = UnityWebRequestMultimedia
+        .GetAudioClip(absoluteUri, type);
+
+    var operation = disposableWebRequest.SendWebRequest();
+        
+    return operation.AsAsyncOperationObservable(progress)
+
+        .Select(_ => DownloadHandlerAudioClip.GetContent(disposableWebRequest))
+        .Select(clip => clip.ThrowIfNull("Cannot load audio: " + disposableWebRequest.error))
+
+        .Finally(() => disposableWebRequest.Dispose())
+        .Take(1);
+}
+```
+
+Why is loading an audio clip this [complicated](https://youtu.be/NMJVAkfIxKg?si=oRFHmrciS94dx2eO)?! I can only assume it's due to the use of `IEnumerator`, which just doesn't do async code very well. 
+
+Now, with our helper function, we can just call our simple function:
+```cs
+RXT.LoadAudioClip(audioUri, AudioType.UNKNOWN)
+    .Subscribe(OnAudioClipLoaded, OnError);
+```
+
+## Conclusion: You'll have to do it yourself.
+
+
+
