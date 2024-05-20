@@ -3,7 +3,7 @@ layout: post
 title:  "Breaking Free: How Virtual Threads Transform Blocking Code into Non-Blocking Magic"
 date:   2024-05-11 10:30:00
 categories: microservice
-tags: kotlin, java, microservice, technology, database, concurrency, multi-threading
+tags: kotlin, java, microservice, technology, database, concurrency, coroutines, multi-threading, virtual-threads
 image: /assets/article_images/2024-05-11-coroutines-and-deadlocks/header.png
 author_name: Viktor Gottfried
 author_link: /authors/viktor-gottfried
@@ -156,6 +156,7 @@ At the same time, no additional connections are available for new coroutines tha
 This situation outlines a classical deadlock scenario where both resources (threads and database connections) are fully utilized but in a state that prevents any further progress.
 
 
+
 ## Conclusion of Understanding the Risks of Mixing Exposed with Coroutines
 
 So, how do we overcome the deadlock issue? 
@@ -210,6 +211,7 @@ val count = newSuspendedTransaction(VIRTUAL_THREAD_DISPATCHER) {
 ```
 
 That's it. By introducing the Virtual Thread Dispatcher context and applying it, we transformed our blocking code into responsive, non-blocking code.
+For a detailed example that illustrates both the problem and the solution, check out our project on GitHub: [Example Project](https://github.com/sw-code/swcode-samples/tree/main/virtual-threads/deadlocks).
 
 # Conclusion
 
