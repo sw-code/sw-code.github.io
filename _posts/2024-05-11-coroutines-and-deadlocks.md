@@ -1,9 +1,9 @@
 ---
 layout: post
-title:  "Kotlin Coroutines and Deadlocks"
+title:  "Breaking Free: How Virtual Threads Transform Blocking Code into Non-Blocking Magic"
 date:   2024-05-11 10:30:00
 categories: microservice
-tags: microservice, technology, database, concurrency, multi-threading
+tags: kotlin, java, microservice, technology, database, concurrency, multi-threading
 image: /assets/article_images/2024-05-11-coroutines-and-deadlocks/header.png
 author_name: Viktor Gottfried
 author_link: /authors/viktor-gottfried
@@ -23,7 +23,7 @@ This circular dependency causes both threads to be stuck indefinitely, leading t
 
 # Introduction
 
-In our current project, we've chosen a tech stack that includes [Ktor](https://ktor.io/), and the [Exposed](https://jetbrains.github.io/Exposed/home.html). 
+In our current project, we've chosen a tech stack that includes [Ktor](https://ktor.io/), and [Exposed](https://jetbrains.github.io/Exposed/home.html). 
 This combination has generally served us well, offering a powerful way to build and manage our application. 
 
 Ktor is a modern, asynchronous framework developed by JetBrains specifically for building Kotlin applications. 
@@ -85,6 +85,13 @@ fun performBlockingOperation(): String {
     return "Operation Complete"
 }
 ```
+
+If you are not familiar with Kotlin, you may ask what is the difference between `Thread.sleep(...)` and the suspending function `delay(...)`. 
+While `Thread.sleep` actually blocks the thread and makes it unresponsive (the thread is literally sleeping and doing nothing), 
+`delay` is a suspending function that suspends the coroutine and releases the executing thread, making it available to perform other work. 
+Eventually, the coroutine is rescheduled, and a thread is assigned to resume its execution. 
+With coroutines, we do not know which thread will execute it when it resumes. 
+This makes coroutines much more efficient and scalable for handling asynchronous tasks.
 
 # Exposed and Coroutine
 
@@ -202,8 +209,7 @@ val count = newSuspendedTransaction(VIRTUAL_THREAD_DISPATCHER) {
 }
 ```
 
-By leveraging Virtual Threads, we can achieve efficient and scalable concurrency management, making our applications more robust and capable of handling high loads without the pitfalls of traditional thread management. 
-This innovation from Project Loom opens up new possibilities for Java developers, enabling them to build more responsive and resilient applications.
+That's it. By introducing the Virtual Thread Dispatcher context and applying it, we transformed our blocking code into responsive, non-blocking code.
 
 # Conclusion
 
