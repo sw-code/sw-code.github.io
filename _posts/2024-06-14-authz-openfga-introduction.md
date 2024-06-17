@@ -28,7 +28,8 @@ This inactivity's impact was significant; without visible updates or development
 Such stagnation not only curtails the tool's growth potential but also poses risks to the project's ability to adapt to new requirements or security concerns. 
 It was this combination of factors — particularly the project's inactivity — that compelled us to seek a more reliable and actively supported solution.
 
-However, during development, we transitioned to [OpenFGA](https://openfga.dev/) in December 2023.
+However, during development, we transitioned to [OpenFGA](https://openfga.dev/) in December 2023. 
+OpenFGA, which stands for Open Fine-Grained Authorization, was developed by Okta and subsequently made open-source.
 Since then, we have made significant progress with our system. The implementation is complete, and we are now preparing to move into production.
 
 ## Why OpenFGA?
