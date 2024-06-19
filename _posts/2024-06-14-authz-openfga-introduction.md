@@ -17,6 +17,8 @@ But as we ventured deeper, the contours of our needs changed, revealing the limi
 We found a new chart in OpenFGA, one that promised not just to navigate the current landscapes but also to evolve with them. 
 Just as explorers of old learned to adapt their charts to new worlds, we learned to adapt our tools to the evolving terrains of digital authorization.
 
+This is the latest article in our [Scaling Authz]({% post_url 2023-06-17-scaling-authz-series %}) series.
+
 # Introduction
 
 In our previous article, [we discussed our experience working with Ory Keto]({% post_url 2023-10-13-authz-keto-introduction %}).
