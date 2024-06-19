@@ -3,7 +3,7 @@ layout: post
 title:  "Future-Proofing Authorization: Leveraging OpenFGA for Enhanced Security and Scalability"
 date:   2024-06-14 10:30:00
 categories: authz
-tags: authentication, authorization, security, rbac, abac, acl, rebac, openfga
+tags: authentication, authorization, security, rbac, abac, acl, rebac, openfga, zansibar
 image: /assets/article_images/2024-06-14-authz-openfga-introduction/header.png
 author_name: Viktor Gottfried
 author_link: /authors/viktor-gottfried
