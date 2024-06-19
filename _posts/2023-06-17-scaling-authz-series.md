@@ -63,3 +63,4 @@ Whether you're a seasoned architect seeking to solidify your knowledge or a begi
 * [Authorization Basics]({% post_url 2023-08-22-authz-basics %})
 * [Requirements for a scalable Authorization Architecture]({% post_url 2023-09-14-authz-requirements %})
 * [Google's Zanzibar and Beyond: A Deep Dive into Relation-based Authorization]({% post_url 2023-10-13-authz-keto-introduction %})
+* [Future-Proofing Authorization: Leveraging OpenFGA for Enhanced Security and Scalability]({% post_url 2024-06-14-authz-openfga-introduction %})
