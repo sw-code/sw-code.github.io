@@ -312,3 +312,5 @@ understanding the dynamics of users and roles, managing blocking relations for e
 
 The world of authorization is vast and ever-evolving, and we're just scratching the surface. 
 Stay with us as we delve deeper into its depths in our forthcoming discussions.
+
+* [Future-Proofing Authorization: Leveraging OpenFGA for Enhanced Security and Scalability]({% post_url 2024-06-14-authz-openfga-introduction %})

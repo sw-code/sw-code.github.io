@@ -171,7 +171,7 @@ tests:
 To execute the tests, you utilize the OpenFGA CLI with the following command:
 
 ```bash
-fga model test --tests .\tests.fga.yml
+fga model test --tests ./tests.fga.yml
 ```
 
 These tests explicitly verify whether the authorization model correctly interprets Jane's permissions as intended. 
