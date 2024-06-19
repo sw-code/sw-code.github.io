@@ -19,6 +19,9 @@ Just as explorers of old learned to adapt their charts to new worlds, we learned
 
 # Introduction
 
+In our previous article, [we discussed our experience working with Ory Keto]({% post_url 2023-10-13-authz-keto-introduction %}).
+It is an authorization service that implements fine-grained access control based on Google's Zanzibar.
+
 While working with Ory Keto, we encountered several gaps in its feature set that could typically be addressed through active development and community support. 
 However, these missing features, although critical for our project's success, were not the primary reason behind our decision to look for alternatives. 
 Our main concern stemmed from the noticeable lack of activity in the [Ory Keto GitHub repository](https://github.com/ory/keto). 
@@ -28,8 +31,8 @@ This inactivity's impact was significant; without visible updates or development
 Such stagnation not only curtails the tool's growth potential but also poses risks to the project's ability to adapt to new requirements or security concerns. 
 It was this combination of factors — particularly the project's inactivity — that compelled us to seek a more reliable and actively supported solution.
 
-However, during development, we transitioned to [OpenFGA](https://openfga.dev/) in December 2023. 
-OpenFGA, which stands for Open Fine-Grained Authorization, was developed by Okta and subsequently made open-source.
+That's why, during development, we transitioned to [OpenFGA](https://openfga.dev/) in December 2023. 
+OpenFGA, which stands for Open Fine-Grained Authorization, was developed by [Okta](https://docs.fga.dev/) and subsequently made open-source.
 Since then, we have made significant progress with our system. The implementation is complete, and we are now preparing to move into production.
 
 ## Why OpenFGA?
@@ -38,8 +41,8 @@ Since then, we have made significant progress with our system. The implementatio
 2. **Active Development and Community Engagement**: Unlike our experience with Keto, OpenFGA boasts an active development cycle. The developers are not only engaged but also readily available for support. This is further bolstered by monthly [community meetings](https://github.com/openfga/community/blob/main/community-meetings.md), accessible via Zoom and archived on [YouTube](https://www.youtube.com/playlist?list=PLUR5l-oTFZqUneyHz-h4WzaJssgxBXdxB), offering a platform for real-time interaction and knowledge sharing.
 3. **Feature-Rich Offering**: OpenFGA's features are robust and well-aligned with the current demands of authorization architecture. 
 4. **Enhanced Developer Experience**: One of the standout features of OpenFGA is its developer-centric approach. The [OpenFGA Playground](https://play.fga.dev/), for instance, is an exceptional tool, allowing for the writing, testing, and visualization of authorization models directly within the interface.
-5. **Developer Tooling**: Catering to a vast majority of developers who use Visual Studio Code, OpenFGA offers a dedicated extension. This integration streamlines the process of working with the authorization model within a familiar coding environment. Additionally, recognizing the diverse preferences in development tools, a JetBrains plugin is also under active development as of the writing of this article, expanding support to an even broader audience within the development community. This upcoming plugin promises to bring similar benefits to those using JetBrains' suite of IDEs, further enhancing productivity and ease of access to OpenFGA’s features.
-6. **Robust Testing Capabilities**: OpenFGA understands the importance of testing in software development, particularly for authorization models. The framework provides tools to write and execute tests, ensuring that the authorization models function as intended.
+5. **Developer Tooling**: Catering to a vast majority of developers who use Visual Studio Code, OpenFGA offers a dedicated [extension](https://marketplace.visualstudio.com/items?itemName=openfga.openfga-vscode). This integration streamlines the process of working with the authorization model within a familiar coding environment. Additionally, recognizing the diverse preferences in development tools, a [JetBrains plugin](https://plugins.jetbrains.com/plugin/24394-openfga) is also under active development as of the writing of this article, expanding support to an even broader audience within the development community. This upcoming plugin promises to bring similar benefits to those using JetBrains' suite of IDEs, further enhancing productivity and ease of access to OpenFGA’s features.
+6. **Robust Testing Capabilities**: OpenFGA understands the importance of testing in software development, particularly for authorization models. The [framework provides tools](https://openfga.dev/docs/modeling/testing) to write and execute tests, ensuring that the authorization models function as intended.
 
 # OpenFGA Integration
 
@@ -51,7 +54,7 @@ The ease of this transition was largely due to the fundamental concepts inherite
 
 ## Recap of Google Zanzibar's Concepts
 
-At its heart, Google’s Zanzibar introduces a robust yet intuitive model known as relation tuples. 
+At its heart, Google’s Zanzibar introduces a robust yet intuitive model known as relation tuples. You can read more about it [our Zanzibar blog article]({% post_url 2023-10-13-authz-keto-introduction %}).
 These tuples efficiently encode relationships in a structured format, facilitating complex access control scenarios. Here’s a breakdown of the components of a relation tuple:
 
 * `tuple`: This is represented in the format `<object>#<relation>@<user>`.
@@ -99,7 +102,7 @@ This process not only enhances security and compliance but also ensures that the
 ### Recap of the Scenario with Jane and GlobeCorp
 
 Previously, we discussed the scenario involving Jane, an auditor at GlobeCorp. 
-Jane had 'readonly' access to GlobeCorp's financial data and also held an admin role at EcoLife. 
+Jane had `readonly` access to GlobeCorp's financial data and also held an admin role at EcoLife. 
 This scenario sets the stage for testing complex permission structures to ensure they function correctly within the system.
 
 ![Relations](/assets/article_images/2024-06-14-authz-openfga-introduction/global-corp-2.png)
@@ -114,16 +117,17 @@ model:
 
 type: user
 
-type: organization
-  relations:
-    define owner as [user] or owner from parent
-    define parent as [organization]
-    define editor as [user] or editor from parent or owner
-    define viewer as [user] or viewer from parent or owner
-
-    define can_view as viewer
-    define can_edit as editor
+type organization
+  relations
+    define parent: [organization]
+    define owner: [user] or owner from parent
+    define can_edit: [user] or can_edit from parent or owner
+    define can_view: [user] or can_view from parent or owner
 ```
+
+The model specifies two types: user and organization. 
+Within the organization type, there are relations such as owner. 
+An owner is a user who can be designated either through a direct relation or inherited through a relation with the parent organization.
 
 This model specifies hierarchical permissions, reflecting Jane's access levels across different organizational layers.
 
@@ -143,10 +147,10 @@ tuples:
     relation: parent
     object: organization:EcoLIfe
   - user: user:Jane
-    relation: viewer
+    relation: can_view
     object: organization:GlobalCorp
   - user: user:Jane
-    relation: editor
+    relation: can_edit
     object:  organization:EcoLIfe
 
 tests:
@@ -162,7 +166,6 @@ tests:
         assertions:
           can_view: true
           can_edit: true
-
 ```
 
 To execute the tests, you utilize the OpenFGA CLI with the following command:
@@ -193,8 +196,8 @@ This capability is crucial for maintaining stability and continuity in large-sca
 
 The creation and management of stores and models are primarily conducted through OpenFGA’s API. This design allows for high flexibility in how these elements are set up and modified:
 
-* `OpenFGA CLI`: This tool is an integral part of the OpenFGA ecosystem and can be used to configure stores and models within a CI pipeline. By scripting and automating these tasks, teams can seamlessly integrate authorization model updates into their deployment processes, ensuring that changes are rolled out efficiently and consistently.
-* `REST Client`: For more dynamic operational needs, using a REST client allows teams to manage authorization models directly through API calls. In our setup, we utilize a central authorization service that leverages this capability to adjust models on the fly. This method is particularly useful for environments where authorization needs can change rapidly, requiring quick adaptations without redeploying or restarting services.
+* [OpenFGA CLI](https://github.com/openfga/cli): This tool is an integral part of the OpenFGA ecosystem and can be used to configure stores and models within a CI pipeline. By scripting and automating these tasks, teams can seamlessly integrate authorization model updates into their deployment processes, ensuring that changes are rolled out efficiently and consistently.
+* [REST Client](https://openfga.dev/api/service): For more dynamic operational needs, using a REST client allows teams to manage authorization models directly through API calls. In our setup, we utilize a central authorization service that leverages this capability to adjust models on the fly. This method is particularly useful for environments where authorization needs can change rapidly, requiring quick adaptations without redeploying or restarting services.
 
 ### Operational Challenges
 
@@ -241,6 +244,7 @@ This setup ensures that everything needed to authenticate and authorize users is
 Given the structural similarity to our previous example with [Ory Keto]({% post_url 2023-10-13-authz-keto-introduction %}), 
 we have chosen not to delve into the specifics of the codebase again. 
 The primary modification — replacing the Keto API client with the OpenFGA client — is minimal and straightforward, thus not necessitating a detailed walkthrough.
+For those interested in delving deeper, the official [Ory Keto](https://www.ory.sh/docs/keto) docs and [OpenFGA](https://openfga.dev/docs/fga) guide will be invaluable resources.
 
 This example aims to provide a clear and functional integration of OpenFGA in a SpringBoot environment, illustrating the ease with which OpenFGA can be incorporated into existing systems. 
 We encourage you to explore the example, modify it, and adapt it to your specific needs, leveraging OpenFGA's powerful capabilities for your applications.
