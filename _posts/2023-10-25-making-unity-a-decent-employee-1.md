@@ -29,7 +29,7 @@ does it work?
 it was already in the project. in `scripts/rx.cs`
 
 > You
-nice. is it the same script?
+nice. so it's the same script?
 
 > Jeff
 yes, it is the same script. no bugs
@@ -70,12 +70,12 @@ WHAT?? I ASKED YOU ON FIRDAY
 YOU SAID ITS THE SAME!!!1
 
 > Jeff
-it's the same script file name. 
-i didn't check the code inside. 
+it's the same script file
+so i didn't check the code inside.
 you didn't tell me to compare each line in the file!!?
 
 > You have blocked 'Jeff (jefferson_magnotastic_x3000)'. 
-> Unblock to see their new messages.
+> Unblock this person to see newer messages.
 ```
 
 ### WTjeFf?!
@@ -121,7 +121,7 @@ This article is the equivalent of choosing and sharpening the right axe for the 
 
 At the end of this blog post, you might almost feel like coding in a simpler C#, made just for your project. You should feel at home in your code.
 
-Some of the code in this post might seem weird or unnecessary to you. That's because this code has been developed with a Clean Code mantra. At SWCode, we declare our Coding Bible be [Clean Code by Bob C. Martin](https://a.co/d/e3EVrb3). Even though I don't agree with every little detail, it's still a great book, and I recommend every coder to read it. 
+This code has been developed with a Clean Code mantra. At SWCode, we declare our Coding Bible be [Clean Code by Bob C. Martin](https://a.co/d/e3EVrb3). Even though I don't agree with every little detail, it's still a great book, and I recommend every coder to read it. 
 
 #### Ye be warned
 <!-- remove this seciton? just not important? -->
@@ -133,7 +133,7 @@ Also, this article might contain some opinionated advice. Of course, you should 
 In this post
 ------------
 <!-- TODO: collect all the headlines into a table of contents, if possible with anchors -->
-(All the Headlines)
+(All the Headlines of this post)
 
 ## Raising the Level of Abstraction
 
@@ -158,10 +158,15 @@ To illustrate the techniques in this blog post, I'll start with an exemplary pie
 The topic of your game is your "domain". But another domain you code in is the spatial world, so you should make it effortless to code. For example, add units for real world distances.
 
 - Add strongly typed measurement units such as Seconds or Metres
-- Add stronlgy typed quantities such as Angles, so you never have to write `Mathf.Pi*2` again ever. Also, why didn't you use `Mathf.Deg2Rad`?
 - Add strongly typed paths instead of using string-based paths. I'll get to that later. It's fantastic, trust me.
+- Add stronlgy typed quantities such as Angles, so you never have to write `Mathf.Pi*2` ever again. 
 
-C# structs have no runtime overhead, so you can use them without any bad feelings. 
+Note: C# structs have no runtime overhead, so you can use them without any bad feelings, even in `Update` functions. 
+
+__Have you ever written `(r/360)*Math.Pi*2`, even though Unity has `Mathf.Deg2Rad`?__
+Because you're using floats instead of a strongly typed `Angle` struct.
+If you were using 
+
 
 ### Extension Methods
 How often do you attempt to use an API in Unity and think: "Gosh, I wish there was just this one slightly different function instead of this mess!"? C# has a wonderuful feature called [extension methods](https://www.tutorialsteacher.com/csharp/csharp-extension-method), and they allow us to make this place our own. They don't even have any kind of performance overhead!

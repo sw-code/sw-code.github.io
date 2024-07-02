@@ -12,6 +12,18 @@ published: false
 # target publish date: december
 ---
 
+<!-- 
+
+dennis feedback:
+Stil ist erstmal ziemlich nice und liest sich richtig top! Ab und zu ziehst du dich ein bisschen zu viel ins Lächerliche für meinen Geschmack  Ich hätte es ein bisschen gedämpfter gemacht.
+Richtig gut, dass du schon mehrere Parts hast!
+Viel Example und Erklärung dabei, was ich gut finde! Dadurch sind die Artikel aber auch sehr lang, vielleicht kann man das noch bisschen splitten, muss aber nicht zwangsweise. Ist nur ein Gefühl
+Gut find ich auch, dass du öfter mal sagst, schreibt mir in den Comments
+Author Page müsstest du noch aufsetzen
+Weiter so 
+Wir überlegen uns grad auch noch ein Incentive fürs Blogging 
+ -->
+
 It's a cloudy monday morning. Your jeans are soaked from the rain on the way to the office. There's only a sip of cold coffee left in your mug as you are leaving your desk with your presentation notes.
 
 Your heart is pounding, as you open the door to the meeting room, knowing that a dozen of people sit there, waiting.
@@ -23,7 +35,7 @@ Jeff, the coworker you teamed up with, nods and smiles, reassuring that everythi
 Jeff goes "Alright!" and plugs his Laptop in. Everyone sees the cat trying to eat cotton candy, his desktop background. 
 "Jeff could you please open the Game?" What is he waiting for?
 
-"No, I cannot open the Game", Jeff explains calmly, "the attachment in your mail last week was corrupted, so of course I don't have it. I didn't want to get in your way."
+"No, I cannot open the Game", Jeff explains calmly, "the attachment in your mail last week was corrupted, and I didn't want to get in your way, so of course I don't have it."
 
 ### WTjeFf?!
 
@@ -120,7 +132,7 @@ To find him, you'll have to find the matching code section for that posts Jeff s
 
 This introduction does not contain a Jeff.
 <!-- because he hid in this markdown comment! congrats! :D there, get him!!
-<-- --<< JEFF (hiding) >>-- -->
+<--<< JEFF (hiding) >>-->
 
 > Sorry if your name is Jeff, I had to choose a name. Visit me in Soest and the beer is on me!
 
@@ -134,9 +146,10 @@ A recurring theme in this series will be performance. So let me get this straigh
 - of course performance matters
 - but only in a fraction of the code
 - and developer time is more important
-- so use abstractions first, and optimize only where you've __measured__ a performance bottleneck
+- so use high-level abstractions first, 
+- and optimize only where you've __measured__ a performance bottleneck
 
-We will use crazy Reflection and LINQ and write horribly inefficient code. That is, if you were to run it every frame unconditionally. But it's only used in tests, or once at initialization, or on build time. So get ready to unlearn those annoying for-loops and write better code in less time!
+We will use crazy Reflection and LINQ and write horribly inefficient code. That is, if you were to run it every frame unconditionally. But it's only used in tests, or once at initialization, or on build time. So get ready to unlearn those annoying foreach-loops and write better code in less time!
 
 All the time you save by choosing high-level abstractions, you gain for later optimization. It pays off. If this ever didn't work out for you, meet me outside, in the comment section.
 
