@@ -10,142 +10,88 @@ author_link: /authors/viktor-gottfried
 author_image: /assets/images/authors/viktor-gottfried/thumbnail.jpg
 ---
 
-Seit vier Jahren gilt bei uns eine einfache Regel: Alles kommt nach Git. Der Code sowieso, aber auch Design,
-Medien, Marketing- und Vertriebsunterlagen, jedes Protokoll aus unseren Kundenterminen und jede Anforderung.
-Nur eins blieb draußen: das Geld. Hier erzählen wir, wie wir diese Lücke geschlossen haben, ohne ein ERP
-einzuführen, und was das darüber verrät, wie man heute Software baut.
+Eine alte Rechnung hat uns vor einer falschen neuen Rechnung bewahrt.
 
-# Die Regel
+Sie enthielt 24 Monate Wartung in einer einzigen Position. Beim Übertragen des historischen Belegs in unser neues System hätte unsere erste Regel daraus 400 € gemacht. Auf der echten Rechnung standen 9.600 €.
 
-Git ist ein System, das jede Änderung mit Autor, Zeitpunkt und Begründung festhält. Entwickler verwalten damit seit
-Jahrzehnten ihren Quellcode. Wir verwalten damit seit etwa vier Jahren fast alles, was in unserer Firma entsteht,
-und arbeiten auf GitHub gemeinsam daran. Eine Änderung läuft bei uns in der Regel über eine Freigabe: Sie wird als
-Vorschlag eingereicht und erst danach übernommen. Wenn ein Kunde wissen will, was wir im März besprochen haben,
-steht die Antwort an einem Ort, und man sieht, wer sie wann aufgeschrieben hat.
+Die Rechnung war nicht falsch gerechnet. Die Regel war falsch gedacht. Sie war in sich stimmig – und sie kannte unseren Geschäftsfall nicht.
 
-Mit einer Ausnahme. Angebote, Rechnungen und die Frage, was davon schon bezahlt ist, lagen woanders: in unserer
-Buchhaltungssoftware und in einer Tabelle daneben.
+Gefunden hat das keine KI und keine automatische Prüfung. Es fiel einem Menschen auf, der den echten Beleg eingab.
 
-# Warum das Geld draußen blieb
+Das war der entscheidende Moment. Die Frage lautete nicht mehr: Wie automatisieren wir Rechnungen? Sondern: Welche Entscheidungen darf ein System treffen? Wo muss ein Mensch verantwortlich bleiben?
 
-Der Grund war banal. Unsere bisherige Buchhaltungssoftware hatte keine Verbindung zu unseren Werkzeugen. Rechnungen
-entstanden dort, wo die Software war, und blieben auch dort.
+Gleichzeitig zeigte der Beleg ein zweites Problem. Die Informationen, um eine Rechnung richtig zu verstehen, lagen an mehreren Orten: im Angebot, in der Zeiterfassung, bei der Bank und in einer Tabelle, die jemand nebenbei pflegte. Genau dort begann unser eigentliches Projekt.
 
-Solange man ein Angebot in einem Stück abrechnet, fällt das kaum auf. Bei uns ist das selten so. Ein typisches
-Projektangebot hat mehrere Positionen, etwa ein Konzept, eine App und eine Schnittstelle. Abgerechnet wird, was
-fertig ist: diesen Monat Position 1 und 3, in drei Monaten die Hälfte von Position 2, den Rest später.
+# Die Tabelle neben der Buchhaltung
 
-Unsere bisherige Buchhaltungssoftware konnte eine Teilrechnung nur als Prozentsatz oder Festbetrag des gesamten
-Angebots erstellen. „Position 1 und 3, bitte“ war damit nicht möglich. Also haben wir freie Rechnungen geschrieben und daneben eine
-Tabelle geführt: Was ist pro Position schon berechnet, was ist noch offen? Gepflegt wurde sie von Hand, natürlich.
+Wer Projekte in Teilen abrechnet, kennt die Situation. Ein Angebot hat mehrere Positionen. Diesen Monat sind Position 1 und 3 fertig. Von Position 2 wird erst später ein Teil berechnet, der Rest noch später. Die Rechnung selbst ist dabei nicht das Schwierige. Schwierig ist die verlässliche Antwort auf eine einfache Frage: Was ist bei jeder Position schon abgerechnet – und was noch offen?
 
-Von Hand lief auch der Rest. Die Stunden aus der Zeiterfassung haben wir jeden Monat in die Buchhaltungssoftware
-übertragen und dort die Rechnung angelegt. Zahlungseingänge haben wir der richtigen Rechnung zugeordnet. Und während
-Protokolle und Anforderungen längst sauber in Git lagen, führte von dort kein Weg zu Angebot und Rechnung.
+Unsere bisherige Buchhaltungssoftware konnte Teilrechnungen als Prozentsatz oder Festbetrag für das ganze Angebot erstellen. „Heute Position 1 und 3“ ging nicht. Also schrieben wir freie Rechnungen und führten eine Tabelle daneben.
 
-![Vorher: Alles liegt in Git, das Geld daneben, verbunden nur von Hand](/assets/article_images/2026-10-06-alles-in-git/vorher.png)
+Auch die Stunden aus der Zeiterfassung wurden monatlich von Hand übertragen. Zahlungseingänge ordneten wir Rechnungen zu. Und obwohl Protokolle und Anforderungen längst sauber abgelegt waren, führte von ihnen kein Weg zu Angebot und Rechnung.
 
-Ein ERP-System hätte das gelöst. Für ein Unternehmen unserer Größe wäre das aber ein Projekt gewesen, das größer
-ist als das Problem.
+Die Tabelle war damit nicht nur eine Liste. Sie war der fehlende Zusammenhang zwischen Verkauf, Leistung und Geld. Mit jeder Teilrechnung musste sie wieder stimmen. Und wenn sie nicht stimmte, war die Rechenoperation vielleicht korrekt – die geschäftliche Aussage aber falsch.
 
-# Heute
+![Vorher: Die Geschäftsfakten liegen getrennt, verbunden nur durch Handarbeit](/assets/article_images/2026-10-06-alles-in-git/vorher.png)
 
-> Heute geht bei uns keine Rechnung mehr an swops vorbei.
-
-swops ist das System, das wir dafür gebaut haben. Der Rest dieses Artikels erklärt, was es tut, warum man ihm
-trauen kann und warum wir dafür weder eine neue Buchhaltung noch ein ERP gebraucht haben.
+Ein ERP-System kann solche Zusammenhänge abbilden. Für ein kleines Dienstleistungsunternehmen wäre das bei uns ein größeres Projekt geworden als die Lücke selbst.
 
 # Standard kaufen, den eigenen Prozess bauen
 
-Wir haben die Teile behalten, die Standard sind, und nur das gebaut, was es so nur bei uns gibt.
+Unsere Entscheidung war deshalb schlicht: Standardsoftware für Standardarbeit. Den eigenen Prozess bauen wir selbst.
 
-- **Qonto** ist unsere Bank und stellt unsere Rechnungen aus, mit der gesetzlichen Rechnungsnummer.
-- **Kimai** bleibt unsere Zeiterfassung.
-- **swops** ist die dünne Schicht dazwischen. Es weiß, was verkauft ist, was berechnet ist und was pro Position noch
-  offen ist. Und es liegt in Git, neben den Protokollen und Anforderungen, aus denen jedes Angebot entstanden ist.
+Qonto bleibt die Bank. Dort entsteht das Rechnungsdokument, dort wird es finalisiert, dort bekommt es seine Rechnungsnummer. Kimai bleibt die Zeiterfassung. swops ist die schmale Verbindung dazwischen. Es hält fest, was verkauft, geliefert, berechnet und bezahlt ist – pro Position und mit dem Weg dorthin.
 
-Eine naheliegende Frage: Kann die Bank das nicht selbst? Teilweise. Qonto kann Teilrechnungen pro Position
-erstellen, behält aber nicht im Blick, was pro Position über mehrere Rechnungen hinweg offen bleibt. Und selbst wenn es das könnte: Diese Antwort gehört für uns dorthin, wo auch das
-Angebot liegt und das Gespräch, aus dem es entstand.
+swops ersetzt weder die Bank noch die Buchhaltung. Es ist auch kein ERP. Sein Job ist enger: die Geschäftsfakten zusammenzuführen, die unser Prozess braucht und die kein einzelnes Standardwerkzeug für uns kennt.
 
-Der Gewinn ist dieses Wissen, keine schönere Rechnung. Wir sehen jederzeit, was offen ist, und brauchen dafür keine
-Tabelle mehr.
+Die Bank kennt das Rechnungsdokument. Die Zeiterfassung kennt die Stunden. Keine von beiden kennt von sich aus die Geschichte einer Angebotsposition über mehrere Teilrechnungen hinweg. Genau diese Geschichte ist unser eigener Prozess – und deshalb gehört sie in die Verbindung zwischen den Werkzeugen, nicht als Sonderwunsch in eines davon.
 
-# Warum man dem System trauen kann
+Diese Fakten liegen bei uns in Git, einem System, das jede Änderung mit Autor, Zeitpunkt und Begründung festhält. Dort lagen schon die Gesprächsprotokolle und Anforderungen. Jetzt liegt dort auch der Zusammenhang zum Geld.
 
-Hinter swops steckt ein einfacher Mechanismus. Er ist auch der Grund, warum wir es so schnell bauen konnten.
+> Heute geht bei uns keine Rechnung mehr an swops vorbei.
 
-1. **Erst die Regeln, dann der Code.** Bevor wir eine Zeile programmiert haben, haben wir aufgeschrieben, was für eine
-   Rechnung gelten muss. Über alle Rechnungen hinweg wird nie mehr berechnet als der vereinbarte Betrag einer
-   Position. Kein Wartungszeitraum und keine erfasste Stunde wird zweimal berechnet. Und jede Rechnung nennt ihren
-   Leistungszeitraum, so wie es das Umsatzsteuergesetz verlangt.
-2. **Jede Rechnung beginnt als Vorschlag.** Das System prüft ihn gegen diese Regeln, und ein Mensch gibt ihn frei.
-   In der Oberfläche lässt sich eine Rechnung, die eine Regel verletzt, gar nicht erst speichern.
-3. **Die Bank wird nachgerechnet.** Den Rechnungsentwurf in der Bank vergleicht swops mit seinen eigenen Summen.
-   Stimmen sie nicht überein, wird der Entwurf verworfen.
-4. **Nichts wird von selbst endgültig.** Die gesetzliche Rechnungsnummer vergibt die Bank, und zwar erst, wenn ein
-   Mensch die Rechnung dort abschließt.
+# Eine Rechnung darf nicht einfach durchlaufen
 
-# Wo KI geholfen hat, und wo nicht
+Vertrauen entsteht nicht, weil ein System eine Rechnung erzeugen kann. Vertrauen entsteht, wenn es eine falsche Rechnung stoppt.
 
-swops haben zwei Entwickler in vier Wochen gebaut, nebenher. Niemand hat Vollzeit oder auch nur Teilzeit daran
-gearbeitet. Programmiert haben wir mit Claude Code, einem KI-Assistenten, der nach unseren Vorgaben Code schreibt.
+Eine Rechnung beginnt deshalb als Vorschlag. swops prüft ihn gegen die vereinbarten Positionen und den Leistungszeitraum: Es darf nicht mehr berechnet werden, als vereinbart wurde. Wartungszeiträume und erfasste Stunden dürfen nicht zweimal auf einer Rechnung landen. Danach entscheidet ein Mensch, ob die Rechnung freigegeben wird.
 
-Die Arbeitsweise war immer gleich: Jede Fähigkeit begann als schriftliche Beschreibung und als Plan. Die KI hat den
-Plan umgesetzt, wir haben das Ergebnis geprüft.
+Erst dann entsteht in Qonto ein Entwurf. Dessen Summen vergleichen wir noch einmal mit den Summen aus swops. Stimmen sie nicht überein, geht es nicht weiter. Den letzten Schritt erledigt bewusst kein Automatismus: Eine Person finalisiert die Rechnung in Qonto. Erst dort wird sie endgültig und bekommt ihre Rechnungsnummer.
 
-Was die KI nicht konnte: unser Geschäft kennen. Die erste Fassung unserer Regeln und Datenstruktur war sorgfältig
-geplant. Am zweiten Tag haben wir echte alte Angebote und Rechnungen eingepflegt, und danach mussten wir sie an fünf
-Stellen ändern. Eine alte Rechnung berechnete zum Beispiel 24 Monate Wartung in einer einzigen Zeile. Die erste
-Fassung hätte daraus 400 Euro gemacht, auf einer Rechnung über 9.600 Euro. Gefunden hat das weder die KI noch eine
-Regel, sondern ein Mensch, der den echten Beleg abgetippt hat.
+Der Ablauf ist absichtlich keine Gerade ohne Halt. An den Stellen, an denen wirtschaftliche Verantwortung entsteht, steht ein Mensch.
 
-Die schwierige Arbeit waren Entscheidungen, nicht Code. Wie wird auf den Cent gerundet, so wie es der Standard für
-Rechnungen verlangt? Was muss laut Gesetz auf einer Rechnung stehen? Wer vergibt die Rechnungsnummer, wir oder die
-Bank? (Die Bank.) KI ist schnell, wo die Regeln auf Papier stehen. Sie aufzuschreiben, bleibt Ihre Arbeit.
+![Zielbild: Der Weg von vereinbarten Positionen bis zur finalisierten Rechnung mit drei menschlichen Freigaben](/assets/article_images/2026-10-06-alles-in-git/zielbild.png)
 
-# Wie es wuchs
+# KI hat den Bau beschleunigt. Die Regeln kamen aus der Praxis.
 
-Angefangen hat swops mit der einen Lücke. Als die Daten einmal sauber verbunden waren, wurde jeder weitere Schritt
-klein.
+Zwei Entwickler haben swops in vier Wochen neben ihrer eigentlichen Arbeit gebaut. Claude Code half beim Programmieren. Jede neue Fähigkeit begann mit einer schriftlichen Beschreibung und einem Plan; die KI setzte ihn um, wir prüften das Ergebnis.
 
-- **Woher kommt eine Anforderung?** Protokolle und Anforderungen lagen längst in Git, nur führte von dort kein Weg
-  zu Angebot und Rechnung. Heute weiß jede Anforderung, aus welchem Protokoll oder Dokument sie stammt. Angebote
-  entstehen aus Anforderungen, und jede Position ist mit den Entwicklungsaufgaben auf GitHub verknüpft, die sie
-  umsetzen. Ein Blick in diese Aufgaben zeigt, ob eine Position fertig ist, und damit, was wir wann abrechnen
-  können.
-- **Stunden.** Früher haben wir die Stunden jeden Monat von Hand übertragen. Heute bestätigt bei Kunden, die nach
-  Stunden abgerechnet werden, ein Mensch zum Monatsanfang, dass alle Stunden in Kimai erfasst sind. swops bereitet
-  daraus einen Rechnungsvorschlag vor, den ein Mensch freigibt.
-- **Zahlungen.** Früher haben wir Zahlungseingänge von Hand zugeordnet. Heute ordnet die Bank sie ihrer Rechnung zu,
-  und swops übernimmt das per Knopfdruck, dorthin, wo steht, was verkauft und was noch offen ist.
-- **Anforderungen aus Gesprächen.** Anforderungen kommen als Protokoll, als E-Mail, als Dokument, und jemand
-  musste sie einzeln herausschreiben. Heute schlägt ein KI-Assistent in swops aus einem Protokoll oder einer
-  E-Mail die Anforderungen vor, jeweils mit Verweis auf die Quelle. Ein Mensch übernimmt sie.
+Das war schnell. Es war aber nicht der schwierige Teil.
 
-Damit auch Kolleginnen und Kollegen ohne Kommandozeile damit arbeiten können, gibt es eine Oberfläche und eine
-Desktop-App.
+Schon am zweiten Tag haben wir alte Angebote und Rechnungen eingepflegt. Die erste Fassung unserer Regeln und Datenstruktur musste danach an mehreren Stellen geändert werden. Die Rechnung mit den 24 Wartungsmonaten ist das beste Beispiel: Die KI konnte die Regel sauber umsetzen. Nur ein echter Beleg und ein Mensch mit Verständnis für das Geschäft konnten zeigen, dass die Regel nicht stimmt.
 
-![Der Weg: von der einen Lücke zu vier Erweiterungen](/assets/article_images/2026-10-06-alles-in-git/weg.png)
+Auch bei den anderen Fragen gab es nichts zu raten: Wie wird auf den Cent gerundet? Was muss auf der Rechnung stehen? Wer vergibt die Rechnungsnummer? Solche Entscheidungen muss ein Unternehmen treffen und nachvollziehbar festhalten. KI ist schnell, wenn die Regeln klar sind. Sie ersetzt nicht die Arbeit, sie richtig zu bestimmen.
 
-# Das Zielbild
+# Aus einer Lücke wurde ein zusammenhängender Prozess
 
-![Zielbild: vom Kundengespräch bis zur Zahlung an einem Ort](/assets/article_images/2026-10-06-alles-in-git/zielbild.png)
+Die erste zuverlässige Rechnung war kein Endpunkt. Sobald die Daten verbunden waren, ergab der nächste Schritt jeweils Sinn.
 
-Vom Kundengespräch bis zur Zahlung ist jetzt alles verbunden, und jede Stelle weiß, woher sie kommt. Angebot,
-Anforderungen und Entwicklungsaufgaben hängen zusammen. Ob eine Position fertig ist, zeigen die verknüpften Aufgaben
-auf GitHub, und damit wissen wir, was wann abgerechnet werden kann. Den letzten Schritt haben wir bewusst nicht
-automatisiert: Endgültig wird eine Rechnung erst, wenn ein Mensch sie in der Bank abschließt.
+Zuerst verbanden wir Anforderungen mit ihrer Quelle, dem Angebot und den Entwicklungsaufgaben, die sie umsetzen. Damit lässt sich vom Gespräch bis zur abgerechneten Position zurückverfolgen, warum etwas verkauft wurde und wo die Umsetzung steht.
 
-# Was das für Sie heißt
+Dann kamen die Stunden: Für Kunden, die nach Zeit abrechnen, bestätigt ein Mensch zum Monatsanfang die vollständig erfassten Stunden in Kimai. Daraus bereitet swops einen Rechnungsvorschlag vor. Später folgten die Zahlungen. Die Bank ordnet sie ihren Rechnungen zu; swops übernimmt diese Zuordnung auf Knopfdruck in den Zusammenhang, der auch das Angebot kennt.
 
-Welche Tabelle führen Sie neben Ihrer Standardsoftware? Diese Tabelle ist Ihre Lücke.
+Dasselbe Muster hilft am Anfang der Kette. Aus Gesprächsprotokollen, E-Mails oder Dokumenten schlägt ein KI-Assistent Anforderungen mit Verweis auf die jeweilige Quelle vor. Ein Mensch übernimmt sie. Kolleginnen und Kollegen arbeiten dafür über eine Oberfläche und Desktop-App, nicht über die Kommandozeile.
 
-Lange hieß die Wahl: mit der Lücke leben oder ein ERP einführen. Heute gibt es einen dritten Weg. Man behält die
-Standardwerkzeuge und baut eine dünne Schicht, die genau den eigenen Prozess abbildet und diese Werkzeuge verbindet.
-Bei uns lief die erste Rechnung acht Tage nach der ersten Zeile Code über swops. Nach vier Wochen stand das Ganze,
-gebaut nebenher von zwei erfahrenen Entwicklern.
+![Der Weg: Eine Lücke wird zu verbundenen Daten, dann zu Rechnungen, Stunden, Zahlungen und Anforderungen](/assets/article_images/2026-10-06-alles-in-git/weg.png)
 
-Genau diese Erfahrung bringen wir mit, wenn Sie Ihre Lücke schließen wollen. Schreiben Sie uns über
-[unsere Website](https://swcode.io/#kontakt) oder direkt unter dem LinkedIn-Beitrag zu diesem Artikel. Wir sind
-gespannt, welche Tabelle bei Ihnen daneben liegt.
+Es sind keine vier losen Zusatzfunktionen. Sie nutzen denselben Zusammenhang: Was wurde besprochen? Was wurde verkauft? Was wurde geleistet? Was wurde berechnet? Was wurde bezahlt?
+
+# Welche Tabelle liegt bei Ihnen daneben?
+
+Vielleicht ist es eine Tabelle neben der Buchhaltung. Vielleicht ein Ordner mit Angeboten, aus denen niemand sicher sagen kann, was noch offen ist. Vielleicht werden Stunden, Zahlungen oder Übergaben zwischen zwei Systemen immer wieder abgetippt.
+
+Diese Tabelle ist nicht bloß eine Notlösung. Sie zeigt, wo Ihr eigener Prozess endet und die Standardsoftware nicht mehr weiterweiß.
+
+Früher blieb dann oft nur die Wahl: mit der Lücke leben oder ein ERP einführen. Wir haben einen dritten Weg gewählt. Die erste Rechnung lief acht Tage nach der ersten Zeile Code über swops. Nach vier Wochen stand die Verbindung, gebaut nebenher von zwei erfahrenen Entwicklern.
+
+Wenn Sie Ihre eigene Lücke schließen wollen, schreiben Sie uns über [unsere Website](https://swcode.io/#kontakt) oder direkt unter dem LinkedIn-Beitrag zu diesem Artikel.
