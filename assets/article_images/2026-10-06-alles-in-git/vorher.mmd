@@ -1,0 +1,17 @@
+graph TD
+  C[Code] --> GIT
+  D[Design & Medien] --> GIT
+  M[Marketing & Vertrieb] --> GIT
+  P[Jour-fixe-Protokolle] --> GIT
+  A[Anforderungen] --> GIT
+  GIT["`Git / GitHub
+seit ca. 4 Jahren`"]
+  GIT -. "✕ keine Verbindung ✕" .- AN
+  AN["Angebot: Pos. 1, 2, 3"] --> BS[Bisherige Buchhaltungssoftware]
+  ST[Stunden aus Kimai] -->|von Hand übertragen| BS
+  BS -->|"nur % oder Festbetrag vom ganzen Angebot"| TR[Teilrechnung]
+  BS -->|von Hand| FR[Freie Rechnung]
+  ZE[Zahlungseingang] -->|von Hand zugeordnet| FR
+  FR --- TAB["`Tabelle von Hand:
+Was ist pro
+Position offen?`"]
